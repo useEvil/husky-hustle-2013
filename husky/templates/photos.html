@@ -1,0 +1,67 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+	<head>
+		{% include "include/page-header.html" %}
+	</head>
+	<body>
+		<div id="wrapper">
+			<div id="header">
+				<div id="logo">
+					<h1><a href="#">Husky Hustle</a></h1>
+				</div>
+				{% include "include/menu.html" %}
+			</div>
+			<div id="inner">
+				<div id="content">
+					<div class="box">
+						{% if albums %}
+						<h2>Albums</h2>
+						<ul class="gallery">
+						{% for album in albums.get_albums.entry %}
+							{% if album.access.text == 'public' %}
+							<li>
+								<a href="/archive/album/{{ album.gphoto_id.text }}">
+									<span></span><em>{{ album.title.text }} ({{ album.numphotos.text }})</em>
+									<img src="{{ album.media.thumbnail.0.url }}" alt="{{ album.title.text }}" width="{{ album.media.thumbnail.0.width }}" height="{{ album.media.thumbnail.0.height }}" />
+								</a>
+							</li>
+							{% endif %}
+						{% endfor %}
+						</ul>
+						{% endif %}
+						{% if album %}
+						<h2><a href="/nav/photos">Albums</a>: {{ album.title.text }}</h2>
+						<ul class="hoverbox">
+						{% for photo in album.entry %}
+							<li>
+								<a href="/archive/photo/{{ album.gphoto_id.text }}/{{ photo.gphoto_id.text }}">
+									<img src="{{ photo.media.thumbnail.2.url }}" alt="{{ photo.title.text }}" />
+									<img src="{{ photo.content.src }}" alt="{{ photo.title.text }}" class="preview" />
+								</a>
+							</li>
+						{% endfor %}
+						</ul>
+						{% endif %}
+						{% if photo %}
+						<a href="/archive/album/{{ photo_album.gphoto_id.text }}"><h4>Back to {{ photo_album.title.text }}</h4></a>
+						<ul style="text-align: center;">
+							<li>
+								<img src="{{ photo.media.content.0.url }}" alt="{{ photo.title.text }}" width="{{ photo.width.text }}" height="{{ photo.height.text }}" />
+								<div class="description">{{ photo.title.text }}</div>
+							</li>
+						</ul>
+						{% endif %}
+					</div>
+					<br class="clearfix" />
+					<br class="clearfix" />
+				</div>
+			</div>
+			<div id="page-bottom">
+				{% include "include/page-bottom.html" %}
+			</div>
+		</div>
+		<div id="footer">
+			{% include "include/page-footer.html" %}
+		</div>
+	</body>
+</html>

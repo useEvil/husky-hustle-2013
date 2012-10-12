@@ -1,0 +1,43 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+	<head>
+		{% include "include/page-header.html" %}
+	</head>
+	<body>
+		<div id="wrapper">
+			<div id="header">
+				<div id="logo">
+					<h1><a href="#">Husky Hustle</a></h1>
+				</div>
+				{% include "include/menu.html" %}
+			</div>
+			<div id="inner">
+				<div id="page">
+					<div id="content">
+						<div class="box">
+							<div class="box col2-3">
+								{% for entry in entries %}
+								<div class="title">{{ entry.title }}</div>
+								<div class="content">{{ entry.content }}</div>
+								<div class="author">by {{ entry.author }} on {{ entry.date_added }}</div>
+								{% endfor %}
+								<br class="clearfix" />
+							</div>
+							<div class="box col1-3">
+								{% include "include/thermometer.html" %}
+								<br class="clearfix" />
+							</div>
+							<br class="clearfix" />
+						</div>
+					</div>
+				</div>
+			</div>
+			<div id="page-bottom">
+				{% include "include/page-bottom.html" %}
+			</div>
+		</div>
+		<div id="footer">
+			{% include "include/page-footer.html" %}
+		</div>
+	</body>
+</html>
