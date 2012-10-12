@@ -1,0 +1,29 @@
+{% if edit %}
+{% for child in parent.children.all %}
+<form action="/edit/child" method="post" id="child_{{ child.id }}" class="form-edit hidden">
+	{% csrf_token %}
+	<input type="hidden" value="{{ child.id }}" name="id" />
+	<ol>
+		<li><label for="first_name">First Name:</label><input id="first_name" type="text" name="first_name" value="{{ child.first_name }}" size="30" class="required" /><span class="hidden pad-left10 error">* required</span></li>
+		<li><label for="last_name">Last Name:</label><input id="last_name" type="text" name="last_name" value="{{ child.last_name }}" size="30" class="required" /><span class="hidden pad-left10 error">* required</span></li>
+		<li><label for="teacher">Teacher:</label><input id="teacher" type="text" name="teacher" value="{{ child.teacher }}" size="30" class="required" /><span class="hidden pad-left10 error">* required</span></li>
+		<li><label for="room_number">Room Number:</label><input id="room_number" type="text" name="room_number" value="{{ child.room_number }}" size="30" class="required" /><span class="hidden pad-left10 error">* required</span></li>
+		<li>
+			<input type="button" style="width: 8em;" class="control input submit_edit" id="submit_child_{{ child.id }}" value=" Update Child " />
+			<input type="button" style="width: 8em;" class="control input cancel_button" id="cancel_child" value=" Cancel " />
+		</li>
+	</ol>
+</form>
+{% endfor %}
+{% else %}
+<form action="/add/child" method="post">
+	{% csrf_token %}
+	<ol>
+		<li><label for="id_first_name"{% if form.first_name.errors %} class="error"{% endif %}>First Name:</label><input id="id_first_name" type="text" name="first_name" value="{{ form.first_name.value }}" size="30" class="required" />{% if form.first_name.errors %}<span class="pad-left10 error">* required</span>{% endif %}</li>
+		<li><label for="id_last_name"{% if form.last_name.errors %} class="error"{% endif %}>Last Name:</label><input id="id_last_name" type="text" name="last_name" value="{{ form.last_name.value }}" size="30" class="required" />{% if form.last_name.errors %}<span class="pad-left10 error">* required</span>{% endif %}</li>
+		<li><label for="id_teacher"{% if form.teacher.errors %} class="error"{% endif %}>Teacher:</label><input id="id_teacher" type="text" name="teacher" value="{{ form.teacher.value }}" size="30" class="required" />{% if form.teacher.errors %}<span class="pad-left10 error">* required</span>{% endif %}</li>
+		<li><label for="id_room_number"{% if form.room_number.errors %} class="error"{% endif %}>Room Number:</label><input id="id_room_number" type="text" name="room_number" value="{{ form.room_number.value }}" size="30" class="required" />{% if form.room_number.errors %}<span class="pad-left10 error">* required</span>{% endif %}</li>
+		<li><input type="submit" style="width: 8em;" class="control input" value=" Add Child " /></li>
+	</ol>
+</form>
+{% endif %}

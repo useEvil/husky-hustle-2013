@@ -1,0 +1,18 @@
+Dear {{ parent_name }},
+
+Thank you for registering your child, {{ child_name }}.
+
+You can now manage your sponsors online.  You can add new sponsors, mark if they have paid and send out reminders to sponsors.
+
+We will periodically send updates to your email address at: {{ email_address }}.  Please make sure our email address husky@huskyhustle.com is in your contact list.
+
+If you would like to invite family and friends to sponsor {{ child_name }}, please use the link below.
+
+http://www.huskyhustle.com/donate/{{ child_identifier }}
+
+Regards,
+
+The Husky Hustle Team
+
+http://www.huskyhustle.com
+husky@huskyhustle.com
