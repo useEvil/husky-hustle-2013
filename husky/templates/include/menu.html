@@ -1,0 +1,15 @@
+<div id="menu">
+	<ul>
+		<li class="first"><a href="/">Homepage</a></li>
+		<li {% if 'photos' in request.path %}class="current_page_item"{% endif %}><a href="/nav/photos">Photos</a></li>
+		<li {% if 'blog' in request.path %}class="current_page_item"{% endif %}><a href="/nav/blog">Blog</a></li>
+		<li {% if 'links' in request.path %}class="current_page_item"{% endif %}><a href="/nav/links">Links</a></li>
+		<li {% if 'contact' in request.path %}class="current_page_item"{% endif %}><a href="/nav/contact">Contact</a></li>
+		{% if request.user.is_authenticated %}
+		<li {% if 'account' in request.path %}class="current_page_item"{% endif %}><a href="/accounts/profile/">Profile</a></li>
+		{% else %}
+		<li class="last"><a href="/accounts/login">Login</a></li>
+		{% endif %}
+	</ul>
+	<br class="clearfix" />
+</div>

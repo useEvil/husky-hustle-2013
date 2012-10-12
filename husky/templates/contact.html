@@ -1,0 +1,51 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+	<head>
+		{% include "include/page-header.html" %}
+	</head>
+	<body>
+		<div id="wrapper">
+			<div id="header">
+				<div id="logo">
+					<h1><a href="#">Husky Hustle</a></h1>
+				</div>
+				{% include "include/menu.html" %}
+			</div>
+			<div id="inner">
+				<div id="page">
+					<div id="content">
+						{% if messages %}
+						<ul class="messages">
+							{% for message in messages %}
+							<li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
+							{% endfor %}
+						</ul>
+						{% endif %}
+						<div class="box">
+							<h2>Feel Free to Contact Us</h2>
+							{% if form.non_field_errors %}
+							<span class="error">{{ form.non_field_errors }}</span>
+							{% endif %}
+							<form action="/contact" method="post">
+								{% csrf_token %}
+								<ol>
+									<li><label for="id_subject"{% if form.subject.errors %} class="error"{% endif %}>Subject:</label><input id="id_subject" type="text" name="subject" value="{{ form.subject.value }}" size="30" class="required" />{% if form.subject.errors %}<span class="pad-left10 error">* required</span>{% endif %}</li>
+									<li><label for="id_sender"{% if form.sender.errors %} class="error"{% endif %}>Sender:</label><input id="id_sender" type="text" name="sender" value="{{ form.sender.value }}" size="30" class="required" />{% if form.sender.errors %}<span class="pad-left10 error">* required</span>{% endif %}</li>
+									<li><label for="id_message"{% if form.message.errors %} class="error"{% endif %}>Message:</label><textarea id="id_message" type="text" name="message" cols="100" rows="15" class="required">{{ form.message.value }}</textarea>{% if form.message.errors %}<span class="pad-left10 error">* required</span>{% endif %}</li>
+									<li><label for="id_cc_myself">CC Myself:</label><input id="id_cc_myself" type="checkbox" name="cc_myself" value="" /></li>
+									<li><input type="submit" value=" Submit " /></li>
+								</ol>
+							</form>
+						</div>
+					</div>
+				</div>
+			</div>
+			<div id="page-bottom">
+				{% include "include/page-bottom.html" %}
+			</div>
+		</div>
+		<div id="footer">
+			{% include "include/page-footer.html" %}
+		</div>
+	</body>
+</html>

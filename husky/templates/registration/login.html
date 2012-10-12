@@ -1,0 +1,89 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+	<head>
+		{% include "include/page-header.html" with page_title="Login" %}
+	</head>
+	<body>
+		<div id="wrapper">
+			<div id="header">
+				<div id="logo">
+					<h1><a href="#">Husky Hustle</a></h1>
+				</div>
+				{% include "include/menu.html" %}
+			</div>
+			<div id="inner">
+				<div id="page">
+					<div id="content">
+						{% if form.non_field_errors %}
+						<span class="error">{{ form.non_field_errors }}</span>
+						{% endif %}
+						{% if messages %}
+						<ul class="messages">
+							{% for message in messages %}
+							<li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
+							{% endfor %}
+						</ul>
+						{% endif %}
+						<div class="box col1">
+							<h3>Login</h3>
+							<form action="/accounts/login/" method="post">
+								{% csrf_token %}
+								<ol>
+									<li><label for="id_username"{% if form.username.errors %} class="error"{% endif %}>Username:</label><input id="id_username" type="text" name="username" value="{{ form.username.value }}" size="30" class="required" />{% if form.username.errors %}<span class="pad-left10 error">* required</span>{% endif %}</li>
+									{% if '/accounts' in request.path or '/activate' in request.path %}
+									<li><label for="id_password">Password:</label><input id="id_password" type="password" name="password" value="" size="15" class="required" /></li>
+									{% else %}
+									<li><label for="id_password"{% if form.non_field_errors or not form.password.value %} class="error"{% endif %}>Password:</label><input id="id_password" type="password" name="password" value="" size="15" class="required" />{% if form.non_field_errors or not form.password.value %}<span class="pad-left10 error">* required</span>{% endif %}</li>
+									{% endif %}
+									<li><input type="submit" value=" Login " /></li>
+								</ol>
+								<a href="/accounts/password/reset/">Forgot your password?</a>
+							</form>
+						</div>
+						<div class="box col1">
+							<h3>Social Login</h3>
+							{% load facebook twitter openid instagram %}
+							{% if not request.user.is_authenticated %}
+								<ol style="text-align: center;">
+									<li>{% facebook_button '/static/images/facebook-login-button.png' %}</li>
+									<!--li>-- OR --</li-->
+									<li>{% twitter_button '/static/images/twitter-login-button.png' %}</li></li>
+									<!--li>-- OR --</li>
+									<li>{% instagram_button '/static/images/instagram-login-button.png' %}</li>
+									<li>-- OR --</li-->
+									<li>{% openid_form 'https://www.google.com/accounts/o8/id' '/static/images/google-login-button.png' %}</li>
+								</ol>
+							{% else %}
+								<h1>Hi, {{ request.user }}</h1>
+							{% endif %}
+						</div>
+						<div class="box">
+							<h3>Register</h3>
+							{% include "include/register-form.html" %}
+							<!--h3>Connected profiles:</h3>
+							
+							<ol>
+								<li>Facebook: {{ facebook.count }}</li>
+								<li>Twitter: {{ twitter.count }}</li>
+								<li>Google: {{ openid.count }}</li>
+								<li>Instagram: {{ instagram.count }}</li>
+							</ol>
+							
+							{% if request.user.is_authenticated %}
+								<a href="{% url socialregistration:logout %}">Logout</a>
+							{% endif %}
+							-->
+						</div>
+						<br class="clearfix" />
+					</div>
+				</div>
+			</div>
+			<div id="page-bottom">
+				{% include "include/page-bottom.html" %}
+			</div>
+		</div>
+		<div id="footer">
+			{% include "include/page-footer.html" %}
+		</div>
+	</body>
+</html>
