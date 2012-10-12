@@ -17,7 +17,8 @@ from django.contrib.auth.views import password_reset, password_reset_done, passw
 from django.contrib.auth.forms import AuthenticationForm, PasswordResetForm, SetPasswordForm, PasswordChangeForm
 from django.contrib.auth.models import User
 from django.contrib.auth.decorators import login_required
-from django.contrib.sites.models import Site
+from django.contrib.sites.models import Site, get_current_site
+from django.contrib.syndication.views import Feed
 from django.views.decorators.debug import sensitive_post_parameters
 from django.views.decorators.cache import never_cache
 from django.views.decorators.csrf import csrf_protect
@@ -58,8 +59,8 @@ def index(request):
     return render_to_response('index.html', c, context_instance=RequestContext(request))
 
 @checkUser
-def nav(request, page='index'):
-    matched     = regexp.compile(r"^/nav/(?P<page_title>\w+)/*$").match(request.path).groupdict()
+def nav(request, page='index', id=None):
+    matched     = regexp.compile(r"^/nav/(?P<page_title>\w+)").match(request.path).groupdict()
     parent      = None
     my_twitter  = None
     my_facebook = None
@@ -84,7 +85,10 @@ def nav(request, page='index'):
     if matched['page_title'] == 'photos':
         c['albums'] = Album()
     elif matched['page_title'] == 'blog':
-        c['entries'] = Blog.objects.all()
+        if id:
+            c['entries'] = [ Blog.objects.get(pk=id) ]
+        else:
+            c['entries'] = Blog.objects.order_by('-date_added')[:15]
     return render_to_response('%s.html'%page, c, context_instance=RequestContext(request))
 
 @login_required(login_url='/accounts/login/')
@@ -203,7 +207,7 @@ def register(request):
                                 activation_key=key,
                                 key_expires=expires,
                                 date_added=date.datetime.now(),
-                                site=Site.objects.get(pk=settings.SITE_ID),
+                                site=Site.objects.get_current(),
                                 user=user,
                             )
                 parent.save()
@@ -461,3 +465,24 @@ def _formatData(data, total):
 def _send_email_teamplate(template, data):
     t = loader.get_template('email/%s.txt' % template)
     send_mail(data['subject'], t.render(data), settings.EMAIL_HOST_USER, [data['email_address']])
+
+
+class BlogFeed(Feed):
+    title = "Husky Hustle Site News"
+    link  = "/nav/blog/"
+    description = "Updates on changes and additions to huskyhustle.com."
+
+    def items(self):
+        return Blog.objects.order_by('-date_added')[:15]
+
+    def item_title(self, item):
+        return item.title
+
+    def item_description(self, item):
+        return item.content
+
+    def item_link(self, item):
+        domain = Site.objects.get_current().domain
+        return 'http://%s/nav/blog/%d' % (domain, item.id)
+
+
