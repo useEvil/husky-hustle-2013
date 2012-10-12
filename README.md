@@ -4,7 +4,7 @@ husky-hustle
 Fundraising website for Managing Registrants, Sponsors and Donations.  Built using Python's Django Framework.
 
 Features
-========
+--------
 
 1. Parent Registration
 2. Children for Parents
@@ -34,7 +34,7 @@ Features
     * Docs (Google Docs)
 
 Frameworks
-==========
+----------
 
 * [Python](http://www.python.org) - http://www.python.org
 * [Django](http://www.djangoproject.com) - https://www.djangoproject.com
@@ -46,3 +46,13 @@ Frameworks
 * [Flexigrid](http://flexigrid.info) - http://flexigrid.info
 * [Axiom CSS Template](http://www.freecsstemplates.org/preview/axiom) - http://www.freecsstemplates.org/preview/axiom
 * [Flexigrid](http://flexigrid.info) - http://flexigrid.info
+
+License
+-------
+
+husky-hustle is provided under the [Apache 2.0 License](http://www.apache.org/licenses/LICENSE-2.0). Commercial use requires attribution.
+
+Credits
+-------
+
+husky-hustle is a project by [Thai Nguyen](http://www.thaiandhien.com/).
