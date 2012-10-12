@@ -1,7 +1,7 @@
 # Django settings for huskyhustle project.
 import base64
 
-DEBUG = True
+DEBUG = False
 TEMPLATE_DEBUG = DEBUG
 
 ADMINS = (
