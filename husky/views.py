@@ -481,6 +481,12 @@ class BlogFeed(Feed):
     def item_description(self, item):
         return item.content
 
+    def item_author_name(self, item):
+        return item.author
+
+    def item_pubdate(self, item):
+        return item.date_added
+
     def item_link(self, item):
         domain = Site.objects.get_current().domain
         return 'http://%s/nav/blog/%d' % (domain, item.id)
