@@ -48,7 +48,10 @@ Frameworks
 * [Axiom CSS Template](http://www.freecsstemplates.org/preview/axiom) - http://www.freecsstemplates.org/preview/axiom
 * [Flexigrid](http://flexigrid.info) - http://flexigrid.info
 * [Hoverbox](http://host.sonspring.com/hoverbox) - http://host.sonspring.com/hoverbox
+<<<<<<< HEAD
 * [CSS Decorative Gallery](http://webdesignerwall.com/tutorials/css-decorative-gallery) - http://webdesignerwall.com/tutorials/css-decorative-gallery
+=======
+>>>>>>> 7b45b80a6aef78d1860575b80ea107e0d6072c70
 
 License
 -------
