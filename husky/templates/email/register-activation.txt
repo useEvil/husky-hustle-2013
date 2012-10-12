@@ -1,0 +1,14 @@
+Dear {{ parent_name }},
+
+Thank you for registering with Husky Hustle.
+
+Please activate your account using the link below to get started.
+
+http://www.huskyhustle.com/activate/{{ key }}
+
+Regards,
+
+The Husky Hustle Team
+
+http://www.huskyhustle.com
+husky@huskyhustle.com

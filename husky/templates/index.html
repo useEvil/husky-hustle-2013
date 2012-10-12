@@ -1,0 +1,136 @@
+{% load custom_filters %}
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+	<head>
+		{% include "include/page-header.html" %}
+	</head>
+	<body>
+		<div id="wrapper">
+			<div id="header">
+				<div id="logo">
+					<h1><a href="#">Husky Hustle</a></h1>
+				</div>
+				{% include "include/menu.html" %}
+			</div>
+			<div id="inner">
+				<div id="splash">
+					<img src="/static/images/banner.jpg" width="900" height="260" alt="" class="image" />
+				</div>
+				<div id="page">
+					<div id="content">
+						{% if messages %}
+						<ul class="messages">
+							{% for message in messages %}
+							<li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
+							{% endfor %}
+						</ul>
+						{% endif %}
+						<div class="box">
+							<h2>Welcome to Hicks Canyon Husky Hustle</h2>
+							<img class="image alignleft" src="/static/images/welcome1.jpg" width="215" height="150" alt="" />
+							{% include "include/thermometer.html" %}
+							<p>
+								Once upon a midnight dreary, while I pondered weak and weary,
+								Over many a quaint and curious volume of forgotten lore,
+								While I nodded, nearly napping, suddenly there came a tapping,
+								As of some one gently rapping, rapping at my chamber door.
+								"'Tis some visitor,' I muttered, `tapping at my chamber door -
+								Only this, and nothing more."
+							</p>
+							<p>
+								Ah, distinctly I remember it was in the bleak December,
+								And each separate dying ember wrought its ghost upon the floor.
+								Eagerly I wished the morrow; - vainly I had sought to borrow
+								From my books surcease of sorrow - sorrow for the lost Lenore -
+								For the rare and radiant maiden whom the angels named Lenore -
+								Nameless here for evermore.
+							</p>
+							<p>
+								And the silken sad uncertain rustling of each purple curtain
+								Thrilled me - filled me with fantastic terrors never felt before;
+								So that now, to still the beating of my heart, I stood repeating
+								"'Tis some visitor entreating entrance at my chamber door -
+								Some late visitor entreating entrance at my chamber door; -
+								This it is, and nothing more,"
+							</p>
+							<p>
+								Presently my soul grew stronger; hesitating then no longer,
+								"Sir," said I, "or Madam, truly your forgiveness I implore;
+								But the fact is I was napping, and so gently you came rapping,
+								And so faintly you came tapping, tapping at my chamber door,
+								That I scarce was sure I heard you" - here I opened wide the door; -
+								Darkness there, and nothing more.
+							</p>
+							<p>
+								Deep into that darkness peering, long I stood there wondering, fearing,
+								Doubting, dreaming dreams no mortal ever dared to dream before;
+								But the silence was unbroken, and the darkness gave no token,
+								And the only word there spoken was the whispered word, "Lenore!"
+								This I whispered, and an echo murmured back the word, "Lenore!"
+								Merely this and nothing more.
+							</p>
+							<p>
+								Back into the chamber turning, all my soul within me burning,
+								Soon again I heard a tapping somewhat louder than before.
+								"Surely," said I, "surely that is something at my window lattice;
+								Let me see then, what thereat is, and this mystery explore -
+								Let my heart be still a moment and this mystery explore; -
+								'Tis the wind and nothing more!"
+							</p>
+							<p>
+								Open here I flung the shutter, when, with many a flirt and flutter,
+								In there stepped a stately raven of the saintly days of yore.
+								Not the least obeisance made he; not a minute stopped or stayed he;
+								But, with mien of lord or lady, perched above my chamber door -
+								Perched upon a bust of Pallas just above my chamber door -
+								Perched, and sat, and nothing more.
+							</p>
+							<p>
+								Then this ebony bird beguiling my sad fancy into smiling,
+								By the grave and stern decorum of the countenance it wore,
+								"Though thy crest be shorn and shaven, thou," I said, "art sure no craven.
+								Ghastly grim and ancient raven wandering from the nightly shore -
+								Tell me what thy lordly name is on the Night's Plutonian shore!"
+								Quoth the raven, "Nevermore."
+							</p>
+						</div>
+						<br class="clearfix" />
+						<div class="box col1">
+							<h3>Dates to Remember</h3>
+							<ul class="list">
+								{% for entry in calendar.entry %}
+								<li style="font-size: 0.85em;"><a href="{{ entry.link.0.href }}">{{ entry.title.text }} on {{ entry.when.0.start|date_format }}</a></li>
+								{% endfor %}
+							</ul>
+						</div>
+						<div class="box col2">
+							<h3>Message of the Week</h3>
+							<img class="image aligntop" src="/static/images/welcome2.jpg" width="430" height="155" alt="" />
+							<p>
+								<div class="title">{{ motd.title }}</div>
+								<div class="content">{{ motd.content }}</div>
+								<div class="author">by {{ motd.author }} on {{ motd.date_added }}</div>
+							</p>
+						</div>
+					</div>
+				</div>
+			</div>
+			<div id="page-bottom">
+				{% include "include/page-bottom.html" %}
+			</div>
+		</div>
+		<div id="footer">
+			{% include "include/page-footer.html" %}
+		</div>
+	</body>
+</html>
+<!--
+Design by Free CSS Templates
+http://www.freecsstemplates.org
+Released for free under a Creative Commons Attribution 3.0 License
+
+Name       : Axiom
+Description: A two-column, fixed-width design with a bright color scheme.
+Version    : 1.0
+Released   : 20120729
+-->

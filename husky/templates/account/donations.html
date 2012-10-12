@@ -1,0 +1,155 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+	<head>
+		{% include "include/page-header.html" %}
+		<link rel="stylesheet" href="/static/js/flexigrid/css/flexigrid.css" type="text/css" media="screen, projection" />
+        <link rel="stylesheet" href="/static/css/ui-lightness/jquery-ui-1.9.0.custom.css" type="text/css" media="screen, projection" charset="utf-8" />
+	</head>
+	<body>
+		<div class="background-cover"></div>
+		<div class="background-cover-top"></div>
+		<div id="wrapper">
+			<div id="header">
+				<div id="logo">
+					<h1><a href="#">Husky Hustle</a></h1>
+				</div>
+				{% include "include/menu.html" %}
+			</div>
+			<div id="inner">
+				<div id="content">
+					{% if messages %}
+					<ul class="messages">
+						{% for message in messages %}
+						<li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
+						{% endfor %}
+					</ul>
+					{% endif %}
+					<div class="box">
+						{% if donate %}
+						<h3><a href="/account/{{ child.identifier }}">Back to Donation List: {{ child }}</a></h3>
+						<h4>Add Sponsor</h4>
+						{% include "include/donation-form.html" %}
+						{% else %}
+						<h3><a href="/account">Back to Profile</a></h3>
+						<span>{{ child }}:  In room {{ child.room_number }} with {{ child.teacher }}</span>
+						{% endif %}
+					</div>
+				</div>
+			</div>
+			{% if child and not donate %}
+			<br class="clearfix" />
+			<table id="donations" style="display: none;"></table>
+			{% endif %}
+			<div id="page-bottom">
+				{% include "include/page-bottom.html" %}
+			</div>
+		</div>
+		<div id="footer">
+			{% include "include/page-footer.html" %}
+		</div>
+		<div id="overlay-box-reminder" class="overlay-box">
+			<div class="overlay-content">
+				<form id="reminder_form" action="/send/reminder">
+					{% csrf_token %}
+					<fieldset class="form">
+					<legend id="title">Send Reminder to Selected Sponsors</legend>
+					<div class="wrapper">
+						<ul>
+							<li>
+								<label for="custom_message" id="custom_message_label">Custom Message</label><br />
+								<textarea class="control input" id="custom_message" name="custom_message" value="" cols="200" rows="10"></textarea>
+							</li>
+							<li>
+								<input type="button" style="width: 8em;" class="control input submit_button" id="submit_reminder" value=" Submit " />
+								<input type="button" style="width: 8em;" class="control input cancel_button" id="cancel_reminder" value=" Cancel " />
+							</li>
+						</ul>
+					</div>
+					</fieldset>
+				</form>
+			</div>
+		</div>
+		<div id="overlay-box-edit" class="overlay-box">
+			<div class="overlay-content">
+				{% include "include/donation-form.html" with edit=1 %}
+			</div>
+		</div>
+		<form id="delete_form" action="/delete/sponsor">
+			{% csrf_token %}
+		</form>
+	</body>
+	{% if child and not donate %}
+	<script type="text/javascript" src="/static/js/jquery-1.8.2.js"></script>
+	<script type="text/javascript" src="/static/js/jquery-ui-1.9.0.custom.min.js"></script>
+	<script type="text/javascript" src="/static/js/jquery.cookie.js"></script>
+	<script type="text/javascript" src="/static/js/husky-hustle.js"></script>
+	<script type="text/javascript" src="/static/js/flexigrid/js/flexigrid.js"></script>
+	<script type="text/javascript">
+		$(document).ready(
+			function () {
+				if ($('a.closeEl')) $('a.closeEl').bind('click', toggleContent);
+				var timecolwidth = 110;
+				var releaseGridDonations = $("#donations").flexigrid({
+					url: "/JSON/{{ child.identifier }}?limit=30",
+					method: 'GET',
+					dataType: 'json',
+					colModel: [
+						{display: 'ID', name: 'id', width: 35, sortable: true, align: 'left'},
+						{display: 'Child', name: 'child', width: 55, sortable: false, align: 'left'},
+						{display: 'First Name', name: 'first_name', width: 100, sortable: true, align: 'left'},
+						{display: 'Last Name', name: 'last_name', width: 100, sortable: true, align: 'left'},
+						{display: 'Email', name: 'email_address', width: 150, sortable: true, align: 'left'},
+						{display: 'Phone Number', name: 'phone_number', width: 100, sortable: true, align: 'left'},
+						{display: 'Laps', name: 'laps', width: 25, sortable: false, align: 'left'},
+						{display: 'Donation', name: 'donation', width: 60, sortable: true, align: 'left'},
+						{display: 'Total', name: 'total', width: 60, sortable: false, align: 'left'},
+						{display: 'Per Lap', name: 'per_lap', width: 40, sortable: true, align: 'center'},
+						{display: 'Date Added', name: 'date_added', width: 60, sortable: true, align: 'left'},
+						{display: 'Paid', name: 'paid', width: 20, sortable: true, align: 'center'},
+						{display: '<input type="checkbox" value="" name="set-all-reminders" class="set-all-reminders" />', name: '', width: 15, sortable: true, align: 'center'},
+					],
+					searchitems : [
+						{display: 'First Name', name : 'first_name', isdefault: false},
+						{display: 'Last Name', name : 'last_name', isdefault: true},
+						{display: 'Email Address', name : 'email_address', isdefault: false},
+						{display: 'Phone Number', name : 'phone_number', isdefault: false},
+						{display: 'ID', name : 'id', isdefault: false},
+					],
+					buttons: [
+						{name: 'Reload', bclass: 'reset', onpress: reloadPage},
+						{separator: true},
+						{name: 'Add', bclass: 'add', onpress: showFormDonate},
+						{separator: true},
+						{name: 'Send Reminders', bclass: 'reminder', onpress: sendReminders},
+						{separator: true},
+						{name: 'Delete', bclass: 'delete', onpress: deleteSponsors},
+						{separator: true},
+					],
+					sortname: 'id',
+					sortorder: 'asc',
+					usepager: true,
+					title: 'Sponsors and Donations',
+					useRp: true,
+					rp: 30,
+					rpOptions: [15,30,45,60],
+					showTableToggleBtn: false,
+					showToggleBtn: false,
+					width: 980,
+					height: 600,
+					singleSelect: true,
+					resizable: false,
+				});
+			});
+		var resizeTimer;
+		$(window).resize(function() {
+			clearTimeout(resizeTimer);
+			resizeTimer = setTimeout(function() {
+				$('.flexigrid').width(980);
+				$('#donations').width($('.flexigrid').width()-17);
+				$('.hDivBox table').width($('.hDiv').width()-15);
+				$('.bDiv').height(600);
+			}, 50);
+		});
+	</script>
+	{% endif %}
+</html>

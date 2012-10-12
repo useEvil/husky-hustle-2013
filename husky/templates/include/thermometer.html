@@ -1,0 +1,5 @@
+{% load custom_filters %}
+<div id="thermometer" class="alignright">
+	<div id="arrow" style="bottom: {{ arrow_height }}px;{{ arrow_height|goal_reached }}"><img src="/static/images/arrow-right-sm.jpg" /></div>
+	<div id="level" style="height: {{ bar_height }}px;"></div>
+</div>
