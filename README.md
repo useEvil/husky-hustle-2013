@@ -29,6 +29,7 @@ Features
 10. Fundraising Thermometer
 11. Content
     * Blogging
+        * RSS Feed
     * Message of the Week
     * Important Links
     * Docs (Google Docs)
@@ -46,6 +47,7 @@ Frameworks
 * [Flexigrid](http://flexigrid.info) - http://flexigrid.info
 * [Axiom CSS Template](http://www.freecsstemplates.org/preview/axiom) - http://www.freecsstemplates.org/preview/axiom
 * [Flexigrid](http://flexigrid.info) - http://flexigrid.info
+* [Hoverbox](http://host.sonspring.com/hoverbox) - http://host.sonspring.com/hoverbox
 
 License
 -------
