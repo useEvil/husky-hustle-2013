@@ -205,6 +205,41 @@ class Children(models.Model):
         fb_share_url = 'https://www.facebook.com/dialog/feed?' + params
         return fb_share_url
 
+    def sponsors_flat(self):
+        return Donation.objects.filter(child=self, per_lap=False).exclude(last_name='teacher').all()
+
+    def sponsors_perlap(self):
+        return Donation.objects.filter(child=self, per_lap=True).all()
+
+    def sponsors_teacher(self):
+        return Donation.objects.filter(child=self, last_name='teacher').all()
+
+    def sponsored_agopian(self):
+        try:
+            return Donation.objects.filter(child=self, first_name='Mrs. Agopian').get()
+        except ObjectDoesNotExist, e:
+            return
+
+    def grand_totals(self):
+        total_due = 0
+        total_got = 0
+        for sponsor in self.sponsors_flat():
+            if sponsor.paid:
+                total_got += sponsor.total() 
+            else:
+                total_due += sponsor.total() 
+        for sponsor in self.sponsors_perlap():
+            if sponsor.paid:
+                total_got += sponsor.total() 
+            else:
+                total_due += sponsor.total() 
+        for sponsor in self.sponsors_teacher():
+            if sponsor.paid:
+                total_got += sponsor.total() 
+            else:
+                total_due += sponsor.total() 
+        return [total_got, total_due]
+
 
 class Donation(models.Model):
 

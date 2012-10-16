@@ -629,6 +629,11 @@ div.pGroup {
 	background: url(/static/js/flexigrid/css/images/delete.png) no-repeat center left;
 }
 
+.flexigrid div.fbutton .pdf {
+	background: url(/static/js/flexigrid/css/images/pdf-icon.png) no-repeat center left;
+	background-size: 16px;
+}
+
 .flexigrid div.fbutton .reminder {
 	background: url(/static/js/flexigrid/css/images/email.png) no-repeat center left;
 }

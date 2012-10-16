@@ -25,18 +25,12 @@
 					</ul>
 					{% endif %}
 					<div class="box">
-						{% if donate %}
-						<h3><a href="/account/{{ child.identifier }}">Back to Donation List: {{ child }}</a></h3>
-						<h4>Add Sponsor</h4>
-						{% include "include/donation-form.html" %}
-						{% else %}
 						<h3><a href="/account">Back to Profile</a></h3>
-						<span>{{ child }}:  In room {{ child.room_number }} with {{ child.teacher }}</span>
-						{% endif %}
+						<span>{{ child }}:  In room {{ child.room_number }} with {{ child.teacher }}{% if child.laps %} ran {{ child.laps }} laps.{% endif %}</span>
 					</div>
 				</div>
 			</div>
-			{% if child and not donate %}
+			{% if child %}
 			<br class="clearfix" />
 			<table id="donations" style="display: none;"></table>
 			{% endif %}
@@ -78,7 +72,7 @@
 			{% csrf_token %}
 		</form>
 	</body>
-	{% if child and not donate %}
+	{% if child %}
 	<script type="text/javascript" src="/static/js/jquery-1.8.2.js"></script>
 	<script type="text/javascript" src="/static/js/jquery-ui-1.9.0.custom.min.js"></script>
 	<script type="text/javascript" src="/static/js/jquery.cookie.js"></script>
@@ -95,10 +89,9 @@
 					dataType: 'json',
 					colModel: [
 						{display: 'ID', name: 'id', width: 35, sortable: true, align: 'left'},
-						{display: 'Child', name: 'child', width: 55, sortable: false, align: 'left'},
-						{display: 'First Name', name: 'first_name', width: 100, sortable: true, align: 'left'},
-						{display: 'Last Name', name: 'last_name', width: 100, sortable: true, align: 'left'},
-						{display: 'Email', name: 'email_address', width: 150, sortable: true, align: 'left'},
+						{display: 'First Name', name: 'first_name', width: 115, sortable: true, align: 'left'},
+						{display: 'Last Name', name: 'last_name', width: 115, sortable: true, align: 'left'},
+						{display: 'Email', name: 'email_address', width: 189, sortable: true, align: 'left'},
 						{display: 'Phone Number', name: 'phone_number', width: 100, sortable: true, align: 'left'},
 						{display: 'Laps', name: 'laps', width: 25, sortable: false, align: 'left'},
 						{display: 'Donation', name: 'donation', width: 60, sortable: true, align: 'left'},
@@ -120,9 +113,11 @@
 						{separator: true},
 						{name: 'Add', bclass: 'add', onpress: showFormDonate},
 						{separator: true},
-						{name: 'Send Reminders', bclass: 'reminder', onpress: sendReminders},
-						{separator: true},
 						{name: 'Delete', bclass: 'delete', onpress: deleteSponsors},
+						{separator: true},
+						{name: 'PDF', bclass: 'pdf', onpress: function() { window.open('/donation_sheet/{{ child.identifier }}', '_pdf') }},
+						{separator: true},
+						{name: 'Send Reminders', bclass: 'reminder', onpress: sendReminders},
 						{separator: true},
 					],
 					sortname: 'id',
