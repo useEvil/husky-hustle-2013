@@ -1,5 +1,5 @@
-import base64
 import pytz
+import base64
 import django.contrib.staticfiles
 import gdata.photos.service as gdata
 import husky.helpers as h
@@ -114,10 +114,48 @@ def account(request, identifier=None):
     c['messages'] = messages.get_messages(request)
     return render_to_response('account/index.html', c, context_instance=RequestContext(request))
 
+def donation_sheet(request, identifier=None):
+    c = Context(dict(
+            page_title='Donation Sheet',
+    ))
+    if identifier and identifier == 'pdf':
+        template = loader.get_template('account/donation_sheet.html')
+        response = HttpResponse(mimetype='application/pdf')
+        response['Content-Disposition'] = 'attachment; filename="donation-sheet.pdf"'
+        response.write(file("/tmp/donation-sheet.pdf"))
+        p = canvas.Canvas(response)
+        p.showPage()
+        p.save()
+        return response
+    elif identifier:
+        try:
+            child  = Children.objects.get(identifier=identifier)
+            c['child'] = child
+            c['page_title'] = 'Donation Sheet: %s' % (child)
+        except:
+            messages.error(request, 'Could not find Child for identity: %s' % identifier)
+    c['messages'] = messages.get_messages(request)
+    return render_to_response('account/donation_sheet.html', c, context_instance=RequestContext(request))
+
 def make_donation(request, identifier=None):
     c = Context(dict(
             page_title='Donate',
             make_donation=True,
+    ))
+    try:
+        child = Children.objects.get(identifier=identifier)
+        c['child'] = child
+    except:
+        messages.error(request, 'Could not find Child for identity: %s' % identifier)
+        c['error'] = True
+    c['messages'] = messages.get_messages(request)
+    return render_to_response('donate.html', c, context_instance=RequestContext(request))
+
+def teacher_donation(request, identifier=None):
+    c = Context(dict(
+            page_title='Donate',
+            make_donation=True,
+            teacher_donation=True,
     ))
     try:
         child = Children.objects.get(identifier=identifier)
@@ -160,9 +198,9 @@ def donate(request, child_id=None):
         c['form'] = form
     c['messages'] = messages.get_messages(request)
     if request.POST.get('make_donation'):
-        return render_to_response('donate.html', c, context_instance=RequestContext(request))
-    else:
-        return render_to_response('account/donations.html', c, context_instance=RequestContext(request))
+        if request.POST.get('teacher_donation'):
+            c['teacher_donation'] = True
+    return render_to_response('donate.html', c, context_instance=RequestContext(request))
 
 @checkUser
 def album(request, album_id=None):
@@ -446,15 +484,24 @@ def _formatData(data, total):
     result['total'] = total
     for donation in data:
         row = {'id': donation.id, 'cell': [ donation.id ]}
-        row['cell'].append(donation.child.first_name)
-        row['cell'].append('<a href="#" class="show-edit" id="edit_sponsor_%s">%s</a>' % (donation.id, donation.first_name))
-        row['cell'].append(donation.last_name)
-        row['cell'].append(donation.email_address)
-        row['cell'].append(donation.phone_number)
-        row['cell'].append(donation.child.laps or 0)
+        if donation.last_name == 'teacher':
+            row['cell'].append(donation.first_name)
+            row['cell'].append('<span class="hidden">%s</span>' % donation.last_name)
+            row['cell'].append('<span class="hidden">%s</span>' % donation.email_address)
+            row['cell'].append('<span class="hidden">%s</span>' % donation.phone_number)
+            row['cell'].append('<span class="hidden">0</span>')
+        else:
+            row['cell'].append('<a href="#" class="show-edit" id="edit_sponsor_%s">%s</a>' % (donation.id, donation.first_name))
+            row['cell'].append(donation.last_name)
+            row['cell'].append(donation.email_address)
+            row['cell'].append(donation.phone_number)
+            row['cell'].append(donation.child.laps or 0)
         row['cell'].append("%01.2f" % (donation.donation or 0))
         row['cell'].append("%01.2f" % (donation.total()))
-        row['cell'].append(donation.per_lap and 'yes' or 'no')
+        if donation.last_name == 'teacher':
+            row['cell'].append('<span class="hidden">no</span>')
+        else:
+            row['cell'].append(donation.per_lap and 'yes' or 'no')
         row['cell'].append(donation.date_added.strftime('%m/%d/%Y'))
         row['cell'].append(donation.paid and '<span class="success">Paid</span>' or '<input type="checkbox" value="paid" name="paid" id="paid-%s" class="set-paid" alt="Mark as Paid" />' % donation.id)
         row['cell'].append('<input type="checkbox" value="%s" name="reminder" id="reminder-%s" class="set-reminder" />' % (donation.id, donation.id))

@@ -24,11 +24,21 @@
 							{% endif %}
 						</ul>
 						{% endif %}
+						{% if make_donation %}
 						{% if not error %}
+						{% if teacher_donation %}
+						<h3>Make a Donation to a Teacher</h3>
+						{% include "include/donation-form-teachers.html" %}
+						{% else %}
 						<h3>Make a Donation to: {{ child }}</h3>
 						{% include "include/donation-form.html" %}
 						{% endif %}
-						<br class="clearfix" />
+						{% endif %}
+						{% else %}
+						<h3><a href="/account/{{ child.identifier }}">Back to Donation List: {{ child }}</a></h3>
+						<h4>Add Sponsor</h4>
+						{% include "include/donation-form.html" %}
+						{% endif %}
 					</div>
 				</div>
 			</div>
@@ -40,4 +50,6 @@
 			{% include "include/page-footer.html" %}
 		</div>
 	</body>
+	<script type="text/javascript" src="/static/js/jquery-1.8.2.js"></script>
+	<script type="text/javascript" src="/static/js/husky-hustle.js"></script>
 </html>

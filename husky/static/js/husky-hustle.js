@@ -15,6 +15,8 @@ $('.set-all-reminders').live('click', setAllReminders);
 $('.disconnect').live('click', disconnectSocial);
 $('.post-facebook').live('click', postToSocial);
 $('.show-edit').live('click', showEdit);
+$('.pre-set-amount').live('click', setPreSetAmount);
+$('.to-agopian').live('click', setPreSetAmount);
 $('body').keyup(cancelOverlay);
 
 $(document).ready(
@@ -275,7 +277,7 @@ function cancelForm(event, cssClass) {
 			var form = id.replace( 'cancel_', '' );
 			$('#'+form+'_form').hide();
 		}
-	} else if (typeof(this.id) != 'object') {
+	} else if (this.id && typeof(this.id) != 'object') {
 		var form = this.id.replace( 'cancel_', '' );
 		$('#'+form+'_form').hide();
 	}
@@ -328,12 +330,39 @@ function setAllReminders() {
 	);
 }
 
+function setPreSetAmount() {
+	var value = $(this).val();
+	if (this.className == 'to-agopian') {
+		if (value) {
+			$('#id_first_name').attr('value',value);
+			$('#id_first_name').attr('readonly', true);
+		} else {
+			$('#id_first_name').attr('value', '');
+			$('#id_first_name').attr('readonly', false);
+		}
+	} else {
+		if (value) {
+			$('#id_donation').attr('value',value);
+			$('#id_donation').attr('readonly', true);
+		} else {
+			$('#id_donation').attr('value', '');
+			$('#id_donation').attr('readonly', false);
+		}
+	}
+}
+
 function sendReminders(event) {
 	var senders = false;
 	$('.set-reminder').each(
 		function () {
 			if ($(this).attr('checked') == 'checked') {
-				senders = true;
+				var id = this.id.replace( 'reminder-', '' );
+				var text = $('#row'+id+' td[abbr="last_name"]').text();
+				if (text == 'teacher') {
+					$(this).attr('checked', false);
+				} else {
+					senders = true;
+				}
 			}
 		}
 	);
@@ -341,7 +370,7 @@ function sendReminders(event) {
 		$('#reminder_form').show();
 		doOverlayOpen('reminder');
 	} else {
-		alert('You must select sponsors to email.');
+		alert('You must select sponsors to email.  You cannot send Reminders to Teachers.');
 	}
 }
 
