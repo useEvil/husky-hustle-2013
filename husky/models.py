@@ -141,7 +141,7 @@ class Parent(models.Model):
     user = models.OneToOneField(User, unique=True)
 
     def __unicode__(self):
-        return self.full_name()
+        return '%s (%s)' % (self.full_name(), self.email_address)
 
     def full_name(self):
         return '%s %s' % (self.first_name, self.last_name)
