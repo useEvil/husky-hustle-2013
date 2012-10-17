@@ -42,15 +42,11 @@
 						</div>
 						<div class="box col1">
 							<h3>Social Login</h3>
-							{% load facebook twitter openid instagram %}
+							{% load facebook twitter openid %}
 							{% if not request.user.is_authenticated %}
 								<ol style="text-align: center;">
 									<li>{% facebook_button '/static/images/facebook-login-button.png' %}</li>
-									<!--li>-- OR --</li-->
 									<li>{% twitter_button '/static/images/twitter-login-button.png' %}</li></li>
-									<!--li>-- OR --</li>
-									<li>{% instagram_button '/static/images/instagram-login-button.png' %}</li>
-									<li>-- OR --</li-->
 									<li>{% openid_form 'https://www.google.com/accounts/o8/id' '/static/images/google-login-button.png' %}</li>
 								</ol>
 							{% else %}
@@ -60,19 +56,6 @@
 						<div class="box">
 							<h3>Register</h3>
 							{% include "include/register-form.html" %}
-							<!--h3>Connected profiles:</h3>
-							
-							<ol>
-								<li>Facebook: {{ facebook.count }}</li>
-								<li>Twitter: {{ twitter.count }}</li>
-								<li>Google: {{ openid.count }}</li>
-								<li>Instagram: {{ instagram.count }}</li>
-							</ol>
-							
-							{% if request.user.is_authenticated %}
-								<a href="{% url socialregistration:logout %}">Logout</a>
-							{% endif %}
-							-->
 						</div>
 						<br class="clearfix" />
 					</div>

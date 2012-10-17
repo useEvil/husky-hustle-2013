@@ -116,7 +116,7 @@ AUTHENTICATION_BACKENDS = (
     'django.contrib.auth.backends.ModelBackend',
     'socialregistration.contrib.twitter.auth.TwitterAuth',
     'socialregistration.contrib.facebook.auth.FacebookAuth',
-    #'socialregistration.contrib.facebook.auth.InstagramAuth',
+    # 'socialregistration.contrib.facebook.auth.InstagramAuth',
     'socialregistration.contrib.openid.auth.OpenIDAuth',
 )
 
@@ -162,7 +162,7 @@ INSTALLED_APPS = (
     'socialregistration',
     'socialregistration.contrib.facebook',
     'socialregistration.contrib.twitter',
-    'socialregistration.contrib.instagram',
+    # 'socialregistration.contrib.instagram',
     'socialregistration.contrib.openid',
     'registration',
     'picasa',
