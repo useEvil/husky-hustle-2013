@@ -11,8 +11,9 @@ from fabric.colors import *
 
 # globals
 env.colors = True
-env.format = True
-env.release = time.strftime('%Y%m%d%H%M%S')
+env.cleaned = 5
+env.format = '%Y%m%d%H%M%S'
+env.release = time.strftime(env.format)
 env.use_ssh_config = True
 env.roledefs = {
     'test': ['localhost'],
@@ -51,7 +52,7 @@ def hello(name="world"):
 
 @task
 def deploy():
-    release = '%s-%s' % (env.project_name, date.datetime.now().strftime(env.release))
+    release = '%s-%s' % (env.project_name, env.release)
     project = os.path.join(env.project_path, env.project_name)
     module  = os.path.join(project, env.module_name)
     media   = os.path.join(module, env.media_name)
@@ -77,18 +78,28 @@ def deploy():
     run('mv %s/%s.py %s/settings.py' % (project, env.settings, project))
     restart()
 
+@task
+def cleanup():
+    older  = (date.datetime.now() - date.timedelta(days=env.cleaned)).strftime(env.format)
+    builds = '%s/builds' % (env.project_path)
+    output = run('ls -l %s' % builds)
+    for row in output.split("\r\n")[1:]:
+        dte = row.split('-')[-1]
+        if int(dte) < int(older):
+            run('rm -Rf %s/builds/huskyhustle-%s' % (env.project_path, dte))
 
 def better_put(local_path, remote_path, mode=None):
     put(local_path.format(**env), remote_path.format(**env), mode)
 
 def print_env():
-    print(date.datetime.now().strftime(env.release))
+    print(date.datetime.now())
     print("Here are your Environment Variables:")
     print("Host: %s" % env.hosts)
     print("Project Path: %s" % env.project_path)
     print("Project Name: %s" % env.project_name)
     print("Module Name: %s" % env.module_name)
     print("Media Name: %s" % env.media_name)
+    print("Release: %s" % env.release)
     print("Settings: %s" % env.settings)
     print(" ------------------------------------ ")
 
