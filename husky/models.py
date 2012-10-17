@@ -205,6 +205,9 @@ class Children(models.Model):
         fb_share_url = 'https://www.facebook.com/dialog/feed?' + params
         return fb_share_url
 
+    def donations(self):
+        return Donation.objects.filter(child=self).count()
+
     def sponsors_flat(self):
         return Donation.objects.filter(child=self, per_lap=False).exclude(last_name='teacher').all()
 
