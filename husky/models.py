@@ -1,6 +1,7 @@
 import math
 import base64
 import urllib
+import husky.bitly
 import re as regexp
 import datetime as date
 import gdata.media as media
@@ -128,6 +129,57 @@ class Message(models.Model):
     date_added = models.DateTimeField()
 
 
+class Link(models.Model):
+
+    title = models.CharField(max_length=50)
+    url = models.CharField(max_length=255)
+    shorten = models.CharField(max_length=255)
+    status = models.IntegerField(blank=True, null=True, choices=((0,0), (1,1)))
+
+    def __unicode__(self):
+        return self.title
+
+    def shortened(self):
+        if not self.shorten:
+            api = bitly.Api(login=settings.BITLY_LOGIN, apikey=settings.BITLY_APIKEY)
+            self.shorten = api.shorten(self.url)
+        return self.shorten
+
+
+class Grade(models.Model):
+
+    grade = models.IntegerField(blank=True, null=True)
+    title = models.CharField(max_length=15)
+
+    def __unicode__(self):
+        return self.title
+
+
+class Teacher(models.Model):
+
+    title = models.CharField(max_length=5, choices=(('Mrs.', 'Mrs.'), ('Ms.', 'Ms.'), ('Miss', 'Miss'), ('Mr.', 'Mr.')), default='Mrs.')
+    first_name = models.CharField(max_length=50, blank=True, null=True)
+    last_name = models.CharField(max_length=50)
+    email_address = models.CharField(max_length=100)
+    phone_number = models.CharField(max_length=25, blank=True, null=True, default='(714) 734-1878')
+    room_number = models.CharField(max_length=5)
+    website = models.CharField(max_length=255, blank=True, null=True)
+    shorten = models.CharField(max_length=255, blank=True, null=True)
+    grade = models.ForeignKey(Grade, related_name='teachers')
+
+    def __unicode__(self):
+        return '%s (%s) %s' % (self.full_name(), self.room_number, self.grade)
+
+    def full_name(self):
+        return '%s %s %s' % (self.title, self.first_name, self.last_name)
+
+    def shortened(self):
+        if not self.shorten:
+            api = bitly.Api(login=settings.BITLY_LOGIN, apikey=settings.BITLY_APIKEY)
+            self.shorten = api.shorten(self.website)
+        return self.shorten
+
+
 class Parent(models.Model):
 
     first_name = models.CharField(max_length=50)
@@ -181,12 +233,11 @@ class Children(models.Model):
 
     first_name = models.CharField(max_length=50)
     last_name = models.CharField(max_length=50)
-    teacher = models.CharField(max_length=100)
-    room_number = models.CharField(max_length=5)
     identifier = models.CharField(max_length=100, unique=True)
     date_added = models.DateTimeField()
     laps = models.IntegerField(blank=True, null=True)
     parent = models.ForeignKey(Parent, related_name='children')
+    teacher = models.ForeignKey(Teacher, related_name='students')
 
     def __unicode__(self):
         return self.full_name()
@@ -205,6 +256,12 @@ class Children(models.Model):
         fb_share_url = 'https://www.facebook.com/dialog/feed?' + params
         return fb_share_url
 
+    def grades(self):
+        return Grade.objects.all()
+
+    def teachers(self):
+        return Teacher.objects.filter(grade=self.teacher.grade).all()
+
     def donations(self):
         return Donation.objects.filter(child=self).count()
 
@@ -217,30 +274,41 @@ class Children(models.Model):
     def sponsors_teacher(self):
         return Donation.objects.filter(child=self, last_name='teacher').all()
 
-    def sponsored_agopian(self):
+    def sponsored_principle(self):
         try:
             return Donation.objects.filter(child=self, first_name='Mrs. Agopian').get()
         except ObjectDoesNotExist, e:
             return
 
-    def grand_totals(self):
+    def total_due(self):
         total_due = 0
+        for sponsor in self.sponsors_flat():
+            if not sponsor.paid:
+                total_due += sponsor.total() 
+        for sponsor in self.sponsors_perlap():
+            if not sponsor.paid:
+                total_due += sponsor.total() 
+        for sponsor in self.sponsors_teacher():
+            if not sponsor.paid:
+                total_due += sponsor.total() 
+        return total_due
+
+    def total_got(self):
         total_got = 0
         for sponsor in self.sponsors_flat():
             if sponsor.paid:
                 total_got += sponsor.total() 
-            else:
-                total_due += sponsor.total() 
         for sponsor in self.sponsors_perlap():
             if sponsor.paid:
                 total_got += sponsor.total() 
-            else:
-                total_due += sponsor.total() 
         for sponsor in self.sponsors_teacher():
             if sponsor.paid:
                 total_got += sponsor.total() 
-            else:
-                total_due += sponsor.total() 
+        return total_got
+
+    def grand_totals(self):
+        total_due = self.total_due()
+        total_got = self.total_got()
         return [total_got, total_due]
 
 
@@ -265,6 +333,9 @@ class Donation(models.Model):
     def laps(self):
         return self.child.laps or 0
 
+    def teacher(self):
+        return self.child.teacher or ''
+
     def total(self):
         if self.per_lap:
            amount = self.donation * (self.child.laps or 0)
@@ -273,26 +344,32 @@ class Donation(models.Model):
             return self.donation
 
     def bar_height(self):
-        results = Donation.objects.all()
-        total   = 0
-        for result in results:
-            if result.per_lap:
-                total += (result.child.laps or 0) * result.donation
-            else:
-                total += result.donation
-        percentage = total / DONATION_GOAL
-        return int(MAX_BAR_LENGTH * percentage)
+        try:
+            results = Donation.objects.all()
+            total   = 0
+            for result in results:
+                if result.per_lap:
+                    total += (result.child.laps or 0) * result.donation
+                else:
+                    total += result.donation
+            percentage = total / DONATION_GOAL
+            return int(MAX_BAR_LENGTH * percentage)
+        except:
+            return 0
 
     def arrow_height(self):
-        results = Donation.objects.filter(paid=True).all()
-        total   = 0
-        for result in results:
-            if result.per_lap:
-                total += (result.child.laps or 0) * result.donation
-            else:
-                total += result.donation
-        percentage = total / DONATION_GOAL
-        return int((MAX_ARROW_HEIGHT * percentage) + BASE_ARROW_HEIGHT)
+        try:
+            results = Donation.objects.filter(paid=True).all()
+            total   = 0
+            for result in results:
+                if result.per_lap:
+                    total += (result.child.laps or 0) * result.donation
+                else:
+                    total += result.donation
+            percentage = total / DONATION_GOAL
+            return int((MAX_ARROW_HEIGHT * percentage) + BASE_ARROW_HEIGHT)
+        except:
+            return BASE_ARROW_HEIGHT
 
     def get_donations(self, child_id, limit=30, offset=0, query=None, field='id', sortname='id', sortorder='asc'):
         results = []
@@ -370,7 +447,6 @@ class ChildrenRegistrationForm(forms.Form):
     first_name = forms.CharField(max_length=50)
     last_name = forms.CharField(max_length=50)
     teacher = forms.CharField(max_length=100)
-    room_number = forms.CharField(max_length=5)
 
 
 class ParentRegistrationForm(RegistrationForm):

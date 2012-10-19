@@ -136,6 +136,9 @@ INSTAGRAM_SECRET_KEY = ''
 SOCIALREGISTRATION_USE_HTTPS = False
 SOCIALREGISTRATION_GENERATE_USERNAME = False
 
+BITLY_LOGIN = ''
+BITLY_APIKEY = ''
+
 PICASA_STORAGE_OPTIONS = {
     'email': 'you@example.com',
     'source': 'example',
@@ -164,6 +167,7 @@ INSTALLED_APPS = (
     'socialregistration.contrib.twitter',
     # 'socialregistration.contrib.instagram',
     'socialregistration.contrib.openid',
+    'djangorestframework',
     'registration',
     'picasa',
     'husky',

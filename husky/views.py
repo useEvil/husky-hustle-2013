@@ -6,6 +6,7 @@ import husky.helpers as h
 import datetime as date
 import re as regexp
 
+from django.db.models import Count, Sum, Avg
 from django.core.mail import send_mail
 from django.template import Context, loader, RequestContext
 from django.shortcuts import render_to_response
@@ -27,7 +28,8 @@ from django.conf import settings
 from socialregistration.contrib.facebook.models import FacebookProfile
 from socialregistration.contrib.twitter.models import TwitterProfile
 
-from husky.models import Parent, Children, Donation, ParentRegistrationForm, ChildrenRegistrationForm, DonationForm, Album, Photo, Blog, Message, Calendar, ContactForm
+from husky.models import Parent, Children, Donation, Teacher, Grade, Album, Photo, Blog, Message, Link, Calendar
+from husky.models import ContactForm, ParentRegistrationForm, ChildrenRegistrationForm, DonationForm
 from husky.helpers import *
 
 # Create your views here.
@@ -84,6 +86,8 @@ def nav(request, page='index', id=None):
     ))
     if matched['page_title'] == 'photos':
         c['albums'] = Album()
+    elif matched['page_title'] == 'links':
+        c['links'] = Link.objects.filter(status=1).all()
     elif matched['page_title'] == 'blog':
         if id:
             c['entries'] = [ Blog.objects.get(pk=id) ]
@@ -100,6 +104,7 @@ def account(request, identifier=None):
             my_facebook=parent.facebook,
             my_twitter=parent.twitter,
             my_google=parent.google,
+            teachers=Teacher.objects.all(),
             facebook_api=settings.FACEBOOK_APP_ID
     ))
     if identifier:
@@ -178,7 +183,7 @@ def donate(request, child_id=None):
         form = DonationForm(request.POST)
         if form.is_valid():
             try:
-                child = Donation(
+                donation = Donation(
                     first_name=request.POST.get('first_name'),
                     last_name=request.POST.get('last_name'),
                     email_address=request.POST.get('email_address'),
@@ -188,7 +193,7 @@ def donate(request, child_id=None):
                     date_added=date.datetime.now(),
                     child=child,
                 )
-                child.save()
+                donation.save()
                 messages.success(request, 'Thank you for making a Donation')
                 c['success'] = True
             except Exception, e:
@@ -324,19 +329,20 @@ def add(request, type=None):
             my_facebook=parent.facebook,
             my_twitter=parent.twitter,
             my_google=parent.google,
+            teachers=Teacher.objects.all(),
             facebook_api=settings.FACEBOOK_APP_ID
     ))
     if request.POST:
         form = ChildrenRegistrationForm(request.POST)
         if form.is_valid():
             try:
+                teacher = Teacher.objects.get(pk=request.POST.get('teacher'))
                 child = Children(
                     first_name=request.POST.get('first_name'),
                     last_name=request.POST.get('last_name'),
-                    teacher=request.POST.get('teacher'),
-                    room_number=request.POST.get('room_number'),
-                    identifier='%s-%s-%s'%(request.POST.get('first_name').lower(), request.POST.get('last_name').lower(), request.POST.get('room_number')),
+                    identifier='%s-%s-%s'%(request.POST.get('first_name').lower(), request.POST.get('last_name').lower(), teacher.room_number),
                     date_added=date.datetime.now(),
+                    teacher=teacher,
                     parent=parent,
                 )
                 child.save()
@@ -353,18 +359,19 @@ def add(request, type=None):
             messages.error(request, 'Failed to Add Child')
         c['form'] = form
     c['messages'] = messages.get_messages(request)
+#    return HttpResponseRedirect('/accounts/profile/')
     return render_to_response('account/index.html', c, context_instance=RequestContext(request))
 
 def edit(request, type=None):
     if request.POST:
         if type == 'child':
             try:
+                teacher = Teacher.objects.get(pk=request.POST.get('teacher')),
                 child = Children.objects.get(pk=request.POST.get('id'))
                 child.first_name = request.POST.get('first_name')
                 child.last_name = request.POST.get('last_name')
-                child.teacher = request.POST.get('teacher')
-                child.room_number = request.POST.get('room_number')
-                child.identifier = '%s-%s-%s'%(request.POST.get('first_name').lower(), request.POST.get('last_name').lower(), request.POST.get('room_number'))
+                child.teacher = teacher
+                child.identifier = '%s-%s-%s'%(request.POST.get('first_name').lower(), request.POST.get('last_name').lower(), teacher.room_number)
                 child.save()
                 messages.success(request, 'Successfully Updated Child')
             except Exception, e:
@@ -397,7 +404,7 @@ def edit(request, type=None):
                 messages.success(request, 'Successfully Updated Sponsor')
             except Exception, e:
                 messages.error(request, 'Failed to Update Sponsor: %s' % str(e))
-    return HttpResponse(simplejson.dumps({'result': 'OK', 'status': 200}))
+    return HttpResponse(simplejson.dumps({'result': 'OK', 'status': 200}), mimetype='application/json')
 
 def delete(request, type=None):
     if request.POST:
@@ -410,7 +417,7 @@ def delete(request, type=None):
                     messages.success(request, 'Successfully Deleted Sponsor: %s' % object.full_name())
                 except Exception, e:
                     messages.error(request, 'Failed to Delete Sponsor: %s' % str(e))
-    return HttpResponse(simplejson.dumps({'result': 'OK', 'status': 200}))
+    return HttpResponse(simplejson.dumps({'result': 'OK', 'status': 200}), mimetype='application/json')
 
 def reminders(request):
     c = Context(dict(
@@ -427,7 +434,7 @@ def reminders(request):
         c['child_identifier'] = donation.child.identifier
         _send_email_teamplate('reminder', c)
     messages.success(request, 'Successfully Sent Reminders')
-    return HttpResponse(simplejson.dumps({'result': 'OK', 'status': 200}))
+    return HttpResponse(simplejson.dumps({'result': 'OK', 'status': 200}), mimetype='application/json')
 
 def disconnect(request, parent_id=None, social=None):
     parent = Parent.objects.get(pk=parent_id)
@@ -441,13 +448,13 @@ def disconnect(request, parent_id=None, social=None):
         messages.success(request, 'Successfully Disconnected')
     except Exception, e:
         messages.error(request, 'Failed to Disconnect: %s' % str(e))
-    return HttpResponse(simplejson.dumps({'result': 'OK', 'status': 200}))
+    return HttpResponse(simplejson.dumps({'result': 'OK', 'status': 200}), mimetype='application/json')
 
 def paid(request, donation_id=None):
     object = Donation.objects.get(pk=donation_id)
     object.paid = True
     object.save()
-    return HttpResponse(simplejson.dumps({'result': 'OK', 'status': 200}))
+    return HttpResponse(simplejson.dumps({'result': 'OK', 'status': 200}), mimetype='application/json')
 
 @csrf_protect
 def reset(request):
@@ -474,7 +481,29 @@ def json(request, child_id=None):
     donations  = Donation().get_donations(child_id, limit, offset, query, field, sortname, sortorder)
     total      = Donation().get_donations_total(child_id, query, field)
     data       = _formatData(donations, total)
-    return HttpResponse(simplejson.dumps(data))
+    return HttpResponse(simplejson.dumps(data), mimetype='application/json')
+
+
+
+
+def reporting(request, type=None):
+    c = Context(dict(
+            page_title='Reporting',
+    ))
+    return render_to_response('admin/bar_chart.html', c, context_instance=RequestContext(request))
+
+def reports(request, type=None):
+    json = {
+        'label': ['label A', 'label B', 'label C', 'label D'],
+        'values': []
+    }
+    if type == 'most-laps':
+        grades = Grade.objects.all()
+        for grade in grades:
+            num_laps = Children.objects.filter(grade=grade).aggregate(num_laps=Sum('laps'))
+            json['values'].append({'label': grade.title, 'values': [num_laps['num_laps']]})
+    return HttpResponse(simplejson.dumps(json), mimetype='application/json')
+
 
 def _formatData(data, total):
     if not data and not total: return

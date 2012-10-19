@@ -2,7 +2,11 @@ from django.conf.urls import patterns, include, url
 from django.contrib import admin
 from django.conf import settings
 
+from djangorestframework.resources import ModelResource
+from djangorestframework.views import ListOrCreateModelView, InstanceModelView
+
 from husky.views import BlogFeed
+from husky.models import Parent, Children, Donation, Link, Teacher, Grade
 
 admin.autodiscover()
 
@@ -42,7 +46,25 @@ urlpatterns = patterns('',
     # rss feed
     url(r'^blog/feed$', BlogFeed()),
 
-    # admin:
+    # admin
     url(r'^admin/doc/', include('django.contrib.admindocs.urls')),
     url(r'^admin/', include(admin.site.urls)),
+
+    # reports
+    url(r'^admin/reporting/(?P<type>[\w-]+)$', 'husky.views.reporting', name='reporting'),
+    url(r'^admin/reports/(?P<type>[\w-]+)$', 'husky.views.reports', name='reports'),
+
+    # REST
+    url(r'^api-auth/', include('djangorestframework.urls', namespace='djangorestframework'))
+)
+
+class TeacherResource(ModelResource):
+    model = Teacher
+
+class GradeResource(ModelResource):
+    model = Grade
+
+urlpatterns += patterns('',
+    url(r'^$', ListOrCreateModelView.as_view(resource=TeacherResource)),
+    url(r'^(?P<pk>[^/]+)/$', InstanceModelView.as_view(resource=TeacherResource)),
 )

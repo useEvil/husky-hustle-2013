@@ -7,11 +7,11 @@
 	<input type="hidden" name="per_lap" value="" />
 	{% csrf_token %}
 	<ol>
-		{% if not child.sponsored_agopian %}
+		{% if not child.sponsored_principle %}
 		<li>
-			<label for="id_to_agopian">Donate To:</label>
-			<input type="radio" class="to-agopian" id="to-agopian" name="to-agopian" value="Mrs. Agopian" />&nbsp;Mrs. Agopian&nbsp;&nbsp;
-			<input type="radio" class="to-agopian" id="to-teacher" name="to-agopian" value="" />&nbsp;A Teacher
+			<label for="id_to_principle">Donate To:</label>
+			<input type="radio" class="to-principle" id="to-principle" name="to-principle" value="Mrs. Agopian" />&nbsp;Mrs. Agopian&nbsp;&nbsp;
+			<input type="radio" class="to-principle" id="to-teacher" name="to-principle" value="" />&nbsp;A Teacher
 		</li>
 		{% endif %}
 		<li><label for="id_first_name"{% if form.first_name.errors %} class="error"{% endif %}>Name:</label><input id="id_first_name" type="text" name="first_name" value="{{ form.first_name.value }}" size="30" class="required" />{% if form.first_name.errors %}<span class="pad-left10 error">* required</span>{% endif %}</li>

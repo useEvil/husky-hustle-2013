@@ -9,10 +9,14 @@ import cgi
 import locale
 import datetime as date
 
+from functools import wraps
 from django.http import HttpResponse, HttpResponseRedirect
 
-from functools import wraps
-from husky.models import Parent
+try:
+    from husky.models import Parent
+except:
+    pass
+
 
 SHORT_DATE_FORMAT = '%Y-%m-%d'
 LONG_DATE_FORMAT = '%Y-%m-%dT%H:%M:%S'

@@ -26,7 +26,7 @@
 					{% endif %}
 					<div class="box">
 						<h3><a href="/accounts/profile/">Profile</a> &gt; Donation List</h3>
-						<span>{{ child }}:  In room {{ child.room_number }} with {{ child.teacher }}{% if child.laps %} ran {{ child.laps }} laps.{% endif %}</span>
+						<span>{{ child }}:  In room {{ child.teacher.room_number }} with {{ child.teacher.full_name }}{% if child.laps %} ran {{ child.laps }} laps.{% endif %}</span>
 					</div>
 				</div>
 			</div>
