@@ -37,7 +37,7 @@
 						<ul class="list">
 							{% for child in parent.children.all %}
 							<li>
-								<a href="/account/{{ child.identifier }}">{{ child.first_name }} {{ child.last_name }} ({{ child.donations }})</a>&nbsp;<img src="/static/images/edit.png" class="show-edit" id="edit_child_{{ child.id }}" />:  In room {{ child.room_number }} with {{ child.teacher }}{% if child.laps %} ran {{ child.laps }} laps.{% endif %}&nbsp;&nbsp;&nbsp;
+								<a href="/account/{{ child.identifier }}">{{ child.first_name }} {{ child.last_name }} ({{ child.donations }})</a>&nbsp;<img src="/static/images/edit.png" class="show-edit" id="edit_child_{{ child.id }}" />:  In room {{ child.teacher.room_number }} with {{ child.teacher.full_name }}{% if child.laps %} ran {{ child.laps }} laps.{% endif %}&nbsp;&nbsp;&nbsp;
 								<span src="{{ child.facebook_share_url }}" class="post-facebook post"><img src="/static/images/facebook-share-button.png" width="60" /></span>&nbsp;
 								<a href="https://twitter.com/intent/tweet?button_hashtag=HuskyHustle" class="twitter-hashtag-button" data-related="HuskyHustle" data-url="{{ child.donate_url }}">Post to Twitter #HuskyHustle</a>
 								<script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0];if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src="//platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");</script>&nbsp;

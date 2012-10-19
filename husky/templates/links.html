@@ -17,12 +17,9 @@
 						<div class="box col1">
 							<h3>Tustin Unified</h3>
 							<ul class="list">
-								<li class="first"><a href="http://www.hickscanyon.org/" target="_school">Hicks Canyon</a></li>
-								<li><a href="http://www.tustin.k12.ca.us/domain/614" target="_school">Kindergarten Teachers</a></li>
-								<li><a href="http://www.tustin.k12.ca.us/domain/1246" target="_school">1st Grade Teachers</a></li>
-								<li><a href="http://www.tustin.k12.ca.us/domain/1245" target="_school">2nd Grade Teachers</a></li>
-								<li><a href="http://www.tustin.k12.ca.us/domain/1247" target="_school">3rd Grade Teachers</a></li>
-								<li class="last"><a href="http://www.tustin.k12.ca.us/domain/1248" target="_school">4th Grade Teachers</a></li>
+								{% for link in links %}
+								<li><a href="{{ link.shorten }}" target="_school">{{ link.title }}</a></li>
+								{% endfor %}
 							</ul>
 						</div>
 						<div class="box col2">

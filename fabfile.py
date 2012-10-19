@@ -76,7 +76,6 @@ def deploy():
     run('mv %s %s/public/%s' % (media, env.project_path, env.media_name))
     run('mv %s/settings.py %s/settings-local.py' % (project, project))
     run('mv %s/%s.py %s/settings.py' % (project, env.settings, project))
-    restart()
 
 @task
 def cleanup():
