@@ -442,6 +442,7 @@ class DonationForm(forms.Form):
                 raise forms.ValidationError("Donation needs to be a Currency value")
             return value
 
+
 class ChildrenRegistrationForm(forms.Form):
 
     first_name = forms.CharField(max_length=50)
@@ -507,6 +508,7 @@ class PasswordResetForm(PasswordResetForm):
 
 
 class ContactForm(forms.Form):
+
     subject = forms.CharField(max_length=100)
     message = forms.CharField()
     sender = forms.EmailField()

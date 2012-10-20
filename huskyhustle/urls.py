@@ -6,12 +6,28 @@ from djangorestframework.resources import ModelResource
 from djangorestframework.views import ListOrCreateModelView, InstanceModelView
 
 from husky.views import BlogFeed
-from husky.models import Parent, Children, Donation, Link, Teacher, Grade
+from husky.models import Parent, Children, Donation, Teacher, Grade
 
 admin.autodiscover()
 
+
+class TeacherResource(ModelResource):
+    model = Teacher
+
+class GradeResource(ModelResource):
+    model = Grade
+
+class ParentResource(ModelResource):
+    model = Parent
+
+class ChildrenResource(ModelResource):
+    model = Children
+
+class DonationResource(ModelResource):
+    model = Donation
+
 urlpatterns = patterns('',
-    # Example:
+    # Site
     url(r'^$', 'husky.views.index', name='index'),
     url(r'^archive/album/(?P<album_id>\w+)$', 'husky.views.album', name='albums'),
     url(r'^archive/photo/(?P<album_id>\w+)/(?P<photo_id>\w+)$', 'husky.views.photo', name='photo'),
@@ -30,6 +46,7 @@ urlpatterns = patterns('',
     url(r'^delete/(?P<type>[\w]+)*$', 'husky.views.delete', name='delete'),
     url(r'^contact/*$', 'husky.views.contact', name='contact'),
     url(r'^register/*$', 'husky.views.register', name='register'),
+    url(r'^results/*$', 'husky.views.results', name='results'),
     url(r'^activate/(?P<key>[\w]+)*$', 'husky.views.activate', name='activate'),
     url(r'^disconnect/(?P<parent_id>[\w]+)/(?P<social>[\w]+)*$', 'husky.views.disconnect', name='disconnect'),
 
@@ -54,17 +71,16 @@ urlpatterns = patterns('',
     url(r'^admin/reporting/(?P<type>[\w-]+)$', 'husky.views.reporting', name='reporting'),
     url(r'^admin/reports/(?P<type>[\w-]+)$', 'husky.views.reports', name='reports'),
 
-    # REST
-    url(r'^api-auth/', include('djangorestframework.urls', namespace='djangorestframework'))
-)
-
-class TeacherResource(ModelResource):
-    model = Teacher
-
-class GradeResource(ModelResource):
-    model = Grade
-
-urlpatterns += patterns('',
-    url(r'^$', ListOrCreateModelView.as_view(resource=TeacherResource)),
-    url(r'^(?P<pk>[^/]+)/$', InstanceModelView.as_view(resource=TeacherResource)),
+    # REST API
+    url(r'^REST/api-auth/', include('djangorestframework.urls', namespace='djangorestframework')),
+    url(r'^REST/teacher/$', ListOrCreateModelView.as_view(resource=TeacherResource)),
+    url(r'^REST/teacher/(?P<pk>[^/]+)/$', InstanceModelView.as_view(resource=TeacherResource)),
+    url(r'^REST/grade/$', ListOrCreateModelView.as_view(resource=GradeResource)),
+    url(r'^REST/grade/(?P<pk>[^/]+)/$', InstanceModelView.as_view(resource=GradeResource)),
+    url(r'^REST/parent/$', ListOrCreateModelView.as_view(resource=ParentResource)),
+    url(r'^REST/parent/(?P<pk>[^/]+)/$', InstanceModelView.as_view(resource=ParentResource)),
+    url(r'^REST/children/$', ListOrCreateModelView.as_view(resource=ChildrenResource)),
+    url(r'^REST/children/(?P<pk>[^/]+)/$', InstanceModelView.as_view(resource=ChildrenResource)),
+    url(r'^REST/donation/$', ListOrCreateModelView.as_view(resource=DonationResource)),
+    url(r'^REST/donation/(?P<pk>[^/]+)/$', InstanceModelView.as_view(resource=DonationResource))
 )
