@@ -171,8 +171,8 @@ function showEdit(event) {
 	doOverlayOpen(edit);
 }
 
-function showBarChart(event) {
-    $.getJSON('/admin/reports/most-laps', initBarChart);
+function showBarChart(type) {
+    $.getJSON('/admin/reports/' + type, initBarChart);
 }
 
 function addItem(event) {
@@ -452,7 +452,7 @@ function initBarChart(json){
 		},
 		Tips: {
 			enable: true,
-			onShow: function(tip, elem) {
+			onShow: function(tip, elem, label) {
 				tip.innerHTML = "<b>" + elem.name + "</b>: " + elem.value;
 			}
 		}

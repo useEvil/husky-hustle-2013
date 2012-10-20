@@ -6,7 +6,7 @@ import husky.helpers as h
 import datetime as date
 import re as regexp
 
-from django.db.models import Count, Sum, Avg
+from django.db.models import Count, Sum, Avg, Max
 from django.core.mail import send_mail
 from django.template import Context, loader, RequestContext
 from django.shortcuts import render_to_response
@@ -320,6 +320,18 @@ def contact(request):
     c = Context({'form': form, 'messages': messages.get_messages(request), 'page_title': 'Contact'})
     return render_to_response('contact.html', c, context_instance=RequestContext(request))
 
+def results(request):
+    c = Context(dict(
+            page_title='Results',
+    ))
+    return render_to_response('results.html', c, context_instance=RequestContext(request))
+
+def reporting(request, type=None):
+    c = Context(dict(
+            page_title='Reporting',
+    ))
+    return render_to_response('admin/chart-%s.html'%type, c, context_instance=RequestContext(request))
+
 @login_required(login_url='/accounts/login/')
 def add(request, type=None):
     parent = Parent.objects.filter(email_address=request.user.email).get()
@@ -483,25 +495,46 @@ def json(request, child_id=None):
     data       = _formatData(donations, total)
     return HttpResponse(simplejson.dumps(data), mimetype='application/json')
 
-
-
-
-def reporting(request, type=None):
-    c = Context(dict(
-            page_title='Reporting',
-    ))
-    return render_to_response('admin/bar_chart.html', c, context_instance=RequestContext(request))
-
 def reports(request, type=None):
-    json = {
-        'label': ['label A', 'label B', 'label C', 'label D'],
-        'values': []
-    }
+    json = {'label': [], 'values': []}
     if type == 'most-laps':
         grades = Grade.objects.all()
-        for grade in grades:
-            num_laps = Children.objects.filter(grade=grade).aggregate(num_laps=Sum('laps'))
-            json['values'].append({'label': grade.title, 'values': [num_laps['num_laps']]})
+        for index, grade in enumerate(grades):
+            json['values'].append({'label': grade.title, 'values': [], 'labels': []})
+            teachers = Teacher.objects.filter(grade=grade).all()
+            for teacher in teachers:
+                num_laps = Children.objects.filter(teacher=teacher).aggregate(num_laps=Sum('laps'))
+                json['values'][index]['values'].append(num_laps['num_laps'] or 0)
+                json['values'][index]['labels'].append(teacher.full_name())
+    elif type == 'most-donations':
+        grades = Grade.objects.all()
+        for index, grade in enumerate(grades):
+            json['values'].append({'label': grade.title, 'values': [], 'labels': []})
+            teachers = Teacher.objects.filter(grade=grade).all()
+            for teacher in teachers:
+                children = Children.objects.filter(teacher=teacher).all()
+                total = 0
+                for child in children:
+                    total += child.total_got()
+                json['values'][index]['values'].append(float(total))
+                json['values'][index]['labels'].append(teacher.full_name())
+    elif type == 'most-laps-by-child':
+        grades = Grade.objects.all()
+        for index, grade in enumerate(grades):
+            json['values'].append({'label': grade.title, 'values': [], 'labels': []})
+            children = Children.objects.filter(teacher__grade=grade).annotate(max_laps=Max('laps'))[:20]
+            for child in children:
+                json['values'][index]['values'].append(child.max_laps or 0)
+                json['values'][index]['labels'].append(child.full_name())
+    elif type == 'most-donations-by-child':
+        grades = Grade.objects.all()
+        for index, grade in enumerate(grades):
+            json['values'].append({'label': grade.title, 'values': [], 'labels': []})
+            teachers = Teacher.objects.filter(grade=grade).all()
+            children = Children.objects.filter(teacher__grade=grade).annotate(max_funds=Max('total_due'))[:20]
+            for child in children:
+                json['values'][index]['values'].append(float(child.max_funds))
+                json['values'][index]['labels'].append(child.full_name())
     return HttpResponse(simplejson.dumps(json), mimetype='application/json')
 
 
