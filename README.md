@@ -8,7 +8,7 @@ payments.  A Printable Donation Sheet is available for record keeping or submitt
 they know the Child's Identifier or Donation Link, which can be posted to Facebook or Twitter.  A Photo Gallery is available which integrates 
 with Picasa.  There is a simple Blog (with RSS Feed) to post updates.  A simple Contact Us form.  Goole Calendar has been integrated to 
 pull event dates.  There is a simple Message of the Week option.  There is also a rising Thermometer so visitors can keep track of the 
-progress of the Fundraiser.
+progress of the Fundraiser.  Results are calculated and graphed so users and admins can visually see how the Fundraiser is doing.
 
 The Django admin interface allows administers to manage all the data collected through the site.
 
@@ -42,32 +42,34 @@ Features
         * RSS Feed
     * Message of the Week
     * Important Links
- 
+12. Reporting
+    * Graphing of Sum
+    * Graphing of Max
+
 Frameworks
 ----------
 
-* [Python](http://www.python.org) - http://www.python.org
-* [Django](http://www.djangoproject.com) - https://www.djangoproject.com
-* [django-registration](http://www.djangoproject.com) - http://code.google.com/p/django-registration
-* [django-socialregistration](https://github.com/flashingpumpkin/django-socialregistration) - https://github.com/flashingpumpkin/django-socialregistration
-* [django-picasa](http://code.google.com/p/django-picasa) - http://code.google.com/p/django-picasa
-* [jQuery](http://http://jquery.com) - http://http://jquery.com
-* [jQuery UI](http://jqueryui.com) - http://jqueryui.com
-* [Flexigrid](http://flexigrid.info) - http://flexigrid.info
-* [Axiom CSS Template](http://www.freecsstemplates.org/preview/axiom) - http://www.freecsstemplates.org/preview/axiom
-* [Flexigrid](http://flexigrid.info) - http://flexigrid.info
-* [Hoverbox](http://host.sonspring.com/hoverbox) - http://host.sonspring.com/hoverbox
-* [CSS Decorative Gallery](http://webdesignerwall.com/tutorials/css-decorative-gallery) - http://webdesignerwall.com/tutorials/css-decorative-gallery
+* [Python](http://www.python.org/) - http://www.python.org/
+* [Django](http://www.djangoproject.com/) - https://www.djangoproject.com/
+* [django-registration](http://www.djangoproject.com/) - http://code.google.com/p/django-registration/
+* [django-socialregistration](https://github.com/flashingpumpkin/django-socialregistration/) - https://github.com/flashingpumpkin/django-socialregistration/
+* [django-picasa](http://code.google.com/p/django-picasa/) - http://code.google.com/p/django-picasa/
+* [jQuery](http://http://jquery.com/) - http://http://jquery.com/
+* [jQuery UI](http://jqueryui.com/) - http://jqueryui.com/
+* [Flexigrid](http://flexigrid.info/) - http://flexigrid.info/
+* [Axiom CSS Template](http://www.freecsstemplates.org/preview/axiom/) - http://www.freecsstemplates.org/preview/axiom/
+* [Flexigrid](http://flexigrid.info/) - http://flexigrid.info/
+* [Hoverbox](http://host.sonspring.com/hoverbox/) - http://host.sonspring.com/hoverbox.
+* [CSS Decorative Gallery](http://webdesignerwall.com/tutorials/css-decorative-gallery/) - http://webdesignerwall.com/tutorials/css-decorative-gallery/
+* [InfoViz](http://philogb.github.com/jit/) - http://philogb.github.com/jit/
 
 ToDo
 ----
 
 1. Child Search
-2. Reporting
-3. Content
-   * Important Links (Object/Table)
+2. Content
    * Docs (Google Docs)
-4. Payment Processor
+3. Payment Processor
    * Intuit
 
 License
