@@ -236,6 +236,7 @@ class Children(models.Model):
     identifier = models.CharField(max_length=100, unique=True)
     date_added = models.DateTimeField()
     laps = models.IntegerField(blank=True, null=True)
+    collected = CurrencyField(blank=True, null=True)
     parent = models.ForeignKey(Parent, related_name='children')
     teacher = models.ForeignKey(Teacher, related_name='students')
 
@@ -311,6 +312,23 @@ class Children(models.Model):
         total_got = self.total_got()
         return [total_got, total_due]
 
+    def calculate_totals(self, id=None):
+        if id:
+            total = 0
+            result = Children.objects.get(pk=id)
+            for sponsor in result.sponsors.all():
+                total += sponsor.donated
+            self.collected = total
+            self.save()
+        else:
+            results = Children.objects.all()
+            for result in results:
+                total = 0
+                for sponsor in result.sponsors.all():
+                    total += sponsor.donated
+                result.collected = total
+                result.save()
+
 
 class Donation(models.Model):
 
@@ -318,8 +336,9 @@ class Donation(models.Model):
     last_name = models.CharField(max_length=50)
     email_address = models.CharField(max_length=100)
     phone_number = models.CharField(max_length=25)
-    child = models.ForeignKey(Children)
+    child = models.ForeignKey(Children, related_name='sponsors')
     donation = CurrencyField(blank=True, null=True)
+    donated = CurrencyField(blank=True, null=True)
     per_lap = models.BooleanField()
     paid = models.BooleanField()
     date_added = models.DateTimeField()
@@ -412,7 +431,6 @@ class Donation(models.Model):
         except:
             return 0
 
-
     def get_reminders(self, parent_id=None):
         try:
             return Donation.objects.filter(child__parent=parent_id, paid=False).all()
@@ -424,6 +442,17 @@ class Donation(models.Model):
             return Donation.objects.filter(child__parent=parent_id, paid=False).count()
         except Exception, e:
             return 0
+
+    def calculate_totals(self, id=None):
+        if id:
+            result = Donation.objects.get(pk=id)
+            result.donated = result.total()
+            result.save()
+        else:
+            results = Donation.objects.all()
+            for result in results:
+                result.donated = result.total()
+                result.save()
 
 
 class DonationForm(forms.Form):

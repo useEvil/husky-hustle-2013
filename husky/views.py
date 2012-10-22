@@ -515,14 +515,14 @@ def reports(request, type=None):
                 children = Children.objects.filter(teacher=teacher).all()
                 total = 0
                 for child in children:
-                    total += child.total_got()
+                    total += child.collected
                 json['values'][index]['values'].append(float(total))
                 json['values'][index]['labels'].append(teacher.full_name())
     elif type == 'most-laps-by-child':
         grades = Grade.objects.all()
         for index, grade in enumerate(grades):
             json['values'].append({'label': grade.title, 'values': [], 'labels': []})
-            children = Children.objects.filter(teacher__grade=grade).annotate(max_laps=Max('laps'))[:20]
+            children = Children.objects.filter(teacher__grade=grade).annotate(max_laps=Max('laps')).order_by('laps')[:20]
             for child in children:
                 json['values'][index]['values'].append(child.max_laps or 0)
                 json['values'][index]['labels'].append(child.full_name())
@@ -530,12 +530,21 @@ def reports(request, type=None):
         grades = Grade.objects.all()
         for index, grade in enumerate(grades):
             json['values'].append({'label': grade.title, 'values': [], 'labels': []})
-            teachers = Teacher.objects.filter(grade=grade).all()
-            children = Children.objects.filter(teacher__grade=grade).annotate(max_funds=Max('total_due'))[:20]
+            children = Children.objects.filter(teacher__grade=grade).annotate(max_funds=Max('collected')).order_by('collected')[:20]
             for child in children:
-                json['values'][index]['values'].append(float(child.max_funds))
+                json['values'][index]['values'].append(float(child.collected))
                 json['values'][index]['labels'].append(child.full_name())
     return HttpResponse(simplejson.dumps(json), mimetype='application/json')
+
+def calculate_totals(request, type=None, id=None):
+    if type == 'donation':
+        Donation().calculate_totals(id)
+    if type == 'children':
+        Children().calculate_totals(id)
+    if type == 'both':
+        Donation().calculate_totals()
+        Children().calculate_totals()
+    return HttpResponse(simplejson.dumps({'result': 'OK', 'status': 200}), mimetype='application/json')
 
 
 def _formatData(data, total):

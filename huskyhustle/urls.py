@@ -70,6 +70,7 @@ urlpatterns = patterns('',
     # reports
     url(r'^admin/reporting/(?P<type>[\w-]+)$', 'husky.views.reporting', name='reporting'),
     url(r'^admin/reports/(?P<type>[\w-]+)$', 'husky.views.reports', name='reports'),
+    url(r'^admin/(?P<type>[\w]+)/calculate_totals/*(?P<id>[\d]*)$', 'husky.views.calculate_totals', name='calculate_totals'),
 
     # REST API
     url(r'^REST/api-auth/', include('djangorestframework.urls', namespace='djangorestframework')),
