@@ -18,6 +18,7 @@ $('.post-facebook').live('click', postToSocial);
 $('.show-edit').live('click', showEdit);
 $('.pre-set-amount').live('click', setPreSetAmount);
 $('.to-principle').live('click', setPreSetAmount);
+$('.run-calculations').live('click', runCalculations);
 $('body').keyup(cancelOverlay);
 
 $(document).ready(
@@ -381,6 +382,12 @@ function sendReminders(event) {
 
 function disconnectSocial(event) {
 	$.getJSON($(this).attr('src'), reloadPage);
+	return false;
+}
+
+function runCalculations() {
+	doOverlayOpen('none', 50);
+	$.getJSON($(this).attr('href'), reloadPage);
 	return false;
 }
 
