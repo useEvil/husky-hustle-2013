@@ -1,8 +1,6 @@
 {% extends "admin/app_index.html" %}
 {% load i18n %}
 
-{% block extrastyle %}{{ block.super }}<link rel="stylesheet" type="text/css" href="{% load adminmedia %}{% admin_media_prefix %}css/dashboard.css" />{% endblock %}
-
 {% block coltype %}colMS{% endblock %}
 
 {% block bodyclass %}dashboard{% endblock %}
@@ -42,33 +40,69 @@
 	</div>
 	{% endfor %}
 	<style>
-		.viewresult {
+		.view-result {
 			padding-left: 16px;
-			background: url(/static/js/flexigrid/css/images/magnifier.png) 0 .2em no-repeat;
+			background: url(/static/js/flexigrid/css/images/magnifier.png) no-repeat;
+		}
+		.calculator {
+			padding-left: 16px;
+			background: url(/static/js/flexigrid/css/images/calculator-gray.png) no-repeat;
+		}
+		.background-cover-top {
+			background: #000;
+			position: absolute;
+			left: 0;
+			top: 0;
+			display: none;
+			overflow: hidden;
+			z-index: 125;
 		}
 	</style>
+	<script type="text/javascript" src="/static/js/jquery-1.8.2.js"></script>
+	<script type="text/javascript" src="/static/js/husky-hustle.js"></script>
+	<div class="background-cover-top"></div>
 	<div class="module">
 		<table summary="Graph Results.">
 		<caption><a href="/admin/results/" class="section">Results</a></caption>
 			<tr>
 				<th scope="row"><a href="/admin/results/most-laps">Total Laps By Grade</a></th>
 				<td>&nbsp;</td>
-				<td><a href="/admin/results/most-laps" class="viewresult">View</a></td>
+				<td><a href="/admin/results/most-laps" class="view-result">View</a></td>
 			</tr>
 			<tr>
 				<th scope="row"><a href="/admin/results/most-laps-by-child">Most Laps By Child By Grade</a></th>
 				<td>&nbsp;</td>
-				<td><a href="/admin/results/most-laps-by-child" class="viewresult">View</a></td>
+				<td><a href="/admin/results/most-laps-by-child" class="view-result">View</a></td>
 			</tr>
 			<tr>
 				<th scope="row"><a href="/admin/results/most-donations">Total Donations By Grade</a></th>
 				<td>&nbsp;</td>
-				<td><a href="/admin/results/most-donations" class="viewresult">View</a></td>
+				<td><a href="/admin/results/most-donations" class="view-result">View</a></td>
 			</tr>
 			<tr>
 				<th scope="row"><a href="/admin/results/most-donations-by-child">Most Donations By Child By Grade</a></th>
 				<td>&nbsp;</td>
-				<td><a href="/admin/results/most-donations-by-child" class="viewresult">View</a></td>
+				<td><a href="/admin/results/most-donations-by-child" class="view-result">View</a></td>
+			</tr>
+			<tr>
+				<td>&nbsp;</td>
+				<td>&nbsp;</td>
+				<td>&nbsp;</td>
+			</tr>
+			<tr>
+				<th scope="row"><a href="/admin/both/calculate_totals" class="run-calculations">Run Calculations for Results</a></th>
+				<td>&nbsp;</td>
+				<td><a href="/admin/both/calculate_totals" class="run-calculations calculator">Run</a></td>
+			</tr>
+			<tr>
+				<th scope="row"><a href="/admin/donation/calculate_totals" class="run-calculations">Run Calculations for Donations</a></th>
+				<td>&nbsp;</td>
+				<td><a href="/admin/donation/calculate_totals" class="run-calculations calculator">Run</a></td>
+			</tr>
+			<tr>
+				<th scope="row"><a href="/admin/children/calculate_totals" class="run-calculations">Run Calculations for Children</a></th>
+				<td>&nbsp;</td>
+				<td><a href="/admin/children/calculate_totals" class="run-calculations calculator">Run</a></td>
 			</tr>
 		</table>
 	</div>
