@@ -16,6 +16,7 @@
 					<div class="box">
 						{% if albums %}
 						<h2>Albums</h2>
+						{{ content.content|safe }}
 						<ul class="gallery">
 						{% for album in albums.get_albums.entry %}
 							{% if album.access.text == 'public' %}

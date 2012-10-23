@@ -1,4 +1,4 @@
-from husky.models import Parent, Children, Blog, Message, Link, Donation, Grade, Teacher
+from husky.models import Parent, Children, Content, Blog, Message, Link, Donation, Grade, Teacher
 
 from django import forms
 from django.contrib import admin
@@ -70,6 +70,16 @@ class ParentAdmin(admin.ModelAdmin):
     inlines = [ChildrenInline]
     search_fields = ['email_address', 'first_name', 'last_name']
 
+class ContentModelForm( forms.ModelForm ):
+    content = forms.CharField( widget=forms.Textarea(attrs={'cols': 125, 'rows': 50}) )
+    class Meta:
+        model = Content
+
+class ContentAdmin(admin.ModelAdmin):
+    fields = ['page', 'content', 'date_added']
+    list_display = ['page', 'content', 'date_added']
+    form = ContentModelForm
+
 class BlogAdmin(admin.ModelAdmin):
     fields = ['title', 'content', 'author', 'date_added']
     list_display = ['title', 'content', 'date_added']
@@ -114,6 +124,7 @@ admin.site.unregister(User)
 admin.site.register(User, UserAdmin)
 admin.site.register(Parent, ParentAdmin)
 admin.site.register(Children, ChildrenAdmin)
+admin.site.register(Content, ContentAdmin)
 admin.site.register(Blog, BlogAdmin)
 admin.site.register(Message, MessageAdmin)
 admin.site.register(Donation, DonationAdmin)
