@@ -320,17 +320,22 @@ def contact(request):
     c = Context({'form': form, 'messages': messages.get_messages(request), 'page_title': 'Contact'})
     return render_to_response('contact.html', c, context_instance=RequestContext(request))
 
-def results(request):
+def results(request, type=None):
     c = Context(dict(
             page_title='Results',
+            type=type or 'all',
     ))
-    return render_to_response('results.html', c, context_instance=RequestContext(request))
+    if 'admin' in request.path:
+        return render_to_response('admin/results.html', c, context_instance=RequestContext(request))
+    else:
+        return render_to_response('results.html', c, context_instance=RequestContext(request))
 
 def reporting(request, type=None):
     c = Context(dict(
             page_title='Reporting',
+            type=type,
     ))
-    return render_to_response('admin/chart-%s.html'%type, c, context_instance=RequestContext(request))
+    return render_to_response('admin/chart.html', c, context_instance=RequestContext(request))
 
 @login_required(login_url='/accounts/login/')
 def add(request, type=None):
