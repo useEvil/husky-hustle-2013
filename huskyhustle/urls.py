@@ -46,7 +46,7 @@ urlpatterns = patterns('',
     url(r'^delete/(?P<type>[\w]+)*$', 'husky.views.delete', name='delete'),
     url(r'^contact/*$', 'husky.views.contact', name='contact'),
     url(r'^register/*$', 'husky.views.register', name='register'),
-    url(r'^results/*$', 'husky.views.results', name='results'),
+    url(r'^results/*(?P<type>[\w-]*)$', 'husky.views.results', name='results'),
     url(r'^activate/(?P<key>[\w]+)*$', 'husky.views.activate', name='activate'),
     url(r'^disconnect/(?P<parent_id>[\w]+)/(?P<social>[\w]+)*$', 'husky.views.disconnect', name='disconnect'),
 
@@ -63,14 +63,15 @@ urlpatterns = patterns('',
     # rss feed
     url(r'^blog/feed$', BlogFeed()),
 
-    # admin
-    url(r'^admin/doc/', include('django.contrib.admindocs.urls')),
-    url(r'^admin/', include(admin.site.urls)),
-
     # reports
     url(r'^admin/reporting/(?P<type>[\w-]+)$', 'husky.views.reporting', name='reporting'),
     url(r'^admin/reports/(?P<type>[\w-]+)$', 'husky.views.reports', name='reports'),
+    url(r'^admin/results/(?P<type>[\w-]*)$', 'husky.views.results', name='results'),
     url(r'^admin/(?P<type>[\w]+)/calculate_totals/*(?P<id>[\d]*)$', 'husky.views.calculate_totals', name='calculate_totals'),
+
+    # admin
+    url(r'^admin/doc/', include('django.contrib.admindocs.urls')),
+    url(r'^admin/', include(admin.site.urls)),
 
     # REST API
     url(r'^REST/api-auth/', include('djangorestframework.urls', namespace='djangorestframework')),

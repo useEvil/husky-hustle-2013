@@ -1,0 +1,38 @@
+{% extends "admin/base_site.html" %}
+{% load i18n %}
+
+{% block extrastyle %}{{ block.super }}<link rel="stylesheet" type="text/css" href="{% load adminmedia %}{% admin_media_prefix %}css/dashboard.css" />{% endblock %}
+
+{% block coltype %}colMS{% endblock %}
+
+{% block bodyclass %}dashboard{% endblock %}
+
+{% block breadcrumbs %}
+<div class="breadcrumbs">
+	<a href="../">{% trans "Home" %}</a> &rsaquo; <a href="/admin/husky">{% trans "Husky" %}</a> &rsaquo; <a href="/admin/results/">{% trans "Results" %}</a> &rsaquo; {{ type }}
+</div>
+{% endblock %}
+
+{% block content %}
+<div id="content-main">
+	{% if type == 'most-laps' or type == 'all' %}
+	<span class="bold">Total Laps By Grade:</span>
+	<iframe src="/admin/reporting/most-laps" height="600" width="900"></iframe>
+	{% endif %}
+
+	{% if type == 'most-laps-by-child' or type == 'all' %}
+	<span class="bold">Most Laps By Child By Grade:</span>
+	<iframe src="/admin/reporting/most-laps-by-child" height="600" width="900"></iframe>
+	{% endif %}
+
+	{% if type == 'most-donations' or type == 'all' %}
+	<span class="bold">Total Donations By Grade:</span>
+	<iframe src="/admin/reporting/most-donations" height="600" width="900"></iframe>
+	{% endif %}
+
+	{% if type == 'most-donations-by-child' or type == 'all' %}
+	<span class="bold">Most Donations By Child By Grade:</span>
+	<iframe src="/admin/reporting/most-donations-by-child" height="600" width="900"></iframe>
+	{% endif %}
+</div>
+{% endblock %} 

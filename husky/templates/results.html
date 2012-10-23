@@ -3,7 +3,7 @@
 	<head>
 		{% include "include/page-header.html" %}
 		<link rel="stylesheet" href="/static/js/flexigrid/css/flexigrid.css" type="text/css" media="screen, projection" />
-        <link rel="stylesheet" href="/static/css/ui-lightness/jquery-ui-1.9.0.custom.css" type="text/css" media="screen, projection" charset="utf-8" />
+		<link rel="stylesheet" href="/static/css/ui-lightness/jquery-ui-1.9.0.custom.css" type="text/css" media="screen, projection" charset="utf-8" />
 	</head>
 	<body>
 		<div class="background-cover"></div>
@@ -17,17 +17,26 @@
 			</div>
 			<div id="inner">
 				<div id="content">
+
+					{% if type == 'most-laps' or type == 'all' %}
 					<span class="bold">Total Laps By Grade:</span>
 					<iframe src="/admin/reporting/most-laps" height="600" width="900"></iframe>
+					{% endif %}
 
+					{% if type == 'most-laps-by-child' or type == 'all' %}
 					<span class="bold">Most Laps By Child By Grade:</span>
 					<iframe src="/admin/reporting/most-laps-by-child" height="600" width="900"></iframe>
+					{% endif %}
 
+					{% if type == 'most-donations' or type == 'all' %}
 					<span class="bold">Total Donations By Grade:</span>
 					<iframe src="/admin/reporting/most-donations" height="600" width="900"></iframe>
+					{% endif %}
 
+					{% if type == 'most-donations-by-child' or type == 'all' %}
 					<span class="bold">Most Donations By Child By Grade:</span>
 					<iframe src="/admin/reporting/most-donations-by-child" height="600" width="900"></iframe>
+					{% endif %}
 				</div>
 			</div>
 			<div id="page-bottom">

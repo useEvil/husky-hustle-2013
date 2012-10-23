@@ -11144,7 +11144,7 @@ $jit.BarChart = new Class({
       levelDistance: 0,
       siblingOffset: config.barsOffset,
       subtreeOffset: 0,
-      withLabels: config.Label.type != 'Native',      
+      withLabels: config.Label.type != 'Native',
       useCanvas: config.useCanvas,
       Label: {
         type: config.Label.type
