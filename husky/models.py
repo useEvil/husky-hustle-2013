@@ -113,6 +113,13 @@ class Album(object):
 
 
 # Create your models here.
+class Content(models.Model):
+
+    page = models.CharField(max_length=100)
+    content = models.TextField(max_length=65000, blank=True, null=True)
+    date_added = models.DateTimeField()
+
+
 class Blog(models.Model):
 
     title = models.CharField(max_length=100)

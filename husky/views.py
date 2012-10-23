@@ -28,7 +28,7 @@ from django.conf import settings
 from socialregistration.contrib.facebook.models import FacebookProfile
 from socialregistration.contrib.twitter.models import TwitterProfile
 
-from husky.models import Parent, Children, Donation, Teacher, Grade, Album, Photo, Blog, Message, Link, Calendar
+from husky.models import Parent, Children, Donation, Teacher, Grade, Album, Photo, Content, Blog, Message, Link, Calendar
 from husky.models import ContactForm, ParentRegistrationForm, ChildrenRegistrationForm, DonationForm
 from husky.helpers import *
 
@@ -54,6 +54,7 @@ def index(request):
             my_twitter=my_twitter,
             my_google=my_google,
             motd=Message.objects.get(),
+            content=Content.objects.filter(page='index').get(),
             bar_height=Donation().bar_height(),
             arrow_height=Donation().arrow_height(),
             calendar=Calendar().get_events(),
@@ -62,7 +63,6 @@ def index(request):
 
 @checkUser
 def nav(request, page='index', id=None):
-    matched     = regexp.compile(r"^/nav/(?P<page_title>\w+)").match(request.path).groupdict()
     parent      = None
     my_twitter  = None
     my_facebook = None
@@ -76,7 +76,7 @@ def nav(request, page='index', id=None):
         except:
             pass
     c = Context(dict(
-            page_title=matched['page_title'].title(),
+            page_title=page.title(),
             parent=parent,
             my_facebook=my_twitter,
             my_twitter=my_twitter,
@@ -84,11 +84,13 @@ def nav(request, page='index', id=None):
             bar_height=Donation().bar_height(),
             arrow_height=Donation().arrow_height(),
     ))
-    if matched['page_title'] == 'photos':
+    if page == 'photos':
         c['albums'] = Album()
-    elif matched['page_title'] == 'links':
+        c['content'] = Content.objects.filter(page=page).get()
+    elif page == 'links':
         c['links'] = Link.objects.filter(status=1).all()
-    elif matched['page_title'] == 'blog':
+        c['content'] = Content.objects.filter(page=page).get()
+    elif page == 'blog':
         if id:
             c['entries'] = [ Blog.objects.get(pk=id) ]
         else:

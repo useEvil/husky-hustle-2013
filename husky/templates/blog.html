@@ -17,8 +17,8 @@
 						<div class="box">
 							<div class="box col2-3">
 								{% for entry in entries %}
-								<div class="title">{{ entry.title }}</div>
-								<div class="content">{{ entry.content }}</div>
+								<div class="title">{{ entry.title|safe }}</div>
+								<div class="content">{{ entry.content|safe }}</div>
 								<div class="author">by {{ entry.author }} on {{ entry.date_added }}</div>
 								{% endfor %}
 								<br class="clearfix" />
