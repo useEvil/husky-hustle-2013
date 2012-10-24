@@ -61,7 +61,7 @@ Frameworks
 * [Flexigrid](http://flexigrid.info/) - http://flexigrid.info/
 * [Hoverbox](http://host.sonspring.com/hoverbox/) - http://host.sonspring.com/hoverbox.
 * [CSS Decorative Gallery](http://webdesignerwall.com/tutorials/css-decorative-gallery/) - http://webdesignerwall.com/tutorials/css-decorative-gallery/
-* [InfoViz](http://philogb.github.com/jit/) - http://philogb.github.com/jit/
+* [InfoVis Toolkit ](http://philogb.github.com/jit/) - http://philogb.github.com/jit/
 
 ToDo
 ----
@@ -71,6 +71,7 @@ ToDo
    * Docs (Google Docs)
 3. Payment Processor
    * Intuit
+4. Mobile Version
 
 License
 -------
