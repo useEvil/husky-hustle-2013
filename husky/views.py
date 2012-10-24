@@ -18,7 +18,7 @@ from django.contrib.auth.views import password_reset, password_reset_done, passw
 from django.contrib.auth.forms import AuthenticationForm, PasswordResetForm, SetPasswordForm, PasswordChangeForm
 from django.contrib.auth.models import User
 from django.contrib.auth.decorators import login_required
-from django.contrib.sites.models import Site, get_current_site
+from django.contrib.sites.models import Site
 from django.contrib.syndication.views import Feed
 from django.views.decorators.debug import sensitive_post_parameters
 from django.views.decorators.cache import never_cache

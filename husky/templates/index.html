@@ -6,15 +6,10 @@
 	</head>
 	<body>
 		<div id="wrapper">
-			<div id="header">
-				<div id="logo">
-					<h1><a href="#">Husky Hustle</a></h1>
-				</div>
-				{% include "include/menu.html" %}
-			</div>
+			{% include "include/menu.html" %}
 			<div id="inner">
-				<div id="splash">
-					<img src="/static/images/banner.jpg" width="900" height="260" alt="" class="image" />
+				<div id="splash" class="full">
+					<img class="image" src="/static/images/banner.jpg" width="900" height="260" alt="" />
 				</div>
 				<div id="page">
 					<div id="content">
@@ -27,7 +22,7 @@
 						{% endif %}
 						<div class="box">
 							<h2>Welcome to Hicks Canyon Husky Hustle</h2>
-							<img class="image alignleft" src="/static/images/welcome1.jpg" width="215" height="150" alt="" />
+							<img class="image alignleft" src="/static/images/welcome1.jpg" width="215" height="150" alt="Welcome" />
 							{% include "include/thermometer.html" %}
 							{{ content.content|safe }}
 						</div>
@@ -42,13 +37,14 @@
 						</div>
 						<div class="box col2">
 							<h3>Message of the Week</h3>
-							<img class="image aligntop" src="/static/images/welcome2.jpg" width="430" height="155" alt="" />
+							<img class="image aligntop full" src="/static/images/welcome2.jpg" width="430" height="155" alt="" />
 							<p>
 								<div class="title">{{ motd.title }}</div>
 								<div class="content">{{ motd.content }}</div>
 								<div class="author">by {{ motd.author }} on {{ motd.date_added }}</div>
 							</p>
 						</div>
+						<br class="clearfix" />
 					</div>
 				</div>
 			</div>
