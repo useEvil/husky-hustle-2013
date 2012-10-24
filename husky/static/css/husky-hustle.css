@@ -96,7 +96,6 @@ ol {
 label {
 	float: left;
 	display: block;
-	float: left;
 	width: 125px;
 	text-align: right;
 	margin-right: 1em;
@@ -209,10 +208,15 @@ div.author {
 }
 
 #header {
+    display: block;
 	position: relative;
 	padding: 35px;
 	width: 910px;
 	height: 100px;
+}
+
+#mobile {
+	display: none;
 }
 
 #logo {
@@ -509,8 +513,8 @@ div.author {
 #thermometer {
 	height: 377px;
 	width: 180px;
-	margin:5px;
-	padding:0;
+	margin: 5px;
+	padding: 0;
 	border: #cccccc solid 1px;
 	background: url(/static/images/thermometer.jpg);
 	position: relative;
@@ -732,4 +736,12 @@ fieldset {
 .post {
 	text-decoration: underline;
 	cursor: pointer;
+}
+
+.social-links {
+	float: right;
+}
+
+.full {
+    display: block;
 }

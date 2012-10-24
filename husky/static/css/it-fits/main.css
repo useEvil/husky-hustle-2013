@@ -1,0 +1,348 @@
+/* ==|== primary styles =====================================================
+    It Fits - HTML5/CSS3 Responsive template
+	$hekh@r d-Ziner (@shekhardesigner)
+	April 26th, 2012
+	Released under Creative Common License
+	Original post:  http://www.cssjunction.com/freebies/html5-css3-responsive-web-template
+   ========================================================================== */
+/*
+	RESPONSIVE STYLES
+*/
+@media only screen and (-webkit-min-device-pixel-ratio: 1.5), only screen and (min-device-pixel-ratio: 1.5), only screen and (max-width: 960px) {
+  #mobile {
+    display: block;
+  }
+  #header {
+    display: none;
+  }
+  #content {
+    color: #3D3D3D;
+    padding: 10px;
+    width: 100%;
+  }
+  #wrapper {
+    margin: 20px auto 0 auto;
+    width: 100%;
+    position: relative;
+  }
+  #page {
+    position: relative;
+    margin: 0 0 0 0;
+    padding: 0;
+    width: 100%;
+  }
+  #page-bottom {
+    width: 85%;
+    line-height: 100%;
+  }
+  #page-bottom-content {
+    width: 90%;
+    line-height: 1.3em;
+  }
+  #logo {
+    height: 120px;
+    left: 35px;
+    line-height: 40px;
+    position: absolute;
+    top: 0px;
+  }
+  #thermometer {
+    height: 377px;
+    margin: 30px 5px;
+    padding: 0;
+    border: #cccccc solid 1px;
+    background: url(/static/images/thermometer.jpg);
+    position: relative;
+  }
+  .full {
+    display: none;
+  }
+  .required {
+    width: 100%;
+  }
+  h2.orphan {
+    margin: 0 5% 20px;
+    width: 90%;
+  }
+  .box {
+    float: none;
+    width: 95%;
+  }
+  .col1 {
+    float: none;
+    width: 95%;
+  }
+  .col2 {
+    float: none;
+	margin: 0 0 0 0;
+  }
+  .col1-3 {
+    margin: 0 0 0 0;
+    width: 300px;
+  }
+  .container {
+    width: 100%;
+    height: 300px;
+  }
+  .social-links {
+    float: none;
+  }
+  .social-icon {
+    width: 48px;
+  }
+  .social-icons {
+    float: none;
+  }
+  label {
+     float: none;
+     display: block;
+     width: 50px;
+     margin-right: 1em;
+  }
+  nav {
+    float: none;
+    margin: 20px 0;
+    top: 60px;
+    position: relative;
+  }
+  ul[role=navigation] ul {
+    list-style: none;
+    padding: 0 25px 0 25px;
+  }
+  ul[role=navigation] li {
+    float: none;
+    display: block;
+    margin: 0 3% 5px;
+    width: 85%;
+    border-radius: 5px;
+    padding: 0 15px 0 15px;
+    box-shadow: inset 0px 0px 0px 1px #872424, inset 0px 2px 0px 0px #F79494, inset 0px 0px 0px 2px #E78484;
+    background: #A74444;
+    background-image: linear-gradient(top, #A74444, #C76464);
+    background-image: -moz-linear-gradient(top, #A74444, #C76464);
+    background-image: -webkit-linear-gradient(top, #A74444, #C76464);
+    background-image: -o-linear-gradient(top, #A74444, #C76464);
+    background-image: -ms-linear-gradient(top, #A74444, #C76464);
+    text-shadow: -1px -1px 0px rgba(0,0,0,0.5);
+  }
+  ul[role=navigation] li a {
+    color: #1D1D1D;
+    text-transform: uppercase;
+    font-size: 1.1em;
+    letter-spacing: -1px;
+    text-decoration: none;
+    color: #fff;
+  }
+  ul[role=navigation] li a .icon {
+    font-size: 22px;
+    vertical-align: text-bottom;
+  }
+  section[role=banner] hgroup h1, section[role=banner] hgroup h2 {
+    width: 100%;
+    font: bold 24px Helvetica, Arial, Tahoma;
+    padding: 0 5%;
+    width: 90%;
+  }
+  section[role=banner] hgroup h2 {
+    font-size: 16px;
+    margin-top: 15px;
+  }
+  section[role=banner] article[role=main] {
+    width: 100%;
+    padding: 0 0 30px;
+  }
+  section[role=banner] article[role=main] h2 {
+    line-height: 1.2em;
+  }
+  section[role=banner] article[role=main] .post, section[role=banner] article[role=main] aside {
+    float: none;
+    width: 90%;
+    margin: 0 5%;
+  }
+  section[role=banner] article[role=main] aside {
+    display: none;
+  }
+  section[role=banner] article[role=main] .price-table li {
+    display: block;
+  }
+  section[role=banner] article[role=main] .price-table li ul, section[role=banner] article[role=main] .price-table li h4, section[role=banner] article[role=main] .price-table li .button {
+    display: none;
+  }
+  section[role=banner] article[role=main] .price-table li .dark {
+    margin: 0;
+    padding: 15px 0 5px;
+    -moz-border-radius: 5px;
+    -webkit-border-radius: 5px;
+    border-radius: 5px;
+  }
+  section[role=banner] article[role=main] .price-table li.box {
+    margin: 0 5% 10px;
+    width: 90%;
+    padding: 0;
+  }
+  section[role=banner] article[role=main] .price-table li.box .button {
+    margin: 10px 5% 0;
+    width: 90%;
+  }
+  section[role=banner] article[role=main] .price-table li.box:first-child {
+    padding: 0 0 20px;
+  }
+  section[role=banner] article[role=main] .price-table li.box:first-child ul, section[role=banner] article[role=main] .price-table li.box:first-child h4, section[role=banner] article[role=main] .price-table li.box:first-child .button {
+    display: block;
+  }
+  section[role=banner] article[role=main] .price-table li.box:first-child .dark {
+    margin: 0 0 10px;
+    padding-bottom: 0;
+    -moz-border-radius: 5px 5px 0 0;
+    -webkit-border-radius: 5px 5px 0 0;
+    border-radius: 5px 5px 0 0;
+  }
+  section[role=banner] article[role=main] .price-table li.gap {
+    display: none;
+  }
+  .button {
+    width: 100%;
+    padding: 15px 0;
+    margin: 0 0 15px;
+  }
+  .left {
+    float: none;
+  }
+  .columns article {
+    border: 0 !important;
+    display: block;
+    width: 90%;
+    padding: 0;
+    margin: 0 5%;
+    font-size: 13px;
+  }
+  .columns article figure {
+    display: none;
+  }
+  .columns article figure p {
+    margin: 0;
+  }
+  .columns article figure img {
+    width: 100%;
+  }
+  .columns article:first-child {
+    padding: 20px 0 10px;
+  }
+  .columns article:first-child figure {
+    display: block;
+  }
+  .columns article:last-child h3 {
+    border: 0;
+  }
+  .thumb-rotator {
+    padding: 0 5% 20px;
+  }
+  .thumb-rotator li {
+    float: none;
+    margin: 0 0 5px;
+    width: 100%;
+    display: none;
+  }
+  .thumb-rotator li:first-child {
+    display: block;
+  }
+  .foo-slogan {
+    overflow: hidden;
+    padding: 10px 5% 20px;
+    width: 90%;
+  }
+  .foo-slogan h2 {
+    float: none;
+    width: 100%;
+    font: bold 22px/1em Helvetica, Arial, Tahoma;
+    margin: 0 0 15px;
+  }
+  .foo-slogan .button {
+    float: none;
+  }
+  .c-form input[type=text], .c-form input[type=email], .c-form input[type=tel] {
+    padding: 10px 3%;
+    width: 93%;
+  }
+  .c-form textarea {
+    padding: 10px 3%;
+    width: 93%;
+  }
+  .sort-bar {
+    margin: 0 5% 20px;
+  }
+  .sort-bar a {
+    line-height: 24px;
+  }
+  .thumb-list {
+    margin: 0 5%;
+  }
+  .thumb-list li {
+    height: auto !important;
+    margin: 0 0 20px !important;
+    width: 100%;
+  }
+  .thumb-list li img {
+    padding: 2%;
+    width: 96%;
+  }
+  aside[role=complementary], .content {
+    display: block;
+    padding: 10px 5%;
+    width: 90%;
+  }
+  aside[role=complementary] img, .content img {
+    max-width: 90%;
+  }
+  aside[role=complementary] table, .content table {
+    width: 95%;
+  }
+  aside[role=complementary] th,
+  .content th,
+  aside[role=complementary] td,
+  .content td {
+    padding: 2px 4px;
+  }
+  footer[role=contentinfo] {
+    padding: 10px 5%;
+    width: 90%;
+  }
+  footer[role=contentinfo] p {
+    width: 100%;
+  }
+}
+/*
+      OLDIES
+	  FIXING IE THE HELL
+*/
+.oldies .columns {
+  overflow: hidden;
+}
+.oldies .columns article {
+  float: left;
+  display: block;
+  width: 21%;
+}
+.oldies section[role="banner"] article[role="main"] .price-table {
+  overflow: hidden;
+}
+.oldies section[role="banner"] article[role="main"] .price-table li {
+  float: left;
+  width: 215px;
+}
+.oldies section[role="banner"] article[role="main"] .price-table li.gap {
+  width: 30px;
+}
+.oldies section[role="banner"] article[role="main"] .price-table li .dark {
+  width: 215px;
+}
+.oldies section[role="banner"] article[role="main"] .price-table li li {
+  float: none;
+}
+.ie7 aside[role=complementary] {
+  float: left;
+}
+.ie7 .content {
+  width: 680px;
+  float: left;
+}

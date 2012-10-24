@@ -5,12 +5,7 @@
 	</head>
 	<body>
 		<div id="wrapper">
-			<div id="header">
-				<div id="logo">
-					<h1><a href="#">Husky Hustle</a></h1>
-				</div>
-				{% include "include/menu.html" %}
-			</div>
+			{% include "include/menu.html" %}
 			<div id="inner">
 				<div id="page">
 					<div id="content">
@@ -24,7 +19,7 @@
 						</div>
 						<div class="box col2">
 							<h3>Fundraising</h3>
-							<img class="image aligntop" src="/static/images/welcome2.jpg" width="430" height="155" alt="" />
+							<img class="image aligntop full" src="/static/images/welcome2.jpg" width="430" height="155" alt="" />
 							{% include "include/thermometer.html" %}
 							{{ content.content|safe }}
 						</div>

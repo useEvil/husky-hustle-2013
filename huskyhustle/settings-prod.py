@@ -78,22 +78,26 @@ SECRET_KEY = '*nzo2z3hdye73y%+l473v_pt46il#g$+4mp)6^#8-n)v8vp)jf'
 
 # List of callables that know how to import templates from various sources.
 TEMPLATE_LOADERS = (
+    # 'django_mobile.loader.Loader',
     'django.template.loaders.filesystem.Loader',
     'django.template.loaders.app_directories.Loader',
-#     'django.template.loaders.eggs.Loader',
+    # 'django.template.loaders.eggs.Loader',
 )
 
 TEMPLATE_CONTEXT_PROCESSORS = (
     'django.contrib.auth.context_processors.auth',
     'django.core.context_processors.request',
+    # 'django_mobile.context_processors.flavour',
 )
 
 MIDDLEWARE_CLASSES = (
     'django.middleware.common.CommonMiddleware',
-    'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
+    'django.contrib.sessions.middleware.SessionMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
+    # 'django_mobile.middleware.MobileDetectionMiddleware',
+    # 'django_mobile.middleware.SetFlavourMiddleware',
 )
 
 MESSAGE_STORAGE = 'django.contrib.messages.storage.session.SessionStorage'
@@ -168,6 +172,7 @@ INSTALLED_APPS = (
     # 'socialregistration.contrib.instagram',
     'socialregistration.contrib.openid',
     'djangorestframework',
+    # 'django_mobile',
     'registration',
     'picasa',
     'husky',
