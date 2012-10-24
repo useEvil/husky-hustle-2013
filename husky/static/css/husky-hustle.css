@@ -652,7 +652,8 @@ fieldset {
 }
 
 .hidden {
-	display: none}
+	display: none;
+}
 
 .input {
 	padding: 0.15em;

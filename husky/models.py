@@ -371,13 +371,8 @@ class Donation(models.Model):
 
     def bar_height(self):
         try:
-            results = Donation.objects.all()
-            total   = 0
-            for result in results:
-                if result.per_lap:
-                    total += (result.child.laps or 0) * result.donation
-                else:
-                    total += result.donation
+            results = Donation.objects.all().aggregate(donated=Sum('donated'))
+            total   = results['donated'] or 0
             percentage = total / DONATION_GOAL
             return int(MAX_BAR_LENGTH * percentage)
         except:
@@ -385,13 +380,8 @@ class Donation(models.Model):
 
     def arrow_height(self):
         try:
-            results = Donation.objects.filter(paid=True).all()
-            total   = 0
-            for result in results:
-                if result.per_lap:
-                    total += (result.child.laps or 0) * result.donation
-                else:
-                    total += result.donation
+            results = Donation.objects.filter(paid=True).aggregate(donated=Sum('donated'))
+            total   = results['donated'] or 0
             percentage = total / DONATION_GOAL
             return int((MAX_ARROW_HEIGHT * percentage) + BASE_ARROW_HEIGHT)
         except:
