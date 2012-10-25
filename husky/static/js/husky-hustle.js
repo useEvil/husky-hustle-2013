@@ -17,9 +17,10 @@ $('.disconnect').live('click', disconnectSocial);
 $('.post-facebook').live('click', postToSocial);
 $('.show-edit').live('click', showEdit);
 $('.pre-set-amount').live('click', setPreSetAmount);
-$('.to-principle').live('click', setPreSetAmount);
-$('.to-teacher').live('change', setPreSetAmount);
+$('.to_principle').live('click', setPreSetAmount);
+$('.to_teacher').live('change', setPreSetAmount);
 $('.run-calculations').live('click', runCalculations);
+$('#link_to').live('click', linkToParent);
 $('body').keyup(cancelOverlay);
 
 $(document).ready(
@@ -323,6 +324,14 @@ function updateStatus(data) {
 	clearMessage();
 }
 
+function linkToParent(event) {
+	if (confirm('Are you sure you want to link to this Parent?') == false) {
+		return false;
+	}
+	$.getJSON($(this).attr('href'), function(){ window.location.href = '/accounts/profile/'; });
+	return false;
+}
+
 function setPaid(event) {
 	var id = this.id.replace( 'paid-', '' );
 	$.getJSON('/paid/' + id);
@@ -339,7 +348,7 @@ function setAllReminders() {
 
 function setPreSetAmount() {
 	var value = $(this).val();
-	if (this.className == 'to-principle') {
+	if (this.className == 'to_principle') {
 		if (value) {
 			$('#id_first_name').attr('value',value);
 			$('#id_first_name').attr('readonly', true);
@@ -353,10 +362,10 @@ function setPreSetAmount() {
 			$('#id_teacher').attr('disabled', false);
 			$('#id_teacher').show();
 		}
-	} else if (this.className == 'to-teacher') {
+	} else if (this.className == 'to_teacher') {
 			value = $('#id_teacher :selected').val()
 			$('#id_first_name').attr('value', value);
-			$('#to-teacher').attr('checked', true);
+			$('#to_teacher').attr('checked', true);
 	} else {
 		if (value) {
 			$('#id_donation').attr('value',value);

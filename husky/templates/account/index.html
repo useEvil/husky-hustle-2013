@@ -16,12 +16,18 @@
 						{% for message in messages %}
 						<li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
 						{% endfor %}
+						{% if linked %}
+						<li style="color: #000000;">Would you like to link your account to: <a id="link_to" href="/link/{{ linked.id }}">{{ linked.full_name }}</a>?</li>
+						{% endif %}
 					</ul>
 					{% endif %}
 					<div class="box">
 						<h3>Profile</h3>
 						<ul class="list">
-							<li>{{ parent.first_name }} {{ parent.last_name }}&nbsp;<img src="/static/images/edit.png" class="show-edit" id="edit_profile_{{ parent.id }}" /></li>
+							<li>{% if parent.guardian == 1 %}Mother{% elif parent.guardian == 2 %}Father{% else %}Guardian{% endif %}: {{ parent.first_name }} {{ parent.last_name }}&nbsp;<img src="/static/images/edit.png" class="show-edit" id="edit_profile_{{ parent.id }}" /></li>
+							{% if not parent.default %}
+							<li>Linked to: {{ parent.linked.full_name }}</li>
+							{% endif %}
 							<li>{{ parent.email_address }}</li>
 							<li>{{ parent.phone_number }}</li>
 							<li>{{ user_id }}</li>
