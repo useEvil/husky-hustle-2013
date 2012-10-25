@@ -18,6 +18,7 @@ $('.post-facebook').live('click', postToSocial);
 $('.show-edit').live('click', showEdit);
 $('.pre-set-amount').live('click', setPreSetAmount);
 $('.to-principle').live('click', setPreSetAmount);
+$('.to-teacher').live('change', setPreSetAmount);
 $('.run-calculations').live('click', runCalculations);
 $('body').keyup(cancelOverlay);
 
@@ -342,10 +343,20 @@ function setPreSetAmount() {
 		if (value) {
 			$('#id_first_name').attr('value',value);
 			$('#id_first_name').attr('readonly', true);
+			$('#id_first_name').show();
+			$('#id_teacher').attr('disabled', true);
+			$('#id_teacher').hide();
 		} else {
-			$('#id_first_name').attr('value', '');
-			$('#id_first_name').attr('readonly', false);
+			value = $('#id_teacher :selected').val()
+			$('#id_first_name').attr('value', value);
+			$('#id_first_name').hide();
+			$('#id_teacher').attr('disabled', false);
+			$('#id_teacher').show();
 		}
+	} else if (this.className == 'to-teacher') {
+			value = $('#id_teacher :selected').val()
+			$('#id_first_name').attr('value', value);
+			$('#to-teacher').attr('checked', true);
 	} else {
 		if (value) {
 			$('#id_donation').attr('value',value);

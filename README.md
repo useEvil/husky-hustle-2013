@@ -42,23 +42,27 @@ Features
         * RSS Feed
     * Message of the Week
     * Important Links
+    * Mobile Version
 12. Reporting
     * Graphing of Sum
     * Graphing of Max
 
-Frameworks
-----------
+Dependencies
+------------
 
 * [Python](http://www.python.org/) - http://www.python.org/
 * [Django](http://www.djangoproject.com/) - https://www.djangoproject.com/
 * [django-registration](http://www.djangoproject.com/) - http://code.google.com/p/django-registration/
 * [django-socialregistration](https://github.com/flashingpumpkin/django-socialregistration/) - https://github.com/flashingpumpkin/django-socialregistration/
 * [django-picasa](http://code.google.com/p/django-picasa/) - http://code.google.com/p/django-picasa/
+
+Frameworks
+----------
+
 * [jQuery](http://http://jquery.com/) - http://http://jquery.com/
 * [jQuery UI](http://jqueryui.com/) - http://jqueryui.com/
 * [Flexigrid](http://flexigrid.info/) - http://flexigrid.info/
 * [Axiom CSS Template](http://www.freecsstemplates.org/preview/axiom/) - http://www.freecsstemplates.org/preview/axiom/
-* [Flexigrid](http://flexigrid.info/) - http://flexigrid.info/
 * [Hoverbox](http://host.sonspring.com/hoverbox/) - http://host.sonspring.com/hoverbox.
 * [CSS Decorative Gallery](http://webdesignerwall.com/tutorials/css-decorative-gallery/) - http://webdesignerwall.com/tutorials/css-decorative-gallery/
 * [InfoVis Toolkit ](http://philogb.github.com/jit/) - http://philogb.github.com/jit/
@@ -71,7 +75,6 @@ ToDo
    * Docs (Google Docs)
 3. Payment Processor
    * Intuit
-4. Mobile Version
 
 License
 -------

@@ -180,6 +180,12 @@ class Teacher(models.Model):
     def full_name(self):
         return '%s %s %s' % (self.title, self.first_name, self.last_name)
 
+    def find(self, last_name=None):
+        try:
+            return Teacher.objects.filter(last_name__icontains=last_name).all()
+        except ObjectDoesNotExist, e:
+            return
+
     def shortened(self):
         if not self.shorten:
             api = bitly.Api(login=settings.BITLY_LOGIN, apikey=settings.BITLY_APIKEY)
@@ -252,6 +258,17 @@ class Children(models.Model):
 
     def full_name(self):
         return '%s %s' % (self.first_name, self.last_name)
+
+    def find(self, child_name=None, parent_name=None):
+        try:
+            if child_name and parent_name:
+                return Children.objects.filter(first_name__icontains=child_name, parent__first_name__icontains=parent_name).all()
+            elif child_name:
+                return Children.objects.filter(first_name__icontains=child_name).all()
+            elif parent_name:
+                return Children.objects.filter(parent__first_name__icontains=parent_name).all()
+        except ObjectDoesNotExist, e:
+            return
 
     def donate_url(self):
         site = self.parent.site

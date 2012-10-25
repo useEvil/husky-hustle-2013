@@ -20,15 +20,20 @@
 						</ul>
 						{% endif %}
 						{% if make_donation %}
-						{% if not error %}
-						{% if teacher_donation %}
-						<h3>Make a Donation to a Teacher</h3>
-						{% include "include/donation-form-teachers.html" %}
-						{% else %}
-						<h3>Make a Donation to: {{ child }}</h3>
-						{% include "include/donation-form.html" %}
-						{% endif %}
-						{% endif %}
+							{% if not error %}
+								{% if search %}
+								{% include "include/search-form.html" %}
+								{% elif teacher_donation %}
+								<h3>Make a Donation to a Teacher for: {{ child }}</h3>
+								{% include "include/donation-form-teachers.html" %}
+								{% else %}
+								<h3>Make a Donation to: {{ child }}</h3>
+								{% include "include/donation-form.html" %}
+								{% include "include/search-form.html" %}
+								{% endif %}
+							{% else %}
+								{% include "include/search-form.html" %}
+							{% endif %}
 						{% else %}
 						<h3><a href="/accounts/profile/">Profile</a> &gt; <a href="/account/{{ child.identifier }}">Donation List</a> &gt; Add Sponsor</h3>
 						{% include "include/donation-form.html" %}

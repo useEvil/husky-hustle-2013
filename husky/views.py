@@ -149,12 +149,28 @@ def make_donation(request, identifier=None):
             page_title='Donate',
             make_donation=True,
     ))
-    try:
-        child = Children.objects.get(identifier=identifier)
-        c['child'] = child
-    except:
-        messages.error(request, 'Could not find Child for identity: %s' % identifier)
-        c['error'] = True
+    if identifier == 'search':
+        c['search'] = True
+        child_name = request.GET.get('student_name')
+        parent_name = request.GET.get('parent_name')
+        if child_name or parent_name:
+            try:
+                children = Children().find(child_name, parent_name)
+                c['children'] = children
+                if child_name and parent_name:
+                    c['search'] = '%s" and "%s' % (child_name, parent_name)
+                else:
+                    c['search'] = child_name or parent_name
+            except Exception, e:
+                messages.error(request, 'Could not find Children matching: %s: %s' % (str(e), first_name))
+                c['error'] = True
+    else:
+        try:
+            child = Children.objects.get(identifier=identifier)
+            c['child'] = child
+        except:
+            messages.error(request, 'Could not find Child for identity: %s' % identifier)
+            c['error'] = True
     c['messages'] = messages.get_messages(request)
     return render_to_response('donate.html', c, context_instance=RequestContext(request))
 
@@ -162,6 +178,7 @@ def teacher_donation(request, identifier=None):
     c = Context(dict(
             page_title='Donate',
             make_donation=True,
+            teachers=Teacher.objects.all(),
             teacher_donation=True,
     ))
     try:

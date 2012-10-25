@@ -14,7 +14,15 @@
 			<input type="radio" class="to-principle" id="to-teacher" name="to-principle" value="" />&nbsp;A Teacher
 		</li>
 		{% endif %}
-		<li><label for="id_first_name"{% if form.first_name.errors %} class="error"{% endif %}>Name:</label><input id="id_first_name" type="text" name="first_name" value="{{ form.first_name.value }}" size="30" class="required" />{% if form.first_name.errors %}<span class="pad-left10 error">* required</span>{% endif %}</li>
+		<li>
+			<label for="teacher">Teacher:</label>
+			<input id="id_first_name" type="text" name="first_name" value="{{ form.first_name.value }}" class="hidden" />
+			<select id="id_teacher" name="teacher" class="to-teacher">
+				{% for teacher in teachers %}
+				<option value="{{ teacher.full_name }}">{{ teacher }}</option>
+				{% endfor %}
+			</select>
+		</li>
 		<li>
 			<label for="id_set_amount"{% if form.donation.errors %} class="error"{% endif %}>Set Amount:</label>
 			<input type="radio" class="pre-set-amount" name="pre-set-amount" value="5.00" />&nbsp;$5&nbsp;&nbsp;

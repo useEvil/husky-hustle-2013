@@ -745,3 +745,17 @@ fieldset {
 .full {
     display: block;
 }
+
+.search-results {
+	border-collapse: collapse;
+	text-align: left;
+}
+
+.search-results tr:nth-child(even) {
+	background-color: #eee;
+}
+
+.search-results td, th {
+	width: 175px;
+	padding: 3px 3px 3px 10px;
+}
