@@ -12,7 +12,7 @@ from django.db import models
 from django.db.models import Sum
 from django.db.models.signals import post_save
 from django.conf import settings
-from django.core.exceptions import ObjectDoesNotExist
+from django.core.exceptions import ObjectDoesNotExist, MultipleObjectsReturned
 from django.contrib.auth.models import User
 from django.contrib.auth.forms import PasswordResetForm
 from django.contrib.sites.models import Site
@@ -193,55 +193,6 @@ class Teacher(models.Model):
         return self.shorten
 
 
-class Parent(models.Model):
-
-    first_name = models.CharField(max_length=50)
-    last_name = models.CharField(max_length=50)
-    email_address = models.CharField(max_length=100)
-    phone_number = models.CharField(max_length=25)
-    activation_key = models.CharField(max_length=200)
-    key_expires = models.DateTimeField()
-    date_added = models.DateTimeField()
-    site = models.ForeignKey(Site)
-    user = models.OneToOneField(User, unique=True)
-
-    def __unicode__(self):
-        return '%s (%s)' % (self.full_name(), self.email_address)
-
-    def full_name(self):
-        return '%s %s' % (self.first_name, self.last_name)
-
-    def num_chilren(self):
-        return self.children.count()
-
-    def facebook(self, user_id=None):
-        if not user_id:
-            user_id = self.user.id
-        try:
-            facebook = FacebookProfile.objects.filter(user_id=user_id).get()
-        except ObjectDoesNotExist, e:
-            return
-        return facebook
-
-    def twitter(self, user_id=None):
-        if not user_id:
-            user_id = self.user.id
-        try:
-            twitter = TwitterProfile.objects.filter(user_id=user_id).get()
-        except ObjectDoesNotExist, e:
-            return
-        return twitter
-
-    def google(self, user_id=None):
-        if not user_id:
-            user_id = self.user.id
-        try:
-            google = OpenIDProfile.objects.filter(user_id=user_id).get()
-        except ObjectDoesNotExist, e:
-            return
-        return google
-
-
 class Children(models.Model):
 
     first_name = models.CharField(max_length=50)
@@ -250,7 +201,6 @@ class Children(models.Model):
     date_added = models.DateTimeField()
     laps = models.IntegerField(blank=True, null=True)
     collected = CurrencyField(blank=True, null=True)
-    parent = models.ForeignKey(Parent, related_name='children')
     teacher = models.ForeignKey(Teacher, related_name='students')
 
     def __unicode__(self):
@@ -271,12 +221,12 @@ class Children(models.Model):
             return
 
     def donate_url(self):
-        site = self.parent.site
+        site = Site.objects.get_current()
         donate_url = 'http://%s/make-donation/%s' % (site.domain, self.identifier)
         return donate_url
 
     def facebook_share_url(self):
-        site = self.parent.site
+        site = Site.objects.get_current()
         params = 'app_id=' + settings.FACEBOOK_APP_ID + '&link=' + self.donate_url() + '&picture=' + ('http://%s/static/images/hickslogo-1.jpg' % site.domain) + '&name=' + urllib.quote('Husky Hustle') + '&caption=' + urllib.quote('Donate to %s' % self.full_name()) + '&description=' + urllib.quote("Donate and help further our children's education.") + '&redirect_uri=' + 'http://%s/' % site.domain
         fb_share_url = 'https://www.facebook.com/dialog/feed?' + params
         return fb_share_url
@@ -304,6 +254,15 @@ class Children(models.Model):
             return Donation.objects.filter(child=self, first_name='Mrs. Agopian').get()
         except ObjectDoesNotExist, e:
             return
+
+    def parent(self):
+        return self.parents.filter(default=1).get()
+
+    def is_fathter(self):
+        return self.guardian == 0
+
+    def is_mother(self):
+        return self.guardian == 1
 
     def total_due(self):
         total_due = 0
@@ -352,6 +311,65 @@ class Children(models.Model):
                     total += sponsor.donated
                 result.collected = total
                 result.save()
+
+
+class Parent(models.Model):
+
+    first_name = models.CharField(max_length=50)
+    last_name = models.CharField(max_length=50)
+    email_address = models.CharField(max_length=100)
+    phone_number = models.CharField(max_length=25)
+    default = models.BooleanField(default=1)
+    guardian = models.IntegerField(default=1, choices=((1,'Mother'), (2,'Father'), (3,'Guardian')))
+    activation_key = models.CharField(max_length=200)
+    key_expires = models.DateTimeField()
+    date_added = models.DateTimeField()
+    site = models.ForeignKey(Site)
+    user = models.OneToOneField(User, unique=True)
+    children = models.ManyToManyField(Children, related_name='parents')
+
+    def __unicode__(self):
+        return '%s (%s)' % (self.full_name(), self.email_address)
+
+    def full_name(self):
+        return '%s %s' % (self.first_name, self.last_name)
+
+    def linked(self):
+        try:
+            child = self.children.all()[0]
+            return child.parents.filter(default=1).get()
+        except ObjectDoesNotExist, e:
+            return
+
+    def num_chilren(self):
+        return self.children.count()
+
+    def facebook(self, user_id=None):
+        if not user_id:
+            user_id = self.user.id
+        try:
+            facebook = FacebookProfile.objects.filter(user_id=user_id).get()
+        except ObjectDoesNotExist, e:
+            return
+        return facebook
+
+    def twitter(self, user_id=None):
+        if not user_id:
+            user_id = self.user.id
+        try:
+            twitter = TwitterProfile.objects.filter(user_id=user_id).get()
+        except ObjectDoesNotExist, e:
+            return
+        return twitter
+
+    def google(self, user_id=None):
+        if not user_id:
+            user_id = self.user.id
+        try:
+            google = OpenIDProfile.objects.filter(user_id=user_id).get()
+        except ObjectDoesNotExist, e:
+            return
+        return google
 
 
 class Donation(models.Model):

@@ -7,6 +7,7 @@ import datetime as date
 import re as regexp
 
 from django.db.models import Count, Sum, Avg, Max
+from django.db import IntegrityError
 from django.core.mail import send_mail
 from django.template import Context, loader, RequestContext
 from django.shortcuts import render_to_response
@@ -266,6 +267,7 @@ def register(request):
                                 last_name=form['last_name'].data,
                                 email_address=form['email_address'].data,
                                 phone_number=form['phone_number'].data,
+                                guardian=form['guardian'].data,
                                 activation_key=key,
                                 key_expires=expires,
                                 date_added=date.datetime.now(),
@@ -379,9 +381,9 @@ def add(request, type=None):
                     identifier='%s-%s-%s'%(request.POST.get('first_name').lower(), request.POST.get('last_name').lower(), teacher.room_number),
                     date_added=date.datetime.now(),
                     teacher=teacher,
-                    parent=parent,
                 )
                 child.save()
+                parent.children.add(child)
                 c['child_name'] = child.full_name
                 c['parent_name'] = parent.full_name
                 c['email_address'] = parent.email_address
@@ -389,6 +391,18 @@ def add(request, type=None):
                 c['subject'] = 'Husky Hustle: Child Registration'
                 _send_email_teamplate('register-child', c)
                 messages.success(request, 'Child Added')
+            except IntegrityError, e:
+                current_parent = None
+                try:
+                    other_parent = Parent.objects.filter(children__identifier=child.identifier, default=1).get()
+                    current_parent = Parent.objects.filter(children__identifier=child.identifier, pk=parent.id).get()
+                except:
+                    pass
+                if not current_parent:
+                    c['linked'] = other_parent
+                    messages.error(request, 'Child has already been added by another Parent')
+                else:
+                    messages.error(request, 'You have already added this Child')
             except Exception, e:
                 messages.error(request, str(e))
         else:
@@ -402,7 +416,7 @@ def edit(request, type=None):
     if request.POST:
         if type == 'child':
             try:
-                teacher = Teacher.objects.get(pk=request.POST.get('teacher')),
+                teacher = Teacher.objects.get(pk=request.POST.get('teacher'))
                 child = Children.objects.get(pk=request.POST.get('id'))
                 child.first_name = request.POST.get('first_name')
                 child.last_name = request.POST.get('last_name')
@@ -419,6 +433,7 @@ def edit(request, type=None):
                 parent.last_name = request.POST.get('last_name')
                 parent.email_address = request.POST.get('email_address')
                 parent.phone_number = request.POST.get('phone_number')
+                parent.guardian = request.POST.get('guardian')
                 user = parent.user
                 user.email = request.POST.get('email_address')
                 user.username = request.POST.get('email_address')
@@ -487,9 +502,26 @@ def disconnect(request, parent_id=None, social=None):
     return HttpResponse(simplejson.dumps({'result': 'OK', 'status': 200}), mimetype='application/json')
 
 def paid(request, donation_id=None):
-    object = Donation.objects.get(pk=donation_id)
-    object.paid = True
-    object.save()
+    try:
+        object = Donation.objects.get(pk=donation_id)
+        object.paid = True
+        object.save()
+        messages.success(request, 'Successfully set Sponsor to Paid')
+    except Exception, e:
+        messages.error(request, 'Failed to set Sponsor to Paid: %s' % str(e))
+    return HttpResponse(simplejson.dumps({'result': 'OK', 'status': 200}), mimetype='application/json')
+
+def link(request, parent_id=None):
+    try:
+        parent = Parent.objects.filter(email_address=request.user.email).get()
+        linked = Parent.objects.get(pk=parent_id)
+        for child in linked.children.all():
+            parent.children.add(child)
+        parent.default = 0
+        parent.save()
+        messages.success(request, 'Successfully Linked Account')
+    except Exception, e:
+        messages.error(request, 'Failed to Link Account: %s' % str(e))
     return HttpResponse(simplejson.dumps({'result': 'OK', 'status': 200}), mimetype='application/json')
 
 @csrf_protect
