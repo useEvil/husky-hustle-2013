@@ -1,0 +1,27 @@
+{% if children %}
+<span>Your search for <span class="bold">"{{ search|safe }}"</span> found <span class="bold">{{ children|length }}</span> results:</span>
+<table class="search-results">
+    <tr>
+        <th>Parent</th><th>Student</th><th>Grade</th><th>Teacher</th>
+    </tr>
+    {% for child in children %}
+    <tr>
+        <td>{{ child.parent.full_name }}</td>
+        <td><a href="{{ child.donate_url }}">{{ child.full_name }}</a></td>
+        <td>{{ child.teacher.grade }}</td>
+        <td>{{ child.teacher.full_name }} ({{ child.teacher.room_number }})</td>
+    </tr>
+    {% endfor %}
+</table>
+{% else %}
+<h3>Search for a Student</h3>
+<form action="/make-donation/search" method="GET">
+	<ol>
+		<li style="display: inline;"><label style="width: 200px;" for="student_name"{% if form.student_name.errors %} class="error"{% endif %}>student First Name:</label><input id="student_name" type="text" name="student_name" value="{{ form.student_name.value }}" size="30" /></li>
+	</ol>
+	<ol>
+		<li style="display: inline;"><label style="width: 200px;" for="parent_name"{% if form.parent_name.errors %} class="error"{% endif %}>Parent First Name:</label><input id="parent_name" type="text" name="parent_name" value="{{ form.parent_name.value }}" size="30" /></li>
+		<li style="display: inline;padding-left: 15px;"><input type="submit" value=" Search " /></li>
+	</ol>
+</form>
+{% endif %}
