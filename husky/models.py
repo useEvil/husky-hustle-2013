@@ -228,8 +228,16 @@ class Children(models.Model):
     def facebook_share_url(self):
         site = Site.objects.get_current()
         params = 'app_id=' + settings.FACEBOOK_APP_ID + '&link=' + self.donate_url() + '&picture=' + ('http://%s/static/images/hickslogo-1.jpg' % site.domain) + '&name=' + urllib.quote('Husky Hustle') + '&caption=' + urllib.quote('Donate to %s' % self.full_name()) + '&description=' + urllib.quote("Donate and help further our children's education.") + '&redirect_uri=' + 'http://%s/' % site.domain
-        fb_share_url = 'https://www.facebook.com/dialog/feed?' + params
-        return fb_share_url
+        share_url = 'https://www.facebook.com/dialog/feed?' + params
+        return share_url
+
+    def twitter_share_url(self):
+        share_url = 'https://twitter.com/intent/tweet?button_hashtag=HuskyHustle&url=%s' % self.donate_url()
+        return share_url
+
+    def google_share_url(self):
+        share_url = 'https://plus.google.com/share?url=%s' % self.donate_url()
+        return share_url
 
     def grades(self):
         return Grade.objects.all()

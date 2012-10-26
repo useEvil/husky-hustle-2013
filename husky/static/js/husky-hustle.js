@@ -14,8 +14,9 @@ $('.submit_edit').live('click', submitFormEdit);
 $('.set-paid').live('click', setPaid);
 $('.set-all-reminders').live('click', setAllReminders);
 $('.disconnect').live('click', disconnectSocial);
-$('.post-facebook').live('click', postToSocial);
+$('.post-to-social').live('click', postToSocial);
 $('.show-edit').live('click', showEdit);
+$('.send-email').live('click', sendEmail);
 $('.pre-set-amount').live('click', setPreSetAmount);
 $('.to_principle').live('click', setPreSetAmount);
 $('.to_teacher').live('change', setPreSetAmount);
@@ -199,17 +200,22 @@ function removeItem(event) {
 }
 
 function submitForm(event) {
-	var params = $('#reminder_form').serialize();
-	$('.set-reminder').each(
-		function () {
-			if ($(this).attr('checked') == 'checked') {
-				params += '&donators=' + $(this).val();
+	var id = this.id.replace( 'submit_', '' );
+	var form = $('#'+ id +'_form');
+	var params = form.serialize();
+	var action = form.attr('action');
+	if (id === 'reminder') {
+		$('.set-reminder').each(
+			function () {
+				if ($(this).attr('checked') == 'checked') {
+					params += '&donators=' + $(this).val();
+				}
 			}
-		}
-	);
+		);
+	}
 	$.ajax(
 		{
-			url: '/reminders',
+			url: action,
 			type: 'post',
 			dataType: 'json',
 			data: params,
@@ -218,6 +224,7 @@ function submitForm(event) {
 		}
 	);
 	doOverlayOpen('none', 50);
+	return false;
 }
 
 function submitFormEdit(event) {
@@ -377,6 +384,11 @@ function setPreSetAmount() {
 	}
 }
 
+function sendEmail(event) {
+	$('#email_form').show();
+	doOverlayOpen('email');
+}
+
 function sendReminders(event) {
 	var senders = false;
 	$('.set-reminder').each(
@@ -412,7 +424,7 @@ function runCalculations() {
 }
 
 function postToSocial(event) {
-	window.open($(this).attr('src'), 'post-social', 'height=200,width=550,resizable=yes,scrollbars=yes')
+	window.open($(this).attr('src'), '_social', 'height=200,width=550,resizable=yes,scrollbars=yes')
 //	$('#post-iframe').attr('src', $(this).attr('src'));
 //	doOverlayOpen('post');
 }

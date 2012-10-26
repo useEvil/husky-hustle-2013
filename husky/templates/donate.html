@@ -4,6 +4,8 @@
 		{% include "include/page-header.html" %}
 	</head>
 	<body>
+		<div class="background-cover"></div>
+		<div class="background-cover-top"></div>
 		<div id="wrapper">
 			{% include "include/menu.html" %}
 			<div id="inner">
@@ -27,7 +29,7 @@
 								<h3>Make a Donation to a Teacher for: {{ child }}</h3>
 								{% include "include/donation-form-teachers.html" %}
 								{% else %}
-								<h3>Make a Donation to: {{ child }}</h3>
+								<h3>Make a Pledge to: {{ child }}</h3>
 								{% include "include/donation-form.html" %}
 								{% include "include/search-form.html" %}
 								{% endif %}
@@ -35,8 +37,21 @@
 								{% include "include/search-form.html" %}
 							{% endif %}
 						{% else %}
-						<h3><a href="/accounts/profile/">Profile</a> &gt; <a href="/account/{{ child.identifier }}">Donation List</a> &gt; Add Sponsor</h3>
-						{% include "include/donation-form.html" %}
+						<h4>What to do Next:</h4>
+						<ul style="padding-left: 30px;">
+							<li><span src="{{ child.facebook_share_url }}" class="post-to-social post">Share with your Friends on Facebook<span></li>
+							<li><span src="{{ child.twitter_share_url }}" class="post-to-social post">Share with your Friends on Twitter</span></li>
+							<li><span src="{{ child.google_share_url }}" class="post-to-social post">Share with your Friends on Google+</span></li>
+							<li><span class="send-email post">Share with your Friends via Email</span></li>
+							<li><a href="/donation_sheet/" title="Print Form" target="_print">Print a Donation sheet</a></li>
+							<li><a href="/teacher-donation/{{ child.identifier }}">Make a Donation to a Teacher</a></li>
+							<li>
+								<span src="{{ child.facebook_share_url }}" class="post-to-social post"><img src="/static/images/facebook-share-button.png" width="60" /></span>
+								<a href="{{ child.twitter_share_url }}" class="twitter-hashtag-button" data-related="HuskyHustle" data-url="{{ child.donate_url }}">Post to Twitter #HuskyHustle</a>
+								<g:plus action="share" annotation="none"></g:plus>
+								<a href="/donation_sheet/" title="Print Form" target="_print"><img src="/static/images/print-icon.png" width="24" alt="Print Form" /></a>
+							</li>
+						</ul>
 						{% endif %}
 					</div>
 				</div>
@@ -45,10 +60,50 @@
 				{% include "include/page-bottom.html" %}
 			</div>
 		</div>
+		<div id="overlay-box-email" class="overlay-box">
+			<div class="overlay-content">
+				<form id="email_form" action="/emails" action="post">
+					{% csrf_token %}
+					<input type="hidden" id="child_first_name" name="child_first_name" value="{{ child.first_name }}">
+					<fieldset class="form">
+					<legend id="title">Send Email to Prospective Sponsors</legend>
+					<div class="wrapper">
+						<ul>
+							<li>
+								<label for="email_addresses" id="email_addressese_label" style="width: 255px;">Email Addresses (comma separated)</label><br />
+								<input type="text" class="control input" id="email_addresses" name="email_addresses" value="" size="200">
+							</li>
+								<label for="custom_message" id="custom_message_label">Custom Message</label><br />
+								<textarea class="control input" id="custom_message" name="custom_message" value="" cols="200" rows="15">
+Dear Friends,
+
+Please help support {{ child.full_name }} in this year's Husky Hustle Jog-A-Thon.  Our goal is to reach $30,000 to raise money for Hicks Canyon Elementary School.  Last year we were able to raise over $20,000 and we're hoping this year will be even better.
+
+Thank you for your support,
+
+{% if sponsor_full_name %}{{ sponsor_full_name }}{% else %}<<Your Name Here>>{% endif %}
+
+You can use the following url to donate directly to {{ child.first_name }}:
+
+{{ child.donate_url }}
+								</textarea>
+							</li>
+							<li>
+								<input type="button" style="width: 8em;" class="control input submit_button" id="submit_email" value=" Submit " />
+								<input type="button" style="width: 8em;" class="control input cancel_button" id="cancel_email" value=" Cancel " />
+							</li>
+						</ul>
+					</div>
+					</fieldset>
+				</form>
+			</div>
+		</div>
 		<div id="footer">
 			{% include "include/page-footer.html" %}
 		</div>
 	</body>
 	<script type="text/javascript" src="/static/js/jquery-1.8.2.js"></script>
 	<script type="text/javascript" src="/static/js/husky-hustle.js"></script>
+	<script type="text/javascript" src="https://apis.google.com/js/plusone.js"></script>
+	<script type="text/javascript" src="https://platform.twitter.com/widgets.js"></script>
 </html>
