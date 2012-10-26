@@ -98,6 +98,7 @@ def nav(request, page='index', id=None):
     return render_to_response('%s.html'%page, c, context_instance=RequestContext(request))
 
 @login_required(login_url='/accounts/login/')
+@checkUser
 def account(request, identifier=None):
     parent = Parent.objects.filter(email_address=request.user.email).get()
     c = Context(dict(
@@ -604,7 +605,7 @@ def reports(request, type=None):
                 json['values'][index]['labels'].append(child.full_name())
     return HttpResponse(simplejson.dumps(json), mimetype='application/json')
 
-@login_required(login_url='/admin/login/')
+@login_required(login_url='/admin/')
 def calculate_totals(request, type=None, id=None):
     if type == 'donation':
         Donation().calculate_totals(id)
