@@ -62,7 +62,6 @@ def index(request):
     ))
     return render_to_response('index.html', c, context_instance=RequestContext(request))
 
-@checkUser
 def nav(request, page='index', id=None):
     parent      = None
     my_twitter  = None
@@ -228,7 +227,6 @@ def donate(request, child_id=None):
             c['teacher_donation'] = True
     return render_to_response('donate.html', c, context_instance=RequestContext(request))
 
-@checkUser
 def album(request, album_id=None):
     album = Album().get_album(album_id)
     c = Context(dict(
@@ -237,7 +235,6 @@ def album(request, album_id=None):
     ))
     return render_to_response('photos.html', c, context_instance=RequestContext(request))
 
-@checkUser
 def photo(request, album_id=None, photo_id=None):
     album = Album().get_album(album_id)
     photo = Photo().get_photo(album_id, photo_id)
@@ -413,6 +410,7 @@ def add(request, type=None):
 #    return HttpResponseRedirect('/accounts/profile/')
     return render_to_response('account/index.html', c, context_instance=RequestContext(request))
 
+@login_required(login_url='/accounts/login/')
 def edit(request, type=None):
     if request.POST:
         if type == 'child':
@@ -458,6 +456,7 @@ def edit(request, type=None):
                 messages.error(request, 'Failed to Update Sponsor: %s' % str(e))
     return HttpResponse(simplejson.dumps({'result': 'OK', 'status': 200}), mimetype='application/json')
 
+@login_required(login_url='/accounts/login/')
 def delete(request, type=None):
     if request.POST:
         if type == 'sponsor':
@@ -605,6 +604,7 @@ def reports(request, type=None):
                 json['values'][index]['labels'].append(child.full_name())
     return HttpResponse(simplejson.dumps(json), mimetype='application/json')
 
+@login_required(login_url='/admin/login/')
 def calculate_totals(request, type=None, id=None):
     if type == 'donation':
         Donation().calculate_totals(id)

@@ -1,9 +1,9 @@
 import math
 import base64
 import urllib
-import husky.bitly
 import re as regexp
 import datetime as date
+import husky.bitly as bitly
 import gdata.media as media
 import gdata.photos.service as gdata
 import gdata.calendar.client as cdata
@@ -150,6 +150,7 @@ class Link(models.Model):
         if not self.shorten:
             api = bitly.Api(login=settings.BITLY_LOGIN, apikey=settings.BITLY_APIKEY)
             self.shorten = api.shorten(self.url)
+            self.save()
         return self.shorten
 
 
@@ -190,6 +191,7 @@ class Teacher(models.Model):
         if not self.shorten:
             api = bitly.Api(login=settings.BITLY_LOGIN, apikey=settings.BITLY_APIKEY)
             self.shorten = api.shorten(self.website)
+            self.save()
         return self.shorten
 
 

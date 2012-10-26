@@ -26,7 +26,7 @@
 								<ol>
 									<li><label for="id_subject"{% if form.subject.errors %} class="error"{% endif %}>Subject:</label><input id="id_subject" type="text" name="subject" value="{{ form.subject.value }}" size="30" class="required" />{% if form.subject.errors %}<span class="pad-left10 error">* required</span>{% endif %}</li>
 									<li><label for="id_sender"{% if form.sender.errors %} class="error"{% endif %}>Sender:</label><input id="id_sender" type="text" name="sender" value="{{ form.sender.value }}" size="30" class="required" />{% if form.sender.errors %}<span class="pad-left10 error">* required</span>{% endif %}</li>
-									<li><label for="id_message"{% if form.message.errors %} class="error"{% endif %}>Message:</label><textarea id="id_message" type="text" name="message" cols="90" rows="15" class="required">{{ form.message.value }}</textarea>{% if form.message.errors %}<span class="pad-left10 error">* required</span>{% endif %}</li>
+									<li><label for="id_message"{% if form.message.errors %} class="error"{% endif %}>Message:</label><textarea id="id_message" type="text" name="message" cols="90" rows="15" class="required" style="margin-top: 5px;">{{ form.message.value }}</textarea>{% if form.message.errors %}<span class="pad-left10 error">* required</span>{% endif %}</li>
 									<li><label for="id_cc_myself">CC Myself:</label><input id="id_cc_myself" type="checkbox" name="cc_myself" value="" /></li>
 									<li><input type="submit" value=" Submit " /></li>
 								</ol>
