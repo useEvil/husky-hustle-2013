@@ -118,7 +118,7 @@ class GradeAdmin(admin.ModelAdmin):
 
 class LinkAdmin(admin.ModelAdmin):
     fields = ['title', 'url', 'status']
-    list_display = ['title', 'url', 'status']
+    list_display = ['title', 'url', 'shorten', 'status']
     list_editable = ['status']
 
 admin.site.unregister(User)
