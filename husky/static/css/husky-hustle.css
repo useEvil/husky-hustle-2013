@@ -746,7 +746,7 @@ fieldset {
     display: block;
 }
 
-.search-results {
+.search-results, .child-list {
 	border-collapse: collapse;
 	text-align: left;
 }
@@ -757,5 +757,14 @@ fieldset {
 
 .search-results td, th {
 	width: 175px;
+	padding: 3px 3px 3px 10px;
+}
+
+.child-list tr:nth-child(even) {
+	background-color: #eee;
+}
+
+.child-list td, th {
+	white-space: nowrap;
 	padding: 3px 3px 3px 10px;
 }
