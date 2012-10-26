@@ -2,8 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
 	<head>
 		{% include "include/page-header.html" %}
-		<link rel="stylesheet" href="/static/js/flexigrid/css/flexigrid.css" type="text/css" media="screen, projection" />
-        <link rel="stylesheet" href="/static/css/ui-lightness/jquery-ui-1.9.0.custom.css" type="text/css" media="screen, projection" charset="utf-8" />
+		<link rel="stylesheet" href="/static/js/flexigrid/css/flexigrid.css" type="text/css" media="screen, projection" charset="utf-8" />
 	</head>
 	<body>
 		<div class="background-cover"></div>
@@ -38,7 +37,7 @@
 		</div>
 		<div id="overlay-box-reminder" class="overlay-box">
 			<div class="overlay-content">
-				<form id="reminder_form" action="/send/reminder">
+				<form id="reminder_form" action="/reminders" action="post">
 					{% csrf_token %}
 					<fieldset class="form">
 					<legend id="title">Send Reminder to Selected Sponsors</legend>

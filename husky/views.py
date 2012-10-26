@@ -216,6 +216,7 @@ def donate(request, child_id=None):
                 donation.save()
                 messages.success(request, 'Thank you for making a Donation')
                 c['success'] = True
+                c['sponsor_full_name'] = donation.full_name()
             except Exception, e:
                 messages.error(request, str(e))
         else:
@@ -470,6 +471,18 @@ def delete(request, type=None):
                     messages.error(request, 'Failed to Delete Sponsor: %s' % str(e))
     return HttpResponse(simplejson.dumps({'result': 'OK', 'status': 200}), mimetype='application/json')
 
+def emails(request):
+    c = Context(dict(
+            subject='Husky Hustle: Help Support %s' % request.POST.get('child_first_name'),
+            body=request.POST.get('custom_message')
+    ))
+    addresses = request.POST.get('email_addresses')
+    for address in addresses.split(','):
+        c['email_address'] = address
+        _send_email_teamplate('emails', c)
+    messages.success(request, 'Successfully Sent Emails')
+    return HttpResponse(simplejson.dumps({'result': 'OK', 'status': 200}), mimetype='application/json')
+
 def reminders(request):
     c = Context(dict(
             subject='Husky Hustle: Parent Registration',
@@ -637,8 +650,12 @@ def _formatData(data, total):
     return result
 
 def _send_email_teamplate(template, data):
-    t = loader.get_template('email/%s.txt' % template)
-    send_mail(data['subject'], t.render(data), settings.EMAIL_HOST_USER, [data['email_address']])
+    if data.has_key('body'):
+        body = data['body']
+    else:
+        t = loader.get_template('email/%s.txt' % template)
+        body = t.render(data)
+    send_mail(data['subject'], body, settings.EMAIL_HOST_USER, [data['email_address']])
 
 
 class BlogFeed(Feed):
