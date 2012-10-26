@@ -35,17 +35,32 @@
 						</ul>
 						{% if parent.children %}
 						<h3>Children</h3>
-						<ul class="list">
+						<table class="child-list" border="1">
+							<tr>
+								<th>Student</th>
+								<th>Sponsors</th>
+								<th>Teacher</th>
+								<th>Laps</th>
+								<th>&nbsp;</th>
+							</tr>
 							{% for child in parent.children.all %}
-							<li>
-								<a href="/account/{{ child.identifier }}">{{ child.first_name }} {{ child.last_name }} ({{ child.donations }})</a>&nbsp;<img src="/static/images/edit.png" class="show-edit" id="edit_child_{{ child.id }}" />:  In room {{ child.teacher.room_number }} with {{ child.teacher.full_name }}{% if child.laps %} ran {{ child.laps }} laps.{% endif %}&nbsp;&nbsp;&nbsp;
-								<span src="{{ child.facebook_share_url }}" class="post-facebook post"><img src="/static/images/facebook-share-button.png" width="60" /></span>&nbsp;
-								<a href="https://twitter.com/intent/tweet?button_hashtag=HuskyHustle" class="twitter-hashtag-button" data-related="HuskyHustle" data-url="{{ child.donate_url }}">Post to Twitter #HuskyHustle</a>
-								<script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0];if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src="//platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");</script>&nbsp;
-								<a href="/donation_sheet/{{ child.identifier }}" title="Print Form" target="_print"><img src="/static/images/print-icon.png" width="24" alt="Print Form" /></a>
-							</li>
+							<tr>
+								<td>
+									<a href="/account/{{ child.identifier }}">{{ child.first_name }} {{ child.last_name }}</a>&nbsp;<img src="/static/images/edit.png" class="show-edit" id="edit_child_{{ child.id }}" />
+								</td>
+								<td style="width: 10px;">{{ child.donations }}</td>
+								<td style="width: 250px;">{{ child.teacher.full_name }} ({{ child.teacher.room_number }})</td>
+								<td style="width: 10px;">{% if child.laps %}{{ child.laps }}{% else %}0{% endif %}</td>
+								<td nowrap="nowrap">
+									<span src="{{ child.facebook_share_url }}" class="post-facebook post"><img src="/static/images/facebook-share-button.png" width="60" /></span>
+									<a href="https://twitter.com/intent/tweet?button_hashtag=HuskyHustle" class="twitter-hashtag-button" data-related="HuskyHustle" data-url="{{ child.donate_url }}">Post to Twitter #HuskyHustle</a>
+									<script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0];if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src="//platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");</script>
+									<a href="/donation_sheet/{{ child.identifier }}" title="Print Form" target="_print"><img src="/static/images/print-icon.png" width="24" alt="Print Form" /></a>
+								</td>
+							</tr>
 							{% endfor %}
-						</ul>
+						</table>
+						<br class="clearfix" />
 						{% endif %}
 						<h3>Add a Child</h3>
 						{% include "include/child-form.html" %}
