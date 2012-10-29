@@ -32,11 +32,12 @@
 								<h3>Make a Pledge to: {{ child }}</h3>
 								{% include "include/donation-form.html" %}
 								{% include "include/search-form.html" %}
+								<h3><a href="/teacher-donation/{{ child.identifier }}">Make a Donation to a Teacher</a></h3>
 								{% endif %}
 							{% else %}
 								{% include "include/search-form.html" %}
 							{% endif %}
-						{% else %}
+						{% elif form %}
 						<h4>What to do Next:</h4>
 						<ul style="padding-left: 30px;">
 							<li><span src="{{ child.facebook_share_url }}" class="post-to-social post">Share with your Friends on Facebook<span></li>
@@ -52,6 +53,10 @@
 								<a href="/donation_sheet/" title="Print Form" target="_print"><img src="/static/images/print-icon.png" width="24" alt="Print Form" /></a>
 							</li>
 						</ul>
+						{% else %}
+						<h3>Add Sponsor for: {{ child }}</h3>
+						{% include "include/donation-form.html" %}
+						<h3><a href="/teacher-donation/{{ child.identifier }}">Make a Donation to a Teacher</a></h3>
 						{% endif %}
 					</div>
 				</div>

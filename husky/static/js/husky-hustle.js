@@ -18,8 +18,8 @@ $('.post-to-social').live('click', postToSocial);
 $('.show-edit').live('click', showEdit);
 $('.send-email').live('click', sendEmail);
 $('.pre-set-amount').live('click', setPreSetAmount);
-$('.to_principle').live('click', setPreSetAmount);
-$('.to_teacher').live('change', setPreSetAmount);
+$('.to-principle').live('click', setPreSetAmount);
+$('.to-teacher').live('change', setPreSetAmount);
 $('.run-calculations').live('click', runCalculations);
 $('#link_to').live('click', linkToParent);
 $('body').keyup(cancelOverlay);
@@ -355,7 +355,7 @@ function setAllReminders() {
 
 function setPreSetAmount() {
 	var value = $(this).val();
-	if (this.className == 'to_principle') {
+	if (this.className == 'to-principle') {
 		if (value) {
 			$('#id_first_name').attr('value',value);
 			$('#id_first_name').attr('readonly', true);
@@ -369,7 +369,7 @@ function setPreSetAmount() {
 			$('#id_teacher').attr('disabled', false);
 			$('#id_teacher').show();
 		}
-	} else if (this.className == 'to_teacher') {
+	} else if (this.className == 'to-teacher') {
 			value = $('#id_teacher :selected').val()
 			$('#id_first_name').attr('value', value);
 			$('#to_teacher').attr('checked', true);
