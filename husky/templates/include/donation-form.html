@@ -29,7 +29,4 @@
 		<li><input type="submit" value=" {% if make_donation %}Make Donation{% else %}Add Sponsor{% endif %} " /></li>
 	</ol>
 </form>
-{% if not make_donation %}
-<a href="/teacher-donation/{{ child.identifier }}">Make a Donation to a Teacher</a>
-{% endif %}
 {% endif %}

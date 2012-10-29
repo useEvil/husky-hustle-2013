@@ -210,7 +210,7 @@ div.author {
 #header {
     display: block;
 	position: relative;
-	padding: 35px;
+	padding: 30px 35px 30px 35px;
 	width: 910px;
 	height: 100px;
 }
@@ -220,7 +220,7 @@ div.author {
 }
 
 #logo {
-	height: 120px;
+	height: 100px;
 	left: 35px;
 	line-height: 120px;
 	position: absolute;
@@ -314,7 +314,7 @@ div.author {
 	width: 910px;
 	margin: 35px 0 0 0;
 	color: #EAD2D2;
-	padding: 45px 35px 25px 35px;
+	padding: 20px 35px 10px 35px;
 	position: relative;
 	border-radius: 5px;
 	box-shadow: inset 0px 0px 0px 1px #872424, inset 0px 2px 0px 0px #F79494, inset 0px 0px 0px 2px #E78484;
@@ -376,7 +376,7 @@ div.author {
 }
 
 #wrapper {
-	margin: 20px auto 0 auto;
+	margin: 0 auto 0 auto;
 	width: 980px;
 	position: relative;
 }
