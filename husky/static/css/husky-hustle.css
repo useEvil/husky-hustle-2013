@@ -198,9 +198,10 @@ div.author {
 }
 
 #footer {
-	padding: 60px 0 110px 0;
+	padding: 20px 0 110px 0;
 	text-align: center;
 	color: #848585;
+	font-size: 0.75em;
 }
 
 #footer a {

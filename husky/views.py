@@ -87,6 +87,8 @@ def nav(request, page='index', id=None):
     if page == 'photos':
         c['albums'] = Album()
         c['content'] = Content.objects.filter(page=page).get()
+    elif page == 'privacy':
+        c['content'] = Content.objects.filter(page=page).get()
     elif page == 'links':
         c['links'] = Link.objects.filter(status=1).all()
         c['content'] = Content.objects.filter(page=page).get()
