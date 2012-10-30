@@ -23,6 +23,16 @@ env.roledefs = {
 
 
 @task
+def test():
+    env.hosts = env.roledefs['test']
+    env.project_path = '/home/path/to/application'
+    env.project_name = 'huskyhustle'
+    env.module_name  = 'husky'
+    env.media_name   = 'static'
+    env.settings     = 'settings-local'
+    print_env()
+
+@task
 def dev():
     env.hosts = env.roledefs['dev']
     env.project_path = '/home/path/to/application'
@@ -51,7 +61,7 @@ def hello(name="world"):
         run('pwd')
 
 @task
-def deploy():
+def deploy_scp():
     release = '%s-%s' % (env.project_name, env.release)
     project = os.path.join(env.project_path, env.project_name)
     module  = os.path.join(project, env.module_name)
@@ -78,6 +88,25 @@ def deploy():
     run('mv %s/%s.py %s/settings.py' % (project, env.settings, project))
 
 @task
+def deploy():
+    release = '%s-%s' % (env.project_name, env.release)
+    project = os.path.join(env.project_path, env.project_name)
+    module  = os.path.join(project, env.module_name)
+    media   = os.path.join(module, env.media_name)
+    local('git archive --format tar.gz --output /tmp/%s.tgz master' % (env.project_name))
+    put('/tmp/%s.tgz' % env.project_name, env.project_path)
+    run('mkdir -p %s/builds' % env.project_path)
+    run('mv %s %s/builds/%s' % (project, env.project_path, release))
+    with cd(env.project_path):
+        run('tar -zxf %s.tgz' % env.project_name)
+        run('rm %s.tgz' % env.project_name)
+    run('mv %s/public/%s %s/builds/%s/%s' % (env.project_path, env.media_name, env.project_path, release, env.module_name))
+    run('mv %s/%s %s' % (env.project_path, env.module_name, module))
+    run('mv %s %s/public/%s' % (media, env.project_path, env.media_name))
+    run('mv %s/settings.py %s/settings-local.py' % (project, project))
+    put('%s/%s.py' % (env.project_name, env.settings), '%s/settings.py' % (project))
+
+@task
 def cleanup():
     older  = (date.datetime.now() - date.timedelta(days=env.cleaned)).strftime(env.format)
     builds = '%s/builds' % (env.project_path)
@@ -93,6 +122,7 @@ def better_put(local_path, remote_path, mode=None):
 def print_env():
     print(date.datetime.now())
     print("Here are your Environment Variables:")
+    print(" ------------------------------------ ")
     print("Host: %s" % env.hosts)
     print("Project Path: %s" % env.project_path)
     print("Project Name: %s" % env.project_name)
@@ -105,3 +135,11 @@ def print_env():
 @task
 def restart():
     run('pkill python')
+
+@task
+def usage():
+    print("Here are your Environment Variables:")
+    print(" ------------------------------------ ")
+    print("fab dev deploy -i ~/.ssh/id_dsa.useevil")
+    print("fab prod deploy -i ~/.ssh/id_dsa.useevil")
+    print(" ------------------------------------ ")
