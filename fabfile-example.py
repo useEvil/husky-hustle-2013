@@ -138,10 +138,11 @@ def restart():
 
 @task
 def usage():
-    print("Here are your Environment Variables:")
+    print("Usage:")
     print(" ------------------------------------ ")
-    print("fab dev deploy -i ~/.ssh/id_dsa.useevil")
-    print("fab prod deploy -i ~/.ssh/id_dsa.useevil")
-    print("fab dev deploy cleanup -i ~/.ssh/id_dsa.useevil")
-    print("fab dev restart -i ~/.ssh/id_dsa.useevil")
+    print("fab usage -i ~/.ssh/id_dsa")
+    print("fab dev deploy -i ~/.ssh/id_dsa")
+    print("fab prod deploy -i ~/.ssh/id_dsa")
+    print("fab dev deploy cleanup -i ~/.ssh/id_dsa")
+    print("fab dev restart -i ~/.ssh/id_dsa")
     print(" ------------------------------------ ")

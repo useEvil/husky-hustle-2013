@@ -3,173 +3,39 @@
 	<head>
 		{% include "include/page-header.html" with no_css=1 %}
 		<style>
-/*
-Design by Free CSS Templates
-http://www.freecsstemplates.org
-Released for free under a Creative Commons Attribution 3.0 License
-
-Name       : Axiom
-Description: A two-column, fixed-width design with a bright color scheme.
-Version    : 1.0
-Released   : 20120729
-*/
-
-* {
-	margin: 0;
-	padding: 0;
-}
-
-a {
-	text-decoration: underline;
-	color: #A54545;
-}
-
-a:hover {
-	text-decoration: none;
-}
-
-body {
-	color: #3D3D3D;
-	background: #F4F5F5;
-	line-height: 1.8em;
-	font-size: 11.5pt;
-	text-shadow: -1px -1px 0px #ffffff;
-}
-
-body,input {
-	font-family: "Open Sans", sans-serif;
-}
-
-br.clearfix {
-	clear: both;
-}
-
-h1,h2,h3,h4 {
-	text-transform: uppercase;
-	letter-spacing: -1px;
-	font-weight: normal;
-}
-
-a {
-	color: #1F1F1F;
-}
-
-h2 {
-	font-size: 1.75em;
-}
-
-h2,h3,h4 {
-	margin-bottom: 1em;
-	color: #000;
-}
-
-h3 {
-	font-size: 1.5em;
-}
-
-h4 {
-	font-size: 1.25em;
-}
-
-p {
-	margin-bottom: 1.5em;
-}
-
-.box {
-}
-
-.italics {
-	font-style: italic;
-}
-
-.bold {
-	font-weight: bold;
-}
-
-.underline {
-	text-decoration: underline;
-}
-
-#wrapper {
-	margin: 20px auto 0 auto;
-	width: 980px;
-	position: relative;
-}
-
-#content {
-	color: #3D3D3D;
-	padding: 35px;
-	width: 910px;
-}
-
-#header {
-	position: relative;
-	padding: 15px;
-	width: 910px;
-	height: 35px;
-}
-
-#inner {
-	background: #fff;
-	border-radius: 5px;
-	box-shadow: 0px 0px 10px 0px rgba(0,0,0,0.1);
-	border: solid 1px #D4D5D5;
-}
-
-#page {
-	position: relative;
-	margin: 0 0 0 0;
-	padding: 0;
-	width: 980px;
-}
-
-table.donations {
-	width: 850px;
-	border-color: #000;
-	border-style: solid;
-}
-
-table.donations table {
-	border-spacing: 0;
-	border-collapse: collapse;
-}
-
-.donations td {
-	padding: 4px 10px 4px 10px;
-}
-
-.donations th, td {
-	line-height: 1.2em;
-	margin: 0;
-	padding: 4px;
-	border-width: 1px 1px 0 0;
-	background-color: #F4F5F5;
-	border-color: #000;
-	border-style: solid;
-}
-
-.donations .total {
-	font-weight: bold;
-	text-align: right;
-}
-
-.donations .amount {
-	font-weight: bold;
-	text-align: right;
-	width: 100px;
-}
-
-.donations .last-cell {
-	 border-width: 1px 0 0 0;
-}
-
-.donations .top-cell {
-	 border-width: 0 1px 0 0;
-}
-
-.donations .no-cell {
-	 border-width: 0;
-}
+			* {margin: 0;padding: 0;}
+			a {text-decoration: underline;color: #A54545;}
+			a:hover {text-decoration: none;}
+			body {color: #3D3D3D;background: #F4F5F5;line-height: 1.8em;font-size: 11.5pt;text-shadow: -1px -1px 0px #ffffff;}
+			body,input {font-family: "Open Sans", sans-serif;}
+			br.clearfix {clear: both;}
+			h1,h2,h3,h4 {text-transform: uppercase;letter-spacing: -1px;font-weight: normal;}
+			a {color: #1F1F1F;}
+			h2 {font-size: 1.75em;}
+			h2,h3,h4 {margin-bottom: 1em;color: #000;}
+			h3 {font-size: 1.5em;}
+			h4 {font-size: 1.25em;}
+			p {margin-bottom: 1.5em;}
+			.box {}
+			.italics {font-style: italic;}
+			.bold {font-weight: bold;}
+			.underline {text-decoration: underline;}
+			#wrapper {margin: 20px auto 0 auto;width: 980px;position: relative;}
+			#content {color: #3D3D3D;padding: 35px;width: 910px;}
+			#header {position: relative;padding: 15px;width: 910px;height: 35px;}
+			#inner {background: #fff;border-radius: 5px;box-shadow: 0px 0px 10px 0px rgba(0,0,0,0.1);border: solid 1px #D4D5D5;}
+			#page {position: relative;margin: 0 0 0 0;padding: 0;width: 980px;}
+			table.donations {width: 850px;border-color: #000;border-style: solid;}
+			table.donations table {border-spacing: 0;border-collapse: collapse;}
+			.donations tr {page-break-inside: avoid;page-break-after: auto;}
+			.donations td {padding: 4px 10px 4px 10px;}
+			.donations th, td {line-height: 1.2em;margin: 0;padding: 4px;border-width: 1px 1px 0 0;background-color: #F4F5F5;border-color: #000;border-style: solid;}
+			.donations .total {font-weight: bold;text-align: right;}
+			.donations .amount {font-weight: bold;text-align: right;width: 100px;}
+			.donations .last-cell {border-width: 1px 0 0 0;}
+			.donations .top-cell {border-width: 0 1px 0 0;}
+			.donations .no-cell {border-width: 0;}
+			.page-break {page-break-before: always;}
 		</style>
 	</head>
 	<body onLoad="alert('You can Print this page to fill out manually');">
@@ -259,7 +125,7 @@ table.donations table {
 								</tr>
 							</table>
 							<br class="clearfix" />
-							<span class="bold">
+							<span class="bold page-break">
 								In addition to amounts listed above, you can sponsor your favorite teachers and Mrs. Agopian!  Flat 
 								pledge only please.  Choose the amount you would like to pledge or enter an Amount.  (Please turn 
 								in payment on 3/7)
@@ -277,7 +143,6 @@ table.donations table {
 									<th class="top-cell">Amount Enclosed</th>
 									<th class="no-cell">Amount Due</th>
 								</tr>
-
 								{% if child and child.sponsors_teacher %}
 								{% for sponsor in child.sponsors_teacher %}
 								<tr>
@@ -287,8 +152,6 @@ table.donations table {
 									<td class="amount">{% if sponsor.paid %}${{ sponsor.total|floatformat:2|intcomma }}{% else %}&nbsp;{% endif %}</td>
 									<td class="amount last-cell">{% if not sponsor.paid %}${{ sponsor.total|floatformat:2|intcomma }}{% else %}&nbsp;{% endif %}</td>
 								</tr>
-
-
 								{% endfor %}
 								{% else %}
 								{% for row in '123' %}
@@ -304,11 +167,9 @@ table.donations table {
 									<td class="amount last-cell">&nbsp;</td>
 								</tr>
 								{% endfor %}
-								{% endif %}
-								{% if not child.sponsored_principle %}
 								<tr>
 									<td class="bold">Mrs. Agopian</td>
-									<td style="text-align: center;">
+									<td style="text-align: center;white-space: nowrap;">
 										<input type="radio" name="pre-set-5" value="5.00" />&nbsp;$5.00&nbsp;&nbsp;
 										<input type="radio" name="pre-set-10" value="10.00" />&nbsp;$10.00&nbsp;&nbsp;
 										<input type="radio" name="pre-set-20" value="20.00" />&nbsp;$20.00&nbsp;&nbsp;
@@ -326,9 +187,9 @@ table.donations table {
 							<br class="clearfix" />
 							<table class="donations">
 								<tr>
-									<td class="bold top-cell" colspan="4">{% if child %}Child: {{ child.full_name }}{% endif %} in Room {{ child.room_number }} with {{ child.teacher }}&nbsp;</td>
+									<td class="bold top-cell" colspan="4">{% if child %}Student: {{ child.full_name }}{% endif %} with {{ child.teacher }}&nbsp;</td>
 									<td class="total top-cell">Total Encolsed:</td>
-									<td class="amount no-cell">${{ child.grand_totals.0|floatformat:2|intcomma }}</td>
+									<td class="amount no-cell">{% if child.grand_totals.0 %}${{ child.grand_totals.0|floatformat:2|intcomma }}{% endif %}</td>
 								</tr>
 								<tr>
 									<td class="bold" colspan="4">I ran <input type="text" name="laps" style="font-weight: bold;text-align: center;" value="{% if child.laps %}{{ child.laps }}{% endif %}" size="6" /> Laps</td>
@@ -340,9 +201,6 @@ table.donations table {
 					</div>
 				</div>
 			</div>
-			<br class="clearfix" />
-			<br class="clearfix" />
-			<br class="clearfix" />
 			<br class="clearfix" />
 		</div>
 	</body>

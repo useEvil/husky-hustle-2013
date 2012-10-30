@@ -33,7 +33,7 @@
 							<li>{{ user_email }}</li>
 						</ul>
 						{% if parent.children %}
-						<h3>Children</h3>
+						<h3>Students</h3>
 						<table class="child-list" border="1">
 							<tr>
 								<th>Student</th>
@@ -61,7 +61,7 @@
 						</table>
 						<br class="clearfix" />
 						{% endif %}
-						<h3>Add a Child</h3>
+						<h3>Add a Student</h3>
 						{% include "include/child-form.html" %}
 						{% load facebook twitter openid %}
 						<h3>Connected profiles:</h3>
