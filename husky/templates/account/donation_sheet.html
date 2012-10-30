@@ -187,14 +187,14 @@
 							<br class="clearfix" />
 							<table class="donations">
 								<tr>
-									<td class="bold top-cell" colspan="4">{% if child %}Student: {{ child.full_name }}{% endif %} with {{ child.teacher }}&nbsp;</td>
+									<td class="bold top-cell" colspan="4">{% if child %}Student: {{ child.full_name }} with {{ child.teacher }}{% else %}Student:{% endif %}&nbsp;</td>
 									<td class="total top-cell">Total Encolsed:</td>
 									<td class="amount no-cell">{% if child.grand_totals.0 %}${{ child.grand_totals.0|floatformat:2|intcomma }}{% endif %}</td>
 								</tr>
 								<tr>
 									<td class="bold" colspan="4">I ran <input type="text" name="laps" style="font-weight: bold;text-align: center;" value="{% if child.laps %}{{ child.laps }}{% endif %}" size="6" /> Laps</td>
 									<td class="total">Total Due:</td>
-									<td class="amount last-cell">${{ child.grand_totals.1|floatformat:2|intcomma }}</td>
+									<td class="amount last-cell">{% if child.grand_totals.1 %}${{ child.grand_totals.1|floatformat:2|intcomma }}{% endif %}</td>
 								</tr>
 							</table>
 						</div>
