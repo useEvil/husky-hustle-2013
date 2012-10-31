@@ -209,7 +209,7 @@ div.author {
 }
 
 #header {
-    display: block;
+	display: block;
 	position: relative;
 	padding: 30px 35px 30px 35px;
 	width: 910px;
@@ -744,11 +744,11 @@ fieldset {
 }
 
 .full {
-    display: block;
+	display: block;
 }
 
 .require {
-    font-size: 0.65em;
+	font-size: 0.65em;
 }
 
 .search-results, .child-list {
@@ -772,4 +772,22 @@ fieldset {
 .child-list td, th {
 	white-space: nowrap;
 	padding: 3px 3px 3px 10px;
+}
+
+.prev {
+	padding-right: 10px;
+	text-decoration: none;
+	font-size: 0.85em;
+	background: url(/static/images/arrow-left.png) no-repeat center left;
+	cursor: pointer;
+	width: 100px;
+}
+
+.next {
+	padding-left: 10px;
+	text-decoration: none;
+	font-size: 0.85em;
+	background: url(/static/images/arrow-right.png) no-repeat center right;
+	cursor: pointer;
+	width: 100px;
 }

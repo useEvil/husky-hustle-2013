@@ -71,3 +71,20 @@ def checkUser(view_func):
         response = view_func(request, *args, **kwargs)
         return response
     return wraps(view_func)(_decorator)
+
+def prevPhoto(list, index=0):
+    index = int(index) - 1
+    try:
+        if index > 0:
+            return list[index]
+    except:
+        pass
+    return None
+
+def nextPhoto(list, index=0):
+    index = int(index) + 1
+    try:
+        return list[index]
+    except:
+        pass
+    return None

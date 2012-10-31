@@ -243,7 +243,10 @@ def photo(request, album_id=None, photo_id=None):
     c = Context(dict(
             page_title=photo.title.text,
             photo_album=album,
-            photo=photo
+            photo=photo,
+            prev=prevPhoto(album.entry, request.GET.get('index')),
+            next=nextPhoto(album.entry, request.GET.get('index')),
+            index=int(request.GET.get('index'))
     ))
     return render_to_response('photos.html', c, context_instance=RequestContext(request))
 

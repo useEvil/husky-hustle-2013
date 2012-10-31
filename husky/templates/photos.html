@@ -1,3 +1,4 @@
+{% load custom_filters %}
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
 	<head>
@@ -30,7 +31,7 @@
 						<ul class="hoverbox">
 						{% for photo in album.entry %}
 							<li>
-								<a href="/archive/photo/{{ album.gphoto_id.text }}/{{ photo.gphoto_id.text }}">
+								<a href="/archive/photo/{{ album.gphoto_id.text }}/{{ photo.gphoto_id.text }}?index={{ forloop.counter0 }}">
 									<img src="{{ photo.media.thumbnail.2.url }}" alt="{{ photo.title.text }}" />
 									<img src="{{ photo.content.src }}" alt="{{ photo.title.text }}" class="preview" />
 								</a>
@@ -42,8 +43,14 @@
 						<a href="/archive/album/{{ photo_album.gphoto_id.text }}"><h4>Back to {{ photo_album.title.text }}</h4></a>
 						<ul style="text-align: center;">
 							<li>
+								{% if prev %}<a href="/archive/photo/{{ photo_album.gphoto_id.text }}/{{ prev.gphoto_id.text }}{{ photo_album.entry|prev_index:index }}"><img src="{{ prev.media.thumbnail.1.url }}" alt="{{ prev.title.text }}" class="prev" /></a>{% endif %}
 								<img src="{{ photo.media.content.0.url }}" alt="{{ photo.title.text }}" width="{{ photo.width.text }}" height="{{ photo.height.text }}" />
-								<div class="description">{{ photo.title.text }}</div>
+								{% if next %}<a href="/archive/photo/{{ photo_album.gphoto_id.text }}/{{ next.gphoto_id.text }}{{ photo_album.entry|next_index:index }}"><img src="{{ next.media.thumbnail.1.url }}" alt="{{ next.title.text }}" class="next" /></a>{% endif %}
+								<div style="width: {{ photo.width.text|add:"100" }}px;margin-left: auto;margin-right: auto;" class="hoverbox">
+									{% if prev %}<a href="/archive/photo/{{ photo_album.gphoto_id.text }}/{{ prev.gphoto_id.text }}{{ photo_album.entry|prev_index:index }}" class="prev" style="float: left;">&nbsp;</a>{% endif %}
+									<span class="description">{{ photo.title.text }}</span>
+									{% if next  %}<a href="/archive/photo/{{ photo_album.gphoto_id.text }}/{{ next.gphoto_id.text }}{{ photo_album.entry|next_index:index }}" class="next" style="float: right;">&nbsp;</a>{% endif %}
+								</div>
 							</li>
 						</ul>
 						{% endif %}

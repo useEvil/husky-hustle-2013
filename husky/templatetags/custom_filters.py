@@ -1,9 +1,10 @@
 import re
+import husky.models as huksy_model
 
 from django import template
 from datetime import datetime
 
-import husky.models as huksy_model
+from husky.helpers import *
 
 register = template.Library()
 
@@ -32,3 +33,31 @@ def get_facebook(object):
 @register.filter(name='get_twitter')
 def get_twitter(object):
     return object.twitter(request.user.id)
+
+@register.filter(name='prev_photo_id')
+def prev_photo_id(object, index=0):
+    return prevPhoto(object, index)
+
+@register.filter(name='next_photo_id')
+def next_photo_id(object, index=0):
+    return nextPhoto(object, index)
+
+@register.filter(name='prev_index')
+def prev_index(object, index=0):
+    index = int(index) - 1
+    try:
+        if index >= 0:
+            return '?index=%s' % index
+    except:
+        pass
+    return ''
+
+@register.filter(name='next_index')
+def next_index(object, index=0):
+    index = int(index) + 1
+    try:
+        if object[index]:
+            return '?index=%s' % index
+    except:
+        pass
+    return ''
