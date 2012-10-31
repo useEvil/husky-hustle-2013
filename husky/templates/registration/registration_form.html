@@ -9,16 +9,6 @@
 			<div id="inner">
 				<div id="page">
 					<div id="content">
-						{% if error %}
-						<span class="error">{{ error }}</span>
-						{% for field in form %}
-						<span class="error">{{ field.errors }}</span>
-						{% endfor %}
-						{% endif %}
-						{% if form.non_field_errors %}
-						<span class="error">{{ form.non_field_errors }}</span>
-						{% endif %}
-						<h3>Register</h3>
 						{% if messages %}
 						<ul class="messages">
 							{% for message in messages %}
@@ -26,6 +16,20 @@
 							{% endfor %}
 						</ul>
 						{% endif %}
+						{% if error %}
+						<span class="error">{{ error }}</span>
+						{% endif %}
+						{% if form.errors %}
+							{% for field in form %}
+								{% if field.errors %}
+								<span class="error">{{ field.name }}: {{ field.errors }}</span>
+								{% endif %}
+							{% endfor %}
+						{% endif %}
+						{% if form.non_field_errors %}
+						<span class="error">{{ form.non_field_errors }}</span>
+						{% endif %}
+						<h3>Register</h3>
 						{% if is_social %}
 						{% include "include/social-form.html" %}
 						{% else %}

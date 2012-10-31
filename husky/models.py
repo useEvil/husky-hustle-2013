@@ -214,11 +214,11 @@ class Children(models.Model):
     def find(self, child_name=None, parent_name=None):
         try:
             if child_name and parent_name:
-                return Children.objects.filter(first_name__icontains=child_name, parent__first_name__icontains=parent_name).all()
+                return Children.objects.filter(first_name__icontains=child_name, parents__last_name__icontains=parent_name).all()
             elif child_name:
                 return Children.objects.filter(first_name__icontains=child_name).all()
             elif parent_name:
-                return Children.objects.filter(parent__first_name__icontains=parent_name).all()
+                return Children.objects.filter(parents__last_name__icontains=parent_name).all()
         except ObjectDoesNotExist, e:
             return
 
@@ -328,7 +328,7 @@ class Parent(models.Model):
     first_name = models.CharField(max_length=50)
     last_name = models.CharField(max_length=50)
     email_address = models.CharField(max_length=100)
-    phone_number = models.CharField(max_length=25)
+    phone_number = models.CharField(max_length=25, blank=True, null=True)
     default = models.BooleanField(default=1)
     guardian = models.IntegerField(default=1, choices=((1,'Mother'), (2,'Father'), (3,'Guardian')))
     activation_key = models.CharField(max_length=200)
@@ -347,11 +347,14 @@ class Parent(models.Model):
     def linked(self):
         try:
             child = self.children.all()[0]
-            return child.parents.filter(default=1).get()
+        except IndexError:
+            return None
+        try:
+            return child.parents.filter(pk!=self.id, default=1).get()
         except ObjectDoesNotExist, e:
-            return
+            return None
 
-    def num_chilren(self):
+    def num_children(self):
         return self.children.count()
 
     def facebook(self, user_id=None):
@@ -387,7 +390,7 @@ class Donation(models.Model):
     first_name = models.CharField(max_length=50)
     last_name = models.CharField(max_length=50)
     email_address = models.CharField(max_length=100)
-    phone_number = models.CharField(max_length=25)
+    phone_number = models.CharField(max_length=25, blank=True, null=True)
     child = models.ForeignKey(Children, related_name='sponsors')
     donation = CurrencyField(blank=True, null=True)
     donated = CurrencyField(blank=True, null=True)
@@ -502,7 +505,6 @@ class DonationForm(forms.Form):
     first_name = forms.CharField(max_length=50)
     last_name = forms.CharField(max_length=50)
     email_address = forms.EmailField(max_length=100)
-    phone_number = forms.CharField(max_length=25)
     donation = CurrencyField()
 
     def clean(self):
@@ -512,6 +514,18 @@ class DonationForm(forms.Form):
             if not result:
                 raise forms.ValidationError("Donation needs to be a Currency value")
             return value
+
+        if 'phone_number' in self.cleaned_data:
+            value = self.cleaned_data['phone_number']
+            phoneMatchRegex = regexp.compile(r"^[0-9\-\(\) \.]*$")
+            phoneSplitRegex = regexp.compile(r"[\-\(\) \.]")
+            if not value:
+                raise forms.ValidationError("Phone number is required")
+            if not phoneMatchRegex.match(value):
+                raise forms.ValidationError("Phone number can only have dashes, parenthesis, spaces, dots and numbers in them")
+            phone = "".join(phoneSplitRegex.split(value))
+            if len(phone) > 10:
+                raise forms.ValidationError("Phone number can only be 10 digits long")
 
 
 class ChildrenRegistrationForm(forms.Form):
@@ -526,7 +540,6 @@ class ParentRegistrationForm(RegistrationForm):
     first_name = forms.CharField(max_length=50)
     last_name = forms.CharField(max_length=50)
     email_address = forms.EmailField(max_length=100)
-    phone_number = forms.CharField(max_length=25)
 
     def clean(self):
         """

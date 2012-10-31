@@ -24,23 +24,23 @@
 <form action="/register/" method="post">
 	{% csrf_token %}
 	<ol>
-		<li><label for="id_first_name"{% if form.first_name.errors %} class="error"{% endif %}>First Name:</label><input id="id_first_name" type="text" name="first_name" value="{{ form.first_name.value }}" size="30" class="required" />{% if form.first_name.errors %}<span class="pad-left10 error">* required</span>{% endif %}</li>
-		<li><label for="id_last_name"{% if form.last_name.errors %} class="error"{% endif %}>Last Name:</label><input id="id_last_name" type="text" name="last_name" value="{{ form.last_name.value }}" size="30" class="required" />{% if form.last_name.errors %}<span class="pad-left10 error">* required</span>{% endif %}</li>
-		<li><label for="id_email_address"{% if form.email_address.errors %} class="error"{% endif %}>Email Address:</label><input id="id_email_address" type="text" name="email_address" value="{{ form.email_address.value }}" size="30" maxlength="75" class="required" />{% if form.email_address.errors %}<span class="pad-left10 error">* required</span>{% endif %}</li>
-		<li><label for="id_phone_number"{% if form.phone_number.errors %} class="error"{% endif %}>Phone Number:</label><input id="id_phone_number" type="text" name="phone_number" value="{{ form.phone_number.value }}" size="30" class="required" placeholder="(xxx) xxx-xxxx" />{% if form.phone_number.errors %}<span class="pad-left10 error">* required</span>{% endif %}</li>
+		<li><label for="id_first_name"{% if form.first_name.errors %} class="error"{% endif %}>First Name:</label><input id="id_first_name" type="text" name="first_name" value="{{ form.first_name.value }}" size="30" class="required" /><span class="pad-left10 require error">*{% if form.first_name.errors %} required{% endif %}</span></li>
+		<li><label for="id_last_name"{% if form.last_name.errors %} class="error"{% endif %}>Last Name:</label><input id="id_last_name" type="text" name="last_name" value="{{ form.last_name.value }}" size="30" class="required" /><span class="pad-left10 require error">*{% if form.last_name.errors %} required{% endif %}</span></li>
+		<li><label for="id_email_address"{% if form.email_address.errors %} class="error"{% endif %}>Email Address:</label><input id="id_email_address" type="text" name="email_address" value="{{ form.email_address.value }}" size="30" maxlength="75" class="required" /><span class="pad-left10 require error">*{% if form.email_address.errors %} required{% endif %}</span></li>
+		<li><label for="id_phone_number"{% if form.phone_number.errors %} class="error"{% endif %}>Phone Number:</label><input id="id_phone_number" type="text" name="phone_number" value="{{ form.phone_number.value }}" size="30" class="required" placeholder="(xxx) xxx-xxxx" /></li>
 		<li><label for="id_guardian">&nbsp;</label>
 			<select id="id_guardian" name="guardian">
-				<option value="1"{% if form.phone_number.value == 1 %} selected="selected"{% endif %}>Mother</option>
-				<option value="2"{% if form.phone_number.value == 2 %} selected="selected"{% endif %}>Father</option>
-				<option value="3"{% if form.phone_number.value == 3 %} selected="selected"{% endif %}>Guardian</option>
+				<option value="1"{% if form.guardian.value == 1 %} selected="selected"{% endif %}>Mother</option>
+				<option value="2"{% if form.guardian.value == 2 %} selected="selected"{% endif %}>Father</option>
+				<option value="3"{% if form.guardian.value == 3 %} selected="selected"{% endif %}>Guardian</option>
 			</select>
 		</li>
 		{% if request.path == '/register/' %}
-		<li><label for="id_password1"{% if form.non_field_errors or not form.password1.value %} class="error"{% endif %}>Password:</label><input id="id_password1" type="password" name="password1" value="" size="15" class="required" />{% if form.non_field_errors or not form.password1.value %}<span class="pad-left10 error">* required</span>{% endif %}</li>
-		<li><label for="id_password2"{% if form.non_field_errors or not form.password2.value %} class="error"{% endif %}>Confirm:</label><input id="id_password2" type="password" name="password2" value="" size="15" class="required" />{% if form.non_field_errors or not form.password2.value %}<span class="pad-left10 error">* required</span>{% endif %}</li>
+		<li><label for="id_password1"{% if form.non_field_errors or not form.password1.value %} class="error"{% endif %}>Password:</label><input id="id_password1" type="password" name="password1" value="" size="15" class="required" /><span class="pad-left10 require error">*{% if form.non_field_errors or not form.password1.value %} required{% endif %}</span></li>
+		<li><label for="id_password2"{% if form.non_field_errors or not form.password2.value %} class="error"{% endif %}>Confirm:</label><input id="id_password2" type="password" name="password2" value="" size="15" class="required" /><span class="pad-left10 require error">*{% if form.non_field_errors or not form.password2.value %} required{% endif %}</span></li>
 		{% else %}
-		<li><label for="id_password1">Password:</label><input id="id_password1" type="password" name="password1" value="" size="15" class="required" /></li>
-		<li><label for="id_password2">Confirm:</label><input id="id_password2" type="password" name="password2" value="" size="15" class="required" /></li>
+		<li><label for="id_password1">Password:</label><input id="id_password1" type="password" name="password1" value="" size="15" class="required" /><span class="pad-left10 require error">*</span></li>
+		<li><label for="id_password2">Confirm:</label><input id="id_password2" type="password" name="password2" value="" size="15" class="required" /><span class="pad-left10 require error">*</span></li>
 		{% endif %}
 		<li><input type="submit" value=" Register " /></li>
 	</ol>

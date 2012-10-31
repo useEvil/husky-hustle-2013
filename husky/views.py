@@ -154,18 +154,19 @@ def make_donation(request, identifier=None):
     ))
     if identifier == 'search':
         c['search'] = True
+        c['parent_only'] = request.GET.get('parent_only')
         child_name = request.GET.get('student_name')
         parent_name = request.GET.get('parent_name')
         if child_name or parent_name:
+            if child_name and parent_name:
+                c['search'] = '%s" and "%s' % (child_name, parent_name)
+            else:
+                c['search'] = child_name or parent_name
             try:
                 children = Children().find(child_name, parent_name)
                 c['children'] = children
-                if child_name and parent_name:
-                    c['search'] = '%s" and "%s' % (child_name, parent_name)
-                else:
-                    c['search'] = child_name or parent_name
             except Exception, e:
-                messages.error(request, 'Could not find Children matching: %s: %s' % (str(e), first_name))
+                messages.error(request, 'Could not find Records matching: %s' % (c['search']))
                 c['error'] = True
     else:
         try:
@@ -267,8 +268,8 @@ def register(request):
                                 first_name=form['first_name'].data,
                                 last_name=form['last_name'].data,
                                 email_address=form['email_address'].data,
-                                phone_number=form['phone_number'].data,
-                                guardian=form['guardian'].data,
+                                phone_number=post.get('phone_number'),
+                                guardian=post.get('guardian'),
                                 activation_key=key,
                                 key_expires=expires,
                                 date_added=date.datetime.now(),
@@ -284,18 +285,17 @@ def register(request):
                 messages.success(request, 'Successfully Registered Account')
                 auth = authenticate(username=form['email_address'].data, password=form['password1'].data)
                 login(request, auth)
+                return HttpResponseRedirect('/account/')
             except Exception, e:
                 messages.error(request, 'Failed to Register Account: %s' % str(e))
                 c['form'] = form
                 c['messages'] = messages.get_messages(request)
                 return render_to_response('registration/registration_form.html', c, context_instance=RequestContext(request))
-    else:
-        form = ParentRegistrationForm()
-        messages.error(request, 'Failed to Register Account')
-        c['form'] = form
+        else:
+            messages.error(request, 'Failed to Register Account')
+            c['form'] = form
         c['messages'] = messages.get_messages(request)
-        return render_to_response('registration/registration_form.html', c, context_instance=RequestContext(request))
-    return HttpResponseRedirect('/account/')
+    return render_to_response('registration/registration_form.html', c, context_instance=RequestContext(request))
 
 def activate(request, key=None):
     c = Context(dict(

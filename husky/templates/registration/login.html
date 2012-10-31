@@ -24,7 +24,7 @@
 							<form action="/accounts/login/" method="post">
 								{% csrf_token %}
 								<ol>
-									<li><label for="id_username"{% if form.username.errors %} class="error"{% endif %}>Username:</label><input id="id_username" type="text" name="username" value="{{ form.username.value }}" size="30" class="required" />{% if form.username.errors %}<span class="pad-left10 error">* required</span>{% endif %}</li>
+									<li><label for="id_username"{% if form.username.errors %} class="error"{% endif %}>Username:</label><input id="id_username" type="text" name="username" value="{% if form.username.value %}{{ form.username.value }}{% endif %}" size="30" class="required" />{% if form.username.errors %}<span class="pad-left10 error">* required</span>{% endif %}</li>
 									{% if '/accounts' in request.path or '/activate' in request.path %}
 									<li><label for="id_password">Password:</label><input id="id_password" type="password" name="password" value="" size="15" class="required" /></li>
 									{% else %}
