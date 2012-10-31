@@ -1,3 +1,4 @@
+{% load custom_filters %}
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
 	<head>
@@ -24,7 +25,11 @@
 						<h3>Profile</h3>
 						<ul class="list">
 							<li>{% if parent.guardian == 1 %}Mother{% elif parent.guardian == 2 %}Father{% else %}Guardian{% endif %}: {{ parent.first_name }} {{ parent.last_name }}&nbsp;<img src="/static/images/edit.png" class="show-edit" id="edit_profile_{{ parent.id }}" /></li>
-							{% if not parent.default %}
+							{% if parent.default %}
+								{% for link in parent.links %}
+								<li>Linked by: {{ link.full_name }}</li>
+								{% endfor %}
+							{% else %}
 							<li>Linked to: {{ parent.linked.full_name }}</li>
 							{% endif %}
 							<li>{{ parent.email_address }}</li>
@@ -45,7 +50,8 @@
 							{% for child in parent.children.all %}
 							<tr>
 								<td>
-									<a href="/account/{{ child.identifier }}">{{ child.first_name }} {{ child.last_name }}</a>&nbsp;<img src="/static/images/edit.png" class="show-edit" id="edit_child_{{ child.id }}" />
+									<a href="/account/{{ child.identifier }}">{{ child.first_name }} {{ child.last_name }}</a>&nbsp;
+									{% if child|is_default:parent %}<img src="/static/images/edit.png" class="show-edit" id="edit_child_{{ child.id }}" />{% endif %}
 								</td>
 								<td style="width: 10px;">{{ child.donations }}</td>
 								<td style="width: 250px;">{{ child.teacher.full_name }} ({{ child.teacher.room_number }})</td>

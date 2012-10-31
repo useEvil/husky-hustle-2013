@@ -61,3 +61,11 @@ def next_index(object, index=0):
     except:
         pass
     return ''
+
+@register.filter(name='is_default')
+def is_default(object, parent=None):
+    try:
+        return object.is_default(parent)
+    except:
+        pass
+    return None

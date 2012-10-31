@@ -268,11 +268,8 @@ class Children(models.Model):
     def parent(self):
         return self.parents.filter(default=1).get()
 
-    def is_fathter(self):
-        return self.guardian == 0
-
-    def is_mother(self):
-        return self.guardian == 1
+    def is_default(self, parent):
+        return ParentChildren.objects.filter(children=self, parent=parent).get().default
 
     def total_due(self):
         total_due = 0
@@ -336,7 +333,7 @@ class Parent(models.Model):
     date_added = models.DateTimeField()
     site = models.ForeignKey(Site)
     user = models.OneToOneField(User, unique=True)
-    children = models.ManyToManyField(Children, related_name='parents')
+    children = models.ManyToManyField(Children, related_name='parents', through='ParentChildren')
 
     def __unicode__(self):
         return '%s (%s)' % (self.full_name(), self.email_address)
@@ -344,13 +341,26 @@ class Parent(models.Model):
     def full_name(self):
         return '%s %s' % (self.first_name, self.last_name)
 
+    def get_my_children(self):
+        return Children.objects.filter(parent=self, parentchildren__default=1).all()
+
     def linked(self):
         try:
             child = self.children.all()[0]
         except IndexError:
             return None
         try:
-            return child.parents.filter(default=1).exclude(pk=self.id).get()
+            return child.parents.exclude(pk=self.id).get()
+        except ObjectDoesNotExist, e:
+            return None
+
+    def links(self):
+        try:
+            child = self.children.all()[0]
+        except IndexError:
+            return None
+        try:
+            return child.parents.filter(default=0).exclude(pk=self.id).all()
         except ObjectDoesNotExist, e:
             return None
 
@@ -383,6 +393,18 @@ class Parent(models.Model):
         except ObjectDoesNotExist, e:
             return
         return google
+
+    def is_fathter(self):
+        return self.guardian == 0
+
+    def is_mother(self):
+        return self.guardian == 1
+
+
+class ParentChildren(models.Model):
+    parent = models.ForeignKey(Parent)
+    children = models.ForeignKey(Children)
+    default = models.BooleanField(default=1)
 
 
 class Donation(models.Model):

@@ -29,7 +29,7 @@ from django.conf import settings
 from socialregistration.contrib.facebook.models import FacebookProfile
 from socialregistration.contrib.twitter.models import TwitterProfile
 
-from husky.models import Parent, Children, Donation, Teacher, Grade, Album, Photo, Content, Blog, Message, Link, Calendar
+from husky.models import Parent, Children, ParentChildren, Donation, Teacher, Grade, Album, Photo, Content, Blog, Message, Link, Calendar
 from husky.models import ContactForm, ParentRegistrationForm, ChildrenRegistrationForm, DonationForm
 from husky.helpers import *
 
@@ -385,7 +385,8 @@ def add(request, type=None):
                     teacher=teacher,
                 )
                 child.save()
-                parent.children.add(child)
+                pc = ParentChildren(parent=parent, children=child, default=1)
+                pc.save()
                 c['child_name'] = child.full_name
                 c['parent_name'] = parent.full_name
                 c['email_address'] = parent.email_address
@@ -532,7 +533,8 @@ def link(request, parent_id=None):
         parent = Parent.objects.filter(email_address=request.user.email).get()
         linked = Parent.objects.get(pk=parent_id)
         for child in linked.children.all():
-            parent.children.add(child)
+            pc = ParentChildren(parent=parent, children=child, default=0)
+            pc.save()
         parent.default = 0
         parent.save()
         messages.success(request, 'Successfully Linked Account')
