@@ -747,6 +747,10 @@ fieldset {
     display: block;
 }
 
+.require {
+    font-size: 0.65em;
+}
+
 .search-results, .child-list {
 	border-collapse: collapse;
 	text-align: left;

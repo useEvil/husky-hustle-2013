@@ -2,10 +2,17 @@
 <form action="/social/setup/" method="post">
 	{% csrf_token %}
 	<ol>
-		<li><label for="id_first_name"{% if form.first_name.errors %} class="error"{% endif %}>First Name:</label><input id="id_first_name" type="text" name="first_name" value="{{ form.initial.form.identity }}" size="30" class="required" />{% if form.first_name.errors %}<span class="pad-left10 error">* required</span>{% endif %}</li>
-		<li><label for="id_last_name"{% if form.last_name.errors %} class="error"{% endif %}>Last Name:</label><input id="id_last_name" type="text" name="last_name" value="{{ form.initial.form.identity }}" size="30" class="required" />{% if form.last_name.errors %}<span class="pad-left10 error">* required</span>{% endif %}</li>
-		<li><label for="id_email"{% if form.email.errors %} class="error"{% endif %}>Email Address:</label><input id="id_email" type="text" name="email" value="" size="30" class="required" />{% if form.email.errors %}<span class="pad-left10 error">* required</span>{% endif %}</li>
-		<li><label for="id_phone_number"{% if form.phone_number.errors %} class="error"{% endif %}>Phone Number:</label><input id="id_phone_number" type="text" name="phone_number" value="" size="30" class="required" placeholder="(xxx) xxx-xxxx" />{% if form.phone_number.errors %}<span class="pad-left10 error">* required</span>{% endif %}</li>
+		<li><label for="id_first_name"{% if form.first_name.errors %} class="error"{% endif %}>First Name:</label><input id="id_first_name" type="text" name="first_name" value="{% if data %}{{ data.first_name }}{% else %}{{ form.initial.form.first_name }}{% endif %}" size="30" class="required" /><span class="pad-left10 error">* required</span></li>
+		<li><label for="id_last_name"{% if form.last_name.errors %} class="error"{% endif %}>Last Name:</label><input id="id_last_name" type="text" name="last_name" value="{% if data %}{{ data.last_name }}{% else %}{{ form.initial.form.last_name }}{% endif %}" size="30" class="required" /><span class="pad-left10 error">* required</span></li>
+		<li><label for="id_email"{% if error_email %} class="error"{% endif %}>Email Address:</label><input id="id_email" type="text" name="email" value="{% if data %}{{ data.email_address }}{% endif %}" size="30" class="required" /><span class="pad-left10 error">* required</span></li>
+		<li><label for="id_phone_number"{% if form.phone_number.errors %} class="error"{% endif %}>Phone Number:</label><input id="id_phone_number" type="text" name="phone_number" value="{% if data %}{{ data.phone_number }}{% endif %}" size="30" placeholder="(xxx) xxx-xxxx" /></li>
+		<li><label for="guardian">&nbsp;</label>
+			<select id="guardian" name="guardian">
+				<option value="1">Mother</option>
+				<option value="2">Father</option>
+				<option value="3">Guardian</option>
+			</select>
+		</li>
 		<li><input type="submit" value=" Register " /></li>
 	</ol>
 </form>
