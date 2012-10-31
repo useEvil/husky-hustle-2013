@@ -401,8 +401,8 @@ div.author {
 .hoverbox a:hover .preview {
 	display: block;
 	position: absolute;
-	top: -33px;
-	left: -45px;
+	top: 45px;
+	left: 45px;
 	z-index: 1;
 }
 
@@ -433,8 +433,8 @@ div.author {
 
 .hoverbox .preview {
 	border-color: #000;
-	width: 200px;
-	height: 150px;
+	width: auto;
+	height: 200px;
 }
 
 /* ---------- gallery styles start here ----------------------- */

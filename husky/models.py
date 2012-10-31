@@ -350,7 +350,7 @@ class Parent(models.Model):
         except IndexError:
             return None
         try:
-            return child.parents.filter(pk!=self.id, default=1).get()
+            return child.parents.filter(default=1).exclude(pk=self.id).get()
         except ObjectDoesNotExist, e:
             return None
 

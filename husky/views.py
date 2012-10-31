@@ -126,22 +126,20 @@ def account(request, identifier=None):
 
 def donation_sheet(request, identifier=None):
     c = Context(dict(
-            page_title='Donation Sheet',
+            page_title='Pledge Sheet',
     ))
     if identifier and identifier == 'pdf':
-        template = loader.get_template('account/donation_sheet.html')
         response = HttpResponse(mimetype='application/pdf')
         response['Content-Disposition'] = 'attachment; filename="donation-sheet.pdf"'
-        response.write(file("/tmp/donation-sheet.pdf"))
-        p = canvas.Canvas(response)
-        p.showPage()
-        p.save()
+        response.write(file("%s/docs/donation_sheet.pdf" % settings.MEDIA_ROOT).read())
         return response
+    elif identifier and identifier == 'print':
+        c['page_title'] = 'Pledge Sheet'
     elif identifier:
         try:
             child  = Children.objects.get(identifier=identifier)
             c['child'] = child
-            c['page_title'] = 'Donation Sheet: %s' % (child)
+            c['page_title'] = 'Pledge Sheet: %s' % (child)
         except:
             messages.error(request, 'Could not find Child for identity: %s' % identifier)
     c['messages'] = messages.get_messages(request)
