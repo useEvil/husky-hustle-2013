@@ -539,6 +539,43 @@ div.author {
 	max-height: 225px;
 }
 
+/* ---------- login button styles start here ----------------------- */
+
+.facebook-button, .twitter-button, .google-button {
+	width: 253px;
+	height: 44px;
+	display: inline-block;
+	cursor: pointer;
+}
+
+.facebook-button {
+	background: url('/static/images/facebook-login-button.png') no-repeat;
+}
+.facebook-button:hover { 
+	background: url('/static/images/facebook-login-button-hover.png') no-repeat;
+}
+.facebook-button:focus { 
+	background: url('/static/images/facebook-login-button-active.png') no-repeat;
+}
+.twitter-button { 
+	background: url('/static/images/twitter-login-button.png') no-repeat;
+}
+.twitter-button:hover { 
+	background: url('/static/images/twitter-login-button-hover.png') no-repeat;
+}
+.twitter-button:focus { 
+	background: url('/static/images/twitter-login-button-active.png') no-repeat;
+}
+.google-button { 
+	background: url('/static/images/google-login-button.png') no-repeat;
+}
+.google-button:hover { 
+	background: url('/static/images/google-login-button-hover.png') no-repeat;
+}
+.google-button:focus { 
+	background:  url('/static/images/google-login-button-active.png') no-repeat;
+}
+
 /* ---------- overlay styles start here ----------------------- */
 
 #overlay {
