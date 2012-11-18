@@ -40,10 +40,10 @@
 						{% elif form %}
 						<h4>What to do Next:</h4>
 						<ul style="padding-left: 30px;">
-							<li><span src="{{ child.facebook_share_url }}" class="post-to-social post">Share with your Friends on Facebook<span></li>
-							<li><span src="{{ child.twitter_share_url }}" class="post-to-social post">Share with your Friends on Twitter</span></li>
-							<li><span src="{{ child.google_share_url }}" class="post-to-social post">Share with your Friends on Google+</span></li>
-							<li><span class="send-email post">Share with your Friends via Email</span></li>
+							<li><span src="{{ child.facebook_share_url }}" class="post-to-social post">Share with your Friends/Family on Facebook<span></li>
+							<li><span src="{{ child.twitter_share_url }}" class="post-to-social post">Share with your Friends/Family on Twitter</span></li>
+							<li><span src="{{ child.google_share_url }}" class="post-to-social post">Share with your Friends/Family on Google+</span></li>
+							<li><span class="send-email post">Share with your Friends/Family via Email</span></li>
 							<li><a href="/donation_sheet/" title="Print Form" target="_print">Print a Donation sheet</a></li>
 							<li><a href="/teacher-donation/{{ child.identifier }}">Make a Donation to a Teacher</a></li>
 							<li>
@@ -71,27 +71,15 @@
 					{% csrf_token %}
 					<input type="hidden" id="child_first_name" name="child_first_name" value="{{ child.first_name }}">
 					<fieldset class="form">
-					<legend id="title">Send Email to Prospective Sponsors</legend>
+					<legend id="title">Send Email to Friends/Family</legend>
 					<div class="wrapper">
 						<ul>
 							<li>
-								<label for="email_addresses" id="email_addressese_label" style="width: 255px;">Email Addresses (comma separated)</label><br />
-								<input type="text" class="control input" id="email_addresses" name="email_addresses" value="" size="200">
+								<label for="email_addresses" id="email_addresses_label">Email Addresses</label><br />
+								<input type="text" class="control input" id="email_addresses" name="email_addresses" value="" size="200" placeholder="(comma separated)" />
 							</li>
 								<label for="custom_message" id="custom_message_label">Custom Message</label><br />
-								<textarea class="control input" id="custom_message" name="custom_message" value="" cols="200" rows="15">
-Dear Friends,
-
-Please help support {{ child.full_name }} in this year's Husky Hustle Jog-A-Thon.  Our goal is to reach $80,000 to raise money for Hicks Canyon Elementary School.  Last year we were able to raise over $60,000 and we're hoping this year will be even better.
-
-Thank you for your support,
-
-{% if sponsor_full_name %}{{ sponsor_full_name }}{% else %}<<Your Name Here>>{% endif %}
-
-You can use the following url to donate directly to {{ child.first_name }}:
-
-{{ child.donate_url }}
-								</textarea>
+								<textarea class="control input" id="custom_message" name="custom_message" cols="200" rows="15"></textarea>
 							</li>
 							<li>
 								<input type="button" style="width: 8em;" class="control input submit_button" id="submit_email" value=" Submit " />
@@ -101,6 +89,18 @@ You can use the following url to donate directly to {{ child.first_name }}:
 					</div>
 					</fieldset>
 				</form>
+				<span id="message" class="hidden">Dear Friends and Family,
+
+Please help support {{ child.full_name }} in this year's Husky Hustle Jog-A-Thon.  Our goal is to reach $80,000 to raise money for Hicks Canyon Elementary School.  Last year we were able to raise over $60,000 and we're hoping this year will be even better.
+
+Thank you for your support,
+
+{% if full_name %}{{ full_name }}{% else %}&lt;&lt;Your Name Here&gt;&gt;{% endif %}
+
+You can use the following url to donate directly to {{ child.first_name }}:
+
+{{ child.donate_url }}
+				</span>
 			</div>
 		</div>
 		<div id="footer">

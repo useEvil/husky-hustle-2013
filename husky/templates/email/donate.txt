@@ -1,10 +1,10 @@
-Dear {{ sponsor_full_name }},
+Dear {{ full_name }},
 
 Thank you for sponsoring {{ child_full_name }} and Hicks Canyon.
 
 Your contribution ensures that the students at Hicks Canyon will continue to receive the best education and tools our schools can provide.
 
-We will periodically send updates to your email address at: {{ sponsor_email_address }}.  Please make sure our email address husky@huskyhustle.com is in your contact list.
+We will periodically send updates to your email address at: {{ email_address }}.  Please make sure our email address husky@huskyhustle.com is in your contact list.
 
 Upon the conclusion of the Jog-A-Thon we will email you instructions on how to make your payment.
 

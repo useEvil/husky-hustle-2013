@@ -1,4 +1,4 @@
-Dear {{ parent_full_name }},
+Dear {{ full_name }},
 
 {{ request_full_name }} has requested to link their account to yours.  If you would like to accept this request click the link below.
 

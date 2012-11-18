@@ -129,17 +129,18 @@
 			<div class="overlay-content">
 				<form id="email_form" action="/emails" action="post">
 					{% csrf_token %}
+					<input type="hidden" id="child_first_name" name="child_first_name" value="{{ child.first_name }}">
 					<fieldset class="form">
 					<legend id="title">Send Email to Friends/Family</legend>
 					<div class="wrapper">
 						<ul>
 							<li>
 								<label for="email_addresses" id="email_addresses_label">Email Addresses</label><br />
-								<input type="text" class="control input" id="email_addresses" name="email_addresses" value="" />
+								<input type="text" class="control input" id="email_addresses" name="email_addresses" value="" size="200" placeholder="(comma separated)" />
 							</li>
 							<li>
 								<label for="custom_message" id="custom_message_label">Custom Message</label><br />
-								<textarea class="control input" id="custom_message" name="custom_message" value="" cols="200" rows="15"></textarea>
+								<textarea class="control input" id="custom_message" name="custom_message" cols="200" rows="15"></textarea>
 							</li>
 							<li>
 								<input type="button" style="width: 8em;" class="control input submit_button" id="submit_email" value=" Submit " />
@@ -149,8 +150,7 @@
 					</div>
 					</fieldset>
 				</form>
-				<span id="message" class="hidden">
-Dear Friends,
+				<span id="message" class="hidden">Dear Friends and Family,
 
 Please help support {first_name} in this year's Husky Hustle Jog-A-Thon.  Our goal is to reach $80,000 to raise money for Hicks Canyon Elementary School.  Last year we were able to raise over $60,000 and we're hoping this year will be even better.
 
