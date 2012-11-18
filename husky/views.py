@@ -440,7 +440,7 @@ def add(request, type=None):
                 child = Children(
                     first_name=request.POST.get('first_name'),
                     last_name=request.POST.get('last_name'),
-                    identifier='%s-%s-%s'%(request.POST.get('first_name').lower(), request.POST.get('last_name').lower(), teacher.room_number),
+                    identifier='%s-%s-%s'%(replace_space(request.POST.get('first_name')), replace_space(request.POST.get('last_name')), teacher.room_number),
                     date_added=date.datetime.now(),
                     teacher=teacher,
                 )
@@ -500,7 +500,7 @@ def edit(request, type=None):
                 child.first_name = request.POST.get('first_name')
                 child.last_name = request.POST.get('last_name')
                 child.teacher = teacher
-                child.identifier = '%s-%s-%s'%(request.POST.get('first_name').lower(), request.POST.get('last_name').lower(), teacher.room_number)
+                child.identifier = '%s-%s-%s'%(replace_space(request.POST.get('first_name')), replace_space(request.POST.get('last_name')), teacher.room_number)
                 child.save()
                 messages.success(request, 'Successfully Updated Child')
             except Exception, e:
@@ -731,6 +731,12 @@ def _send_email_teamplate(template, data, mass=None):
         return data['subject'], body, settings.EMAIL_HOST_USER, [data['email_address']]
     else:
         send_mail(data['subject'], body, settings.EMAIL_HOST_USER, [data['email_address']])
+
+def replace_space(string):
+     # Replace all runs of whitespace with a single dash
+     string = re.sub(r"\s+", '-', string.lower())
+
+     return string
 
 class BlogFeed(Feed):
     title = "Husky Hustle Site News"
