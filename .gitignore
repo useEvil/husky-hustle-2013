@@ -31,3 +31,4 @@ pip-log.txt
 husky-hustle.db
 fabfile.py
 develop/
+.gitconfig
