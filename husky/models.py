@@ -322,12 +322,14 @@ class Children(models.Model):
 
 class Parent(models.Model):
 
+    GUARDIAN_CHOICES = ((1,'Mother'), (2,'Father'), (3,'Guardian'))
+
     first_name = models.CharField(max_length=50)
     last_name = models.CharField(max_length=50)
     email_address = models.CharField(max_length=100)
     phone_number = models.CharField(max_length=25, blank=True, null=True)
     default = models.BooleanField(default=1)
-    guardian = models.IntegerField(default=1, choices=((1,'Mother'), (2,'Father'), (3,'Guardian')))
+    guardian = models.IntegerField(default=1, choices=GUARDIAN_CHOICES)
     activation_key = models.CharField(max_length=200)
     key_expires = models.DateTimeField()
     date_added = models.DateTimeField()
@@ -389,6 +391,11 @@ class Parent(models.Model):
 
     def is_mother(self):
         return self.guardian == 1
+
+    def is_guardian(self):
+        for choice in self.GUARDIAN_CHOICES:
+            if choice[0] == self.guardian:
+                return choice[1]
 
 
 class ParentChildren(models.Model):
