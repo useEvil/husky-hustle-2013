@@ -266,7 +266,7 @@ class Children(models.Model):
             return
 
     def parent(self):
-        return self.parents.filter(default=1).get()
+        return self.parents.filter(parentchildren__default=1).get()
 
     def is_default(self, parent):
         return ParentChildren.objects.filter(children=self, parent=parent).get().default
