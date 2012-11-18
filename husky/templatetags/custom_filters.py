@@ -2,9 +2,11 @@ import re
 import husky.models as huksy_model
 
 from django import template
+from django.core.exceptions import ObjectDoesNotExist, MultipleObjectsReturned
 from datetime import datetime
 
 from husky.helpers import *
+from husky.models import ParentChildren
 
 register = template.Library()
 
@@ -69,3 +71,11 @@ def is_default(object, parent=None):
     except:
         pass
     return None
+
+@register.filter(name='is_linked')
+def is_linked(object, parent=None):
+    try:
+        ParentChildren.objects.get(parent=parent, children=object)
+        return 1
+    except ObjectDoesNotExist, e:
+        return None

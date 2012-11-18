@@ -39,7 +39,7 @@ def dev():
     env.project_name = 'huskyhustle'
     env.module_name  = 'husky'
     env.media_name   = 'static'
-    env.settings     = 'settings-dev'
+    env.settings     = 'settings-dev-local'
     print_env()
 
 @task
@@ -49,7 +49,7 @@ def prod():
     env.project_name = 'huskyhustle'
     env.module_name  = 'husky'
     env.media_name   = 'static'
-    env.settings     = 'settings-prod'
+    env.settings     = 'settings-prod-local'
     print_env()
 
 @task
@@ -110,7 +110,7 @@ def deploy():
 def cleanup():
     older  = (date.datetime.now() - date.timedelta(days=env.cleaned)).strftime(env.format)
     builds = '%s/builds' % (env.project_path)
-    output = run('ls -l %s' % builds)
+    output = run('ls -l %s | grep -v keep' % builds)
     for row in output.split("\r\n")[1:]:
         dte = row.split('-')[-1]
         if int(dte) < int(older):
@@ -140,7 +140,7 @@ def restart():
 def usage():
     print("Usage:")
     print(" ------------------------------------ ")
-    print("fab usage -i ~/.ssh/id_dsa")
+    print("fab usage")
     print("fab dev deploy -i ~/.ssh/id_dsa")
     print("fab prod deploy -i ~/.ssh/id_dsa")
     print("fab dev deploy cleanup -i ~/.ssh/id_dsa")

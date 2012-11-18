@@ -2,7 +2,7 @@ Thank you for registering with Husky Hustle.
 
 Please activate your account using the link below to get started.
 
-http://www.huskyhustle.com/activate/{{ activation_key }}
+http://{{ domain }}}/activate/{{ activation_key }}
 
 Regards,
 
