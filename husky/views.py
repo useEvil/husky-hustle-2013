@@ -1,3 +1,4 @@
+import re
 import pytz
 import base64
 import django.contrib.staticfiles
@@ -8,7 +9,7 @@ import re as regexp
 
 from django.db.models import Count, Sum, Avg, Max
 from django.db import IntegrityError
-from django.core.mail import send_mail
+from django.core.mail import send_mail, send_mass_mail
 from django.template import Context, loader, RequestContext
 from django.shortcuts import render_to_response
 from django.http import HttpResponse, HttpResponseRedirect
@@ -201,9 +202,10 @@ def teacher_donation(request, identifier=None):
 
 @login_required(login_url='/accounts/login/')
 def donate(request, child_id=None):
-    child  = Children.objects.get(identifier=child_id)
+    child = Children.objects.get(identifier=child_id)
     c = Context(dict(
             page_title='Donator',
+            parent=getParent(request),
             child=child,
             donate=True,
     ))
@@ -224,8 +226,8 @@ def donate(request, child_id=None):
                 donation.save()
                 messages.success(request, 'Thank you for making a Pledge')
                 c['success'] = True
-                c['sponsor_full_name'] = donation.full_name()
-                c['sponsor_email_address'] = donation.email_address
+                c['full_name'] = donation.full_name()
+                c['email_address'] = donation.email_address
                 c['child_full_name'] = child.full_name
                 c['child_identifier'] = child.identifier
                 c['subject'] = 'Husky Hustle: Thank you for making a Pledge'
@@ -237,15 +239,15 @@ def donate(request, child_id=None):
             messages.error(request, 'Failed to Add Sponsor')
         c['form'] = form
     c['messages'] = messages.get_messages(request)
-    if request.POST.get('make_donation'):
-        if request.POST.get('teacher_donation'):
-            c['teacher_donation'] = True
+    if request.POST.get('make_donation') and request.POST.get('teacher_donation'):
+        c['teacher_donation'] = True
     return render_to_response('donate.html', c, context_instance=RequestContext(request))
 
 def album(request, album_id=None):
     album = Album().get_album(album_id)
     c = Context(dict(
             page_title=album.title.text,
+            parent=getParent(request),
             album=album
     ))
     return render_to_response('photos.html', c, context_instance=RequestContext(request))
@@ -255,6 +257,7 @@ def photo(request, album_id=None, photo_id=None):
     photo = Photo().get_photo(album_id, photo_id)
     c = Context(dict(
             page_title=photo.title.text,
+            parent=getParent(request),
             photo_album=album,
             photo=photo,
             prev=prevPhoto(album.entry, request.GET.get('index')),
@@ -341,9 +344,9 @@ def activate(request, key=None):
     return render_to_response(template, c, context_instance=RequestContext(request))
 
 def request(request, type=None, key=None):
-    parent = getParent(request)
     c = Context(dict(
             page_title='Home',
+            parent=getParent(request),
     ))
     if type == 'key':
         user = User.objects.filter(parent__activation_key=key).get()
@@ -357,13 +360,14 @@ def request(request, type=None, key=None):
         c['email_address'] = user.parent.email_address
         c['subject'] = 'Husky Hustle: Parent Activation'
         c['domain'] = Site.objects.get_current().domain
-        messages.success(request, 'New Activation Key Sent')
         _send_email_teamplate('register-activation', c)
+        messages.success(request, 'New Activation Key Sent')
+        c['messages'] = messages.get_messages(request)
         return render_to_response('registration/registration_complete.html', c, context_instance=RequestContext(request))
     elif type == 'link':
         link = Parent.objects.get(id=key)
         c['email_address'] = link.email_address
-        c['parent_full_name'] = link.full_name
+        c['full_name'] = link.full_name
         c['request_full_name'] = parent.full_name
         c['request_id'] = parent.id
         c['subject'] = 'Husky Hustle: Account Link Request'
@@ -375,6 +379,10 @@ def request(request, type=None, key=None):
     return HttpResponseRedirect('/account/')
 
 def contact(request):
+    c = Context(dict(
+            page_title='Contact',
+            parent=getParent(request),
+    ))
     if request.method == 'POST':
         form = ContactForm(request.POST)
         if form.is_valid():
@@ -389,12 +397,14 @@ def contact(request):
             messages.success(request, 'Successfully Sent')
     else:
         form = ContactForm()
-    c = Context({'form': form, 'messages': messages.get_messages(request), 'page_title': 'Contact'})
+    c['form'] = form
+    c['messages'] = messages.get_messages(request)
     return render_to_response('contact.html', c, context_instance=RequestContext(request))
 
 def results(request, type=None):
     c = Context(dict(
             page_title='Results',
+            parent=getParent(request),
             type=type or 'all',
     ))
     if 'admin' in request.path:
@@ -405,6 +415,7 @@ def results(request, type=None):
 def reporting(request, type=None):
     c = Context(dict(
             page_title='Reporting',
+            parent=getParent(request),
             type=type,
     ))
     return render_to_response('admin/chart.html', c, context_instance=RequestContext(request))
@@ -545,9 +556,13 @@ def emails(request):
             body=request.POST.get('custom_message')
     ))
     addresses = request.POST.get('email_addresses')
-    for address in addresses.split(','):
+    p = re.compile(r'\s*,\s*')
+    addresses = filter(None, p.split(addresses))
+    data = []
+    for address in addresses:
         c['email_address'] = address
-        _send_email_teamplate('emails', c)
+        data.append(_send_email_teamplate('emails', c, 1))
+    send_mass_mail(data)
     messages.success(request, 'Successfully Sent Emails')
     return HttpResponse(simplejson.dumps({'result': 'OK', 'status': 200}), mimetype='application/json')
 
@@ -706,14 +721,16 @@ def _formatData(data, total):
         count += 1
     return result
 
-def _send_email_teamplate(template, data):
+def _send_email_teamplate(template, data, mass=None):
     if data.has_key('body'):
         body = data['body']
     else:
         t = loader.get_template('email/%s.txt' % template)
         body = t.render(data)
-    send_mail(data['subject'], body, settings.EMAIL_HOST_USER, [data['email_address']])
-
+    if mass:
+        return data['subject'], body, settings.EMAIL_HOST_USER, [data['email_address']]
+    else:
+        send_mail(data['subject'], body, settings.EMAIL_HOST_USER, [data['email_address']])
 
 class BlogFeed(Feed):
     title = "Husky Hustle Site News"
