@@ -10,6 +10,7 @@ $('.remove_item').live('click', removeItem);
 $('.add_item').live('click', addItem);
 $('.cancel_button').live('click', cancelForm);
 $('.submit_button').live('click', submitForm);
+$('.submit').live('click', submitThisForm);
 $('.submit_edit').live('click', submitFormEdit);
 $('.set-paid').live('click', setPaid);
 $('.set-all-reminders').live('click', setAllReminders);
@@ -225,6 +226,11 @@ function submitForm(event) {
 	);
 	doOverlayOpen('none', 50);
 	return false;
+}
+
+function submitThisForm() {
+	var id = this.id.replace( 'submit_', '' );
+	$('#form_'+ id).submit();
 }
 
 function submitFormEdit(event) {
