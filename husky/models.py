@@ -214,11 +214,11 @@ class Children(models.Model):
     def find(self, child_name=None, parent_name=None):
         try:
             if child_name and parent_name:
-                return Children.objects.filter(first_name__icontains=child_name, parents__last_name__icontains=parent_name).all()
+                return Children.objects.filter(first_name__icontains=child_name, parents__last_name__icontains=parent_name).distinct().all()
             elif child_name:
                 return Children.objects.filter(first_name__icontains=child_name).all()
             elif parent_name:
-                return Children.objects.filter(parents__last_name__icontains=parent_name).all()
+                return Children.objects.filter(parents__last_name__icontains=parent_name).distinct().all()
         except ObjectDoesNotExist, e:
             return
 
@@ -344,23 +344,13 @@ class Parent(models.Model):
     def get_my_children(self):
         return Children.objects.filter(parent=self, parentchildren__default=1).all()
 
-    def linked(self):
-        try:
-            child = self.children.all()[0]
-        except IndexError:
-            return None
-        try:
-            return child.parents.exclude(pk=self.id).get()
-        except ObjectDoesNotExist, e:
-            return None
-
     def links(self):
         try:
             child = self.children.all()[0]
         except IndexError:
             return None
         try:
-            return child.parents.filter(default=0).exclude(pk=self.id).all()
+            return child.parents.exclude(pk=self.id).all()
         except ObjectDoesNotExist, e:
             return None
 
@@ -392,7 +382,7 @@ class Parent(models.Model):
             google = OpenIDProfile.objects.filter(user_id=user_id).get()
         except ObjectDoesNotExist, e:
             return
-        return google
+        return google.identity and True or False
 
     def is_fathter(self):
         return self.guardian == 0

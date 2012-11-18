@@ -30,3 +30,4 @@ pip-log.txt
 *-local*
 husky-hustle.db
 fabfile.py
+develop/

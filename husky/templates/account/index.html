@@ -17,27 +17,35 @@
 						<li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
 						{% endfor %}
 						{% if linked %}
-						<li style="color: #000000;">Would you like to link your account to: <a id="link_to" href="/link/{{ linked.id }}">{{ linked.full_name }}</a>?</li>
+						<li style="color: #000000;">Would you like to link your account to: <a id="link_to" href="/request/link/{{ parent.id }}">{{ linked.full_name }}</a>?</li>
 						{% endif %}
 					</ul>
 					{% endif %}
 					<div class="box">
 						<h3>Profile</h3>
-						<ul class="list">
-							<li>{% if parent.guardian == 1 %}Mother{% elif parent.guardian == 2 %}Father{% else %}Guardian{% endif %}: {{ parent.first_name }} {{ parent.last_name }}&nbsp;<img src="/static/images/edit.png" class="show-edit" id="edit_profile_{{ parent.id }}" /></li>
-							{% if parent.default %}
+						<div class="box left-col1-3">
+							<ul class="list">
+								<li>{% if parent.guardian == 1 %}Mother{% elif parent.guardian == 2 %}Father{% else %}Guardian{% endif %}: {{ parent.first_name }} {{ parent.last_name }}&nbsp;<img src="/static/images/edit.png" class="show-edit" id="edit_profile_{{ parent.id }}" /></li>
+								<li>{{ parent.email_address }}</li>
+								<li>{{ parent.phone_number }}</li>
+								<li>{{ user_id }}</li>
+								<li>{{ user_email }}</li>
+								<li>&nbsp;</li>
 								{% for link in parent.links %}
-								<li>Linked by: {{ link.full_name }}</li>
+								<li>Linked to: {{ link.full_name }}</li>
 								{% endfor %}
-							{% else %}
-							<li>Linked to: {{ parent.linked.full_name }}</li>
-							{% endif %}
-							<li>{{ parent.email_address }}</li>
-							<li>{{ parent.phone_number }}</li>
-							<li>{{ user_id }}</li>
-							<li>{{ user_email }}</li>
-						</ul>
+							</ul>
+						</div>
 						{% if parent.children.all %}
+						<div class="box">
+							Your sponsors can use the link(s) below to make a direct donation to your child:<br />
+							{% if parent.children.all %}
+								{% for child in parent.children.all %}
+								<div id="donate-{{ child.id }}">{{ child.donate_url }}</div>
+								{% endfor %}
+							{% endif %}
+						</div>
+						<br class="clearfix" />
 						<h3>Students</h3>
 						<table class="child-list" border="1">
 							<tr>
@@ -45,33 +53,32 @@
 								<th>Sponsors</th>
 								<th>Teacher</th>
 								<th>Laps</th>
-								<th>&nbsp;</th>
+								<th>Share with Friends/Family</th>
 							</tr>
 							{% for child in parent.children.all %}
 							<tr>
 								<td>
-									<a href="/account/{{ child.identifier }}">{{ child.first_name }} {{ child.last_name }}</a>&nbsp;
+									<a href="/account/{{ child.identifier }}"><span id="first_name-{{ child.id }}">{{ child.first_name }}</span> {{ child.last_name }}</a>&nbsp;
 									{% if child|is_default:parent %}<img src="/static/images/edit.png" class="show-edit" id="edit_child_{{ child.id }}" />{% endif %}
 								</td>
 								<td style="width: 10px;">{{ child.donations }}</td>
 								<td style="width: 250px;">{{ child.teacher.full_name }} ({{ child.teacher.room_number }})</td>
 								<td style="width: 10px;">{% if child.laps %}{{ child.laps }}{% else %}0{% endif %}</td>
 								<td nowrap="nowrap">
-									<span src="{{ child.facebook_share_url }}" class="post-facebook post"><img src="/static/images/facebook-share-button.png" width="60" /></span>
+									<span src="{{ child.facebook_share_url|safe }}" class="post-to-social post"><img src="/static/images/facebook-share-button.png" width="60" /></span>
 									<a href="https://twitter.com/intent/tweet?button_hashtag=HuskyHustle" class="twitter-hashtag-button" data-related="HuskyHustle" data-url="{{ child.donate_url }}">Post to Twitter #HuskyHustle</a>
 									<g:plus action="share" annotation="none"></g:plus>
 									<a href="/donation_sheet/{{ child.identifier }}" title="Print Form" target="_print"><img src="/static/images/print-icon.png" width="24" alt="Print Form" /></a>
+									<span class="send-email post" id="email-{{ child.id }}"><img src="http://globalbookrights.com/books/wp-content/uploads/2010/08/email-icon1.png" width="20" /></span>
 								</td>
 							</tr>
 							{% endfor %}
 						</table>
-						<br class="clearfix" />
 						{% endif %}
+						<br class="clearfix" />
 						<h3>Add a Student</h3>
 						{% include "include/child-form.html" %}
-						{% if not parent.linked %}
 						{% include "include/search-form.html" with parent_only=1 %}
-						{% endif %}
 						{% load facebook twitter openid %}
 						<h3>Connected profiles:</h3>
 						<ol>
@@ -116,6 +123,45 @@
 			<div class="overlay-content">
 				{% include "include/register-form.html" with edit=1 %}
 				{% include "include/child-form.html" with edit=1 %}
+			</div>
+		</div>
+		<div id="overlay-box-email" class="overlay-box">
+			<div class="overlay-content">
+				<form id="email_form" action="/emails" action="post">
+					{% csrf_token %}
+					<fieldset class="form">
+					<legend id="title">Send Email to Friends/Family</legend>
+					<div class="wrapper">
+						<ul>
+							<li>
+								<label for="email_addresses" id="email_addresses_label">Email Addresses</label><br />
+								<input type="text" class="control input" id="email_addresses" name="email_addresses" value="" />
+							</li>
+							<li>
+								<label for="custom_message" id="custom_message_label">Custom Message</label><br />
+								<textarea class="control input" id="custom_message" name="custom_message" value="" cols="200" rows="15"></textarea>
+							</li>
+							<li>
+								<input type="button" style="width: 8em;" class="control input submit_button" id="submit_email" value=" Submit " />
+								<input type="button" style="width: 8em;" class="control input cancel_button" id="cancel_email" value=" Cancel " />
+							</li>
+						</ul>
+					</div>
+					</fieldset>
+				</form>
+				<span id="message" class="hidden">
+Dear Friends,
+
+Please help support {first_name} in this year's Husky Hustle Jog-A-Thon.  Our goal is to reach $80,000 to raise money for Hicks Canyon Elementary School.  Last year we were able to raise over $60,000 and we're hoping this year will be even better.
+
+Thank you for your support,
+
+{{ parent.full_name }}
+
+You can use the following url to donate directly to {first_name}:
+
+{donate_url}
+				</span>
 			</div>
 		</div>
 		<div id="footer">

@@ -66,7 +66,7 @@ class ParentInline(admin.StackedInline):
 
 class ParentAdmin(admin.ModelAdmin):
     fields = ['first_name', 'last_name', 'email_address', 'phone_number', 'activation_key', 'default', 'guardian', 'date_added']
-    list_display = ['id', 'guardian', 'first_name', 'last_name', 'email_address', 'phone_number', 'user', 'facebook', 'twitter', 'default', 'num_children']
+    list_display = ['id', 'guardian', 'first_name', 'last_name', 'email_address', 'phone_number', 'user', 'facebook', 'twitter', 'google', 'default', 'num_children']
     list_editable = ['guardian', 'default']
     inlines = [ChildrenInline]
     search_fields = ['email_address', 'first_name', 'last_name']
