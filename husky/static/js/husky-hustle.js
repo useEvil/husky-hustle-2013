@@ -51,91 +51,91 @@ function clearMessage(out) {
 }
 
 function showOverlay(overlay) {
-    if (tID) clearTimeout(tID);
-    if (!overlay) overlay = 'overlay';
-    $('#'+overlay).css('display', 'block');
-    $('#'+overlay).height($(document).height());
-    $('#message').css('color','#000000');
-    $('#message').css('margin-left','10px');
-    $('#message').css('font-weight','bold');
-    $('#message').html('Loading...Please Wait!');
+	if (tID) clearTimeout(tID);
+	if (!overlay) overlay = 'overlay';
+	$('#'+overlay).css('display', 'block');
+	$('#'+overlay).height($(document).height());
+	$('#message').css('color','#000000');
+	$('#message').css('margin-left','10px');
+	$('#message').css('font-weight','bold');
+	$('#message').html('Loading...Please Wait!');
 }
 
 function hideOverlay(overlay, out) {
-    if (!overlay) overlay = 'overlay';
-    $('#'+overlay).css('display', 'none');
-    clearMessage(out);
+	if (!overlay) overlay = 'overlay';
+	$('#'+overlay).css('display', 'none');
+	clearMessage(out);
 }
 
 function showOverlayBox(overlay, layer) {
-    //if box is not set to open then don't do anything
-    if (isOpen == false) return;
-    // set the properties of the overlay box, the left and top positions
-    $(overlay).css({
-        display: 'block',
+	//if box is not set to open then don't do anything
+	if (isOpen == false) return;
+	// set the properties of the overlay box, the left and top positions
+	$(overlay).css({
+		display: 'block',
 		left: ($(window).width() - $(overlay).width())/2,
-        top: 50,
-        position: 'absolute'
-    });
-    // set the window background for the overlay. i.e the body becomes darker
-    if (layer) {
-        $('.background-cover-top').css({
-            display: 'block',
-            width: '100%',
-            height: $(document).height()
-        });
-        $(overlay).css({ 'z-index': $(overlay).css('z-index')+layer });
-    } else {
-        $('.background-cover').css({
-            display: 'block',
-            width: '100%',
-            height: $(document).height()
-        });
-    }
+		top: 50,
+		position: 'absolute'
+	});
+	// set the window background for the overlay. i.e the body becomes darker
+	if (layer) {
+		$('.background-cover-top').css({
+			display: 'block',
+			width: '100%',
+			height: $(document).height()
+		});
+		$(overlay).css({ 'z-index': $(overlay).css('z-index')+layer });
+	} else {
+		$('.background-cover').css({
+			display: 'block',
+			width: '100%',
+			height: $(document).height()
+		});
+	}
 }
 
 function doOverlayOpen(overlay, layer) {
 	formID  = overlay
-    overlay = '#overlay-box-'+overlay;
-    //set status to open
-    isOpen = true;
-    showOverlayBox(overlay, layer);
-    if (layer) {
-        $('.background-cover-top').css({opacity: 0}).animate({opacity: 0.5, backgroundColor: '#000'});
-    } else {
-        $('.background-cover').css({opacity: 0}).animate({opacity: 0.5, backgroundColor: '#000'});
-    }
-    // dont follow the link : so return false.
-    return false;
+	overlay = '#overlay-box-'+overlay;
+	//set status to open
+	isOpen = true;
+	showOverlayBox(overlay, layer);
+	if (layer) {
+		$('.background-cover-top').css({opacity: 0}).animate({opacity: 0.5, backgroundColor: '#000'});
+	} else {
+		$('.background-cover').css({opacity: 0}).animate({opacity: 0.5, backgroundColor: '#000'});
+	}
+	// dont follow the link : so return false.
+	return false;
 }
 
 function doOverlayClose(overlay, layer) {
-    overlay = '#overlay-box-'+overlay;
-    //set status to closed
-    isOpen = false;
-    $(overlay).css('display', 'none');
-    // now animate the background to fade out to opacity 0
-    // and then hide it after the animation is complete.
-    if (layer) {
-        $('.background-cover-top').animate( {opacity: 0}, 'fast', null, function() { $(this).hide(); } );
-        $(overlay).css({ 'z-index': $(overlay).css('z-index')-layer });
-    } else {
-        $('.background-cover').animate( {opacity: 0}, 'fast', null, function() { $(this).hide(); } );
-    }
+	overlay = '#overlay-box-'+overlay;
+	//set status to closed
+	isOpen = false;
+	$(overlay).css('display', 'none');
+	// now animate the background to fade out to opacity 0
+	// and then hide it after the animation is complete.
+	if (layer) {
+		$('.background-cover-top').animate( {opacity: 0}, 'fast', null, function() { $(this).hide(); } );
+		$(overlay).css({ 'z-index': $(overlay).css('z-index')-layer });
+	} else {
+		$('.background-cover').animate( {opacity: 0}, 'fast', null, function() { $(this).hide(); } );
+	}
 }
 
 function doOverlaySwap(close_overlay, open_overlay) {
-    // close the current overlay
-    overlay = '#overlay-box-'+close_overlay;
-    //set status to closed
-    isOpen = false;
-    $(overlay).css('display', 'none');
-    // open the next overlay
-    overlay = '#overlay-box-'+open_overlay;
-    //set status to open
-    isOpen = true;
-    showOverlayBox(overlay);
-    return false;
+	// close the current overlay
+	overlay = '#overlay-box-'+close_overlay;
+	//set status to closed
+	isOpen = false;
+	$(overlay).css('display', 'none');
+	// open the next overlay
+	overlay = '#overlay-box-'+open_overlay;
+	//set status to open
+	isOpen = true;
+	showOverlayBox(overlay);
+	return false;
 }
 
 
@@ -176,7 +176,7 @@ function showEdit(event) {
 }
 
 function showBarChart(type) {
-    $.getJSON('/admin/reports/' + type, initBarChart);
+	$.getJSON('/admin/reports/' + type, initBarChart);
 }
 
 function addItem(event) {
@@ -332,11 +332,7 @@ function updateStatus(data) {
 }
 
 function linkToParent(event) {
-	if (confirm('Are you sure you want to link to this Parent?') == false) {
-		return false;
-	}
-	$.getJSON($(this).attr('href'), function(){ window.location.href = '/accounts/profile/'; });
-	return false;
+	alert('A request will be sent to the Parent to Link to your Account?');
 }
 
 function setPaid(event) {
@@ -385,6 +381,11 @@ function setPreSetAmount() {
 }
 
 function sendEmail(event) {
+	var id = this.id.replace( 'email-', '' );
+	var msg = $('#message').text();
+	msg = msg.replace( /{donate_url}/g, $('#donate-'+id).text() );
+	msg = msg.replace( /{first_name}/g, $('#first_name-'+id).text() );
+	$('#custom_message').html( msg );
 	$('#email_form').show();
 	doOverlayOpen('email');
 }

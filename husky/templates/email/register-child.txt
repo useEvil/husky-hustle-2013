@@ -8,7 +8,7 @@ We will periodically send updates to your email address at: {{ email_address }}.
 
 If you would like to invite family and friends to sponsor {{ child_name }}, please use the link below.
 
-http://www.huskyhustle.com/donate/{{ child_identifier }}
+http://{{ domain }}/donate/{{ child_identifier }}
 
 Regards,
 

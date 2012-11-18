@@ -14,6 +14,9 @@
 							{% for message in messages %}
 							<li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
 							{% endfor %}
+							{% if new_key %}
+							<li><a href="/request/key/{{ new_key }}">Request new Key</a></li>
+							{% endif %}
 						</ul>
 						{% endif %}
 						{% if error %}

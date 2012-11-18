@@ -154,6 +154,11 @@ div.author {
 	width: 300px;
 }
 
+.left-col1-3 {
+	float: left;
+	width: 300px;
+}
+
 .current_page_item {
 	text-decoration: underline;
 	color: #A54545;

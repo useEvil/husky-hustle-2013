@@ -41,8 +41,8 @@ def index(request):
     my_twitter  = None
     my_google   = None
     if request.user.is_authenticated:
+        parent = getParent(request)
         try:
-            parent  = Parent.objects.filter(email_address=request.user.email).get()
             my_facebook = parent.facebook()
             my_twitter  = parent.twitter()
             my_google   = parent.google()
@@ -68,8 +68,8 @@ def nav(request, page='index', id=None):
     my_facebook = None
     my_google   = None
     if request.user.is_authenticated:
+        parent = getParent(request)
         try:
-            parent  = Parent.objects.filter(email_address=request.user.email).get()
             my_facebook = parent.facebook()
             my_twitter  = parent.twitter()
             my_google   = parent.google()
@@ -102,7 +102,7 @@ def nav(request, page='index', id=None):
 @login_required(login_url='/accounts/login/')
 @checkUser
 def account(request, identifier=None):
-    parent = Parent.objects.filter(email_address=request.user.email).get()
+    parent = getParent(request)
     c = Context(dict(
             page_title='Profile',
             parent=parent,
@@ -146,8 +146,10 @@ def donation_sheet(request, identifier=None):
     return render_to_response('account/donation_sheet.html', c, context_instance=RequestContext(request))
 
 def make_donation(request, identifier=None):
+    parent = getParent(request)
     c = Context(dict(
             page_title='Donate',
+            parent=parent,
             make_donation=True,
     ))
     if identifier == 'search':
@@ -166,6 +168,9 @@ def make_donation(request, identifier=None):
             except Exception, e:
                 messages.error(request, 'Could not find Records matching: %s' % (c['search']))
                 c['error'] = True
+            if not children:
+                messages.error(request, 'Could not find Records matching: %s' % (c['search']))
+                c['error'] = True
     else:
         try:
             child = Children.objects.get(identifier=identifier)
@@ -177,8 +182,10 @@ def make_donation(request, identifier=None):
     return render_to_response('donate.html', c, context_instance=RequestContext(request))
 
 def teacher_donation(request, identifier=None):
+    parent = getParent(request)
     c = Context(dict(
             page_title='Donate',
+            parent=parent,
             make_donation=True,
             teachers=Teacher.objects.all(),
             teacher_donation=True,
@@ -215,13 +222,19 @@ def donate(request, child_id=None):
                     child=child,
                 )
                 donation.save()
-                messages.success(request, 'Thank you for making a Donation')
+                messages.success(request, 'Thank you for making a Pledge')
                 c['success'] = True
                 c['sponsor_full_name'] = donation.full_name()
+                c['sponsor_email_address'] = donation.email_address
+                c['child_full_name'] = child.full_name
+                c['child_identifier'] = child.identifier
+                c['subject'] = 'Husky Hustle: Thank you for making a Pledge'
+                c['domain'] = Site.objects.get_current().domain
+                _send_email_teamplate('donate', c)
             except Exception, e:
                 messages.error(request, str(e))
         else:
-            messages.error(request, 'Failed to Donator')
+            messages.error(request, 'Failed to Add Sponsor')
         c['form'] = form
     c['messages'] = messages.get_messages(request)
     if request.POST.get('make_donation'):
@@ -262,10 +275,10 @@ def register(request):
         form = ParentRegistrationForm(post)
         if form.is_valid():
             try:
-                user    = form.save(form['email_address'].data, form['password1'].data)
-                key     = base64.urlsafe_b64encode('%s-%s' % (form['last_name'].data, form['email_address'].data))
+                user = form.save(form['email_address'].data, form['password1'].data)
                 expires = date.datetime.now() + date.timedelta(settings.ACCOUNT_ACTIVATION_DAYS)
-                parent  = Parent(
+                key = base64.urlsafe_b64encode('%s-%s' % (form['email_address'].data, expires))
+                parent = Parent(
                                 first_name=form['first_name'].data,
                                 last_name=form['last_name'].data,
                                 email_address=form['email_address'].data,
@@ -282,11 +295,9 @@ def register(request):
                 c['parent_name'] = parent.full_name
                 c['email_address'] = parent.email_address
                 c['subject'] = 'Husky Hustle: Parent Registration'
+                c['domain'] = Site.objects.get_current().domain
                 _send_email_teamplate('register-activation', c)
-                messages.success(request, 'Successfully Registered Account')
-                auth = authenticate(username=form['email_address'].data, password=form['password1'].data)
-                login(request, auth)
-                return HttpResponseRedirect('/account/')
+                return render_to_response('registration/registration_complete.html', c, context_instance=RequestContext(request))
             except Exception, e:
                 messages.error(request, 'Failed to Register Account: %s' % str(e))
                 c['form'] = form
@@ -303,6 +314,8 @@ def activate(request, key=None):
             page_title='Home',
     ))
     template = 'registration/login.html'
+    if not key:
+        key = request.GET.get('key')
     try:
         user = User.objects.filter(parent__activation_key=key).get()
     except Exception, e:
@@ -311,8 +324,9 @@ def activate(request, key=None):
     if user:
         if user.is_active:
             messages.error(request, 'Account already Activated')
-        elif user.parent.key_expires < date.datetime.today(pytz.utc):
-            messages.error(request, 'Activation Key has already Expired.  Please Re-Register.')
+        elif user.parent.key_expires < date.datetime.now(pytz.utc):
+            c['new_key'] = key
+            messages.error(request, 'Activation Key has already Expired.  Request a new activation key')
             template = 'registration/registration_form.html'
         else:
             user.is_active = True
@@ -320,10 +334,45 @@ def activate(request, key=None):
             c['subject'] = 'Husky Hustle: Account Activated'
             c['parent_name'] = user.parent.full_name
             c['email_address'] = user.parent.email_address
+            c['domain'] = Site.objects.get_current().domain
             _send_email_teamplate('register-parent', c)
-            messages.success(request, 'Account Activated')
+            messages.success(request, 'Successfully Activated Account')
     c['messages'] = messages.get_messages(request)
     return render_to_response(template, c, context_instance=RequestContext(request))
+
+def request(request, type=None, key=None):
+    parent = getParent(request)
+    c = Context(dict(
+            page_title='Home',
+    ))
+    if type == 'key':
+        user = User.objects.filter(parent__activation_key=key).get()
+        expires = date.datetime.now() + date.timedelta(settings.ACCOUNT_ACTIVATION_DAYS)
+        key = base64.urlsafe_b64encode('%s-%s-%s' % (user.parent.email_address, expires))
+        user.parent.activation_key = key
+        user.parent.key_expires = expires
+        user.parent.save()
+        c['key'] = key
+        c['parent_name'] = user.parent.full_name
+        c['email_address'] = user.parent.email_address
+        c['subject'] = 'Husky Hustle: Parent Activation'
+        c['domain'] = Site.objects.get_current().domain
+        messages.success(request, 'New Activation Key Sent')
+        _send_email_teamplate('register-activation', c)
+        return render_to_response('registration/registration_complete.html', c, context_instance=RequestContext(request))
+    elif type == 'link':
+        link = Parent.objects.get(id=key)
+        c['email_address'] = link.email_address
+        c['parent_full_name'] = link.full_name
+        c['request_full_name'] = parent.full_name
+        c['request_id'] = parent.id
+        c['subject'] = 'Husky Hustle: Account Link Request'
+        c['domain'] = Site.objects.get_current().domain
+        _send_email_teamplate('account-link', c)
+        messages.success(request, 'Your Request has been sent')
+    else:
+        messages.error(request, 'No action provided for this request')
+    return HttpResponseRedirect('/account/')
 
 def contact(request):
     if request.method == 'POST':
@@ -362,7 +411,7 @@ def reporting(request, type=None):
 
 @login_required(login_url='/accounts/login/')
 def add(request, type=None):
-    parent = Parent.objects.filter(email_address=request.user.email).get()
+    parent = getParent(request)
     c = Context(dict(
             page_title='Profile',
             parent=parent,
@@ -392,12 +441,14 @@ def add(request, type=None):
                 c['email_address'] = parent.email_address
                 c['child_identifier'] = child.identifier
                 c['subject'] = 'Husky Hustle: Child Registration'
+                c['domain'] = Site.objects.get_current().domain
                 _send_email_teamplate('register-child', c)
                 messages.success(request, 'Child Added')
             except IntegrityError, e:
+                other_parent = None
                 current_parent = None
                 try:
-                    other_parent = Parent.objects.filter(children__identifier=child.identifier, default=1).get()
+                    other_parent = Parent.objects.filter(children__identifier=child.identifier, parentchildren__default=1).get()
                     current_parent = Parent.objects.filter(children__identifier=child.identifier, pk=parent.id).get()
                 except:
                     pass
@@ -416,6 +467,19 @@ def add(request, type=None):
     return render_to_response('account/index.html', c, context_instance=RequestContext(request))
 
 @login_required(login_url='/accounts/login/')
+def link(request, parent_id=None):
+    try:
+        parent = getParent(request)
+        linked = Parent.objects.get(pk=parent_id)
+        for child in parent.children.all():
+            pc = ParentChildren(parent=linked, children=child, default=0)
+            pc.save()
+        messages.success(request, 'Successfully Linked Account')
+    except Exception, e:
+        messages.error(request, 'Failed to Link Account: %s' % str(e))
+    return HttpResponseRedirect('/account/')
+
+@login_required(login_url='/accounts/login/')
 def edit(request, type=None):
     if request.POST:
         if type == 'child':
@@ -432,7 +496,7 @@ def edit(request, type=None):
                 messages.error(request, 'Failed to Update Child: %s' % str(e))
         elif type == 'profile':
             try:
-                parent = Parent.objects.filter(email_address=request.user.email).get()
+                parent = getParent(request)
                 parent.first_name = request.POST.get('first_name')
                 parent.last_name = request.POST.get('last_name')
                 parent.email_address = request.POST.get('email_address')
@@ -500,6 +564,7 @@ def reminders(request):
         c['email_address'] = donation.email_address
         c['child_name'] = donation.child.full_name
         c['child_identifier'] = donation.child.identifier
+        c['domain'] = Site.objects.get_current().domain
         _send_email_teamplate('reminder', c)
     messages.success(request, 'Successfully Sent Reminders')
     return HttpResponse(simplejson.dumps({'result': 'OK', 'status': 200}), mimetype='application/json')
@@ -526,20 +591,6 @@ def paid(request, donation_id=None):
         messages.success(request, 'Successfully set Sponsor to Paid')
     except Exception, e:
         messages.error(request, 'Failed to set Sponsor to Paid: %s' % str(e))
-    return HttpResponse(simplejson.dumps({'result': 'OK', 'status': 200}), mimetype='application/json')
-
-def link(request, parent_id=None):
-    try:
-        parent = Parent.objects.filter(email_address=request.user.email).get()
-        linked = Parent.objects.get(pk=parent_id)
-        for child in linked.children.all():
-            pc = ParentChildren(parent=parent, children=child, default=0)
-            pc.save()
-        parent.default = 0
-        parent.save()
-        messages.success(request, 'Successfully Linked Account')
-    except Exception, e:
-        messages.error(request, 'Failed to Link Account: %s' % str(e))
     return HttpResponse(simplejson.dumps({'result': 'OK', 'status': 200}), mimetype='application/json')
 
 @csrf_protect

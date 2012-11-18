@@ -1,1 +1,45 @@
-Your Account has been Registered.  Please check your email for the Account Activation Email.
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+	<head>
+		{% include "include/page-header.html" with page_title="Activate" %}
+	</head>
+	<body>
+		<div id="wrapper">
+			{% include "include/menu.html" %}
+			<div id="inner">
+				<div id="page">
+					<div id="content">
+						{% if form.non_field_errors %}
+						<span class="error">{{ form.non_field_errors }}</span>
+						{% endif %}
+						{% if messages %}
+						<ul class="messages">
+							{% for message in messages %}
+							<li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
+							{% endfor %}
+						</ul>
+						{% endif %}
+						<div class="box">
+							<h3>Registration Complete</h3>
+							<p>Your Account has been Registered.  Please check your email for the Account Activation Link.</p>
+							<form action="/activate/" method="get" id="activate">
+								<ol>
+									<li><label for="activation_key">Activation Key:</label><input id="activation_key" type="text" name="key" value="" size="50" class="required" />{% if form.activation_key.errors %}<span class="pad-left10 error">* required</span>{% endif %}</li>
+									<li>&nbsp;</li>
+									<li><input type="submit" style="width: 8em;" class="control input" value=" Activate " /></li>
+								</ol>
+							</form>
+						</div>
+						<br class="clearfix" />
+					</div>
+				</div>
+			</div>
+			<div id="page-bottom">
+				{% include "include/page-bottom.html" %}
+			</div>
+		</div>
+		<div id="footer">
+			{% include "include/page-footer.html" %}
+		</div>
+	</body>
+</html>

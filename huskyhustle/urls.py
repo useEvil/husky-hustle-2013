@@ -50,6 +50,7 @@ urlpatterns = patterns('',
     url(r'^register/*$', 'husky.views.register', name='register'),
     url(r'^results/*(?P<type>[\w-]*)$', 'husky.views.results', name='results'),
     url(r'^activate/(?P<key>[\w]+)*$', 'husky.views.activate', name='activate'),
+    url(r'^request/(?P<type>[\w]+)/(?P<key>[\w]+)*$', 'husky.views.request', name='request'),
     url(r'^disconnect/(?P<parent_id>[\w]+)/(?P<social>[\w]+)*$', 'husky.views.disconnect', name='disconnect'),
 
     # override password function
