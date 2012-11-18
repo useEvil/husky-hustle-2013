@@ -63,7 +63,7 @@ def checkUser(view_func):
     def _decorator(request, *args, **kwargs):
         if request.user.is_authenticated and hasattr(request.user, 'email'):
             try:
-                Parent.objects.filter(email_address=request.user.email).get()
+                getParent(request)
             except:
                 return HttpResponseRedirect('/accounts/logout')
             finally:
@@ -88,3 +88,9 @@ def nextPhoto(list, index=0):
     except:
         pass
     return None
+
+def getParent(request):
+    try:
+        return Parent.objects.filter(email_address=request.user.email).get()
+    except:
+        return None
