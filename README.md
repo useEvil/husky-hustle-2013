@@ -66,6 +66,7 @@ Dependencies
 * [django-socialregistration](https://github.com/flashingpumpkin/django-socialregistration/) - https://github.com/flashingpumpkin/django-socialregistration/
 * [django-picasa](http://code.google.com/p/django-picasa/) - http://code.google.com/p/django-picasa/
 * [djangorestframework==0.4.0](http://django-rest-framework.org/) - http://django-rest-framework.org/
+* [newrelic](https://rpm.newrelic.com/) - https://rpm.newrelic.com/ (for production)
 
 Frameworks
 ----------
