@@ -36,6 +36,7 @@
 			.donations .top-cell {border-width: 0 1px 0 0;}
 			.donations .no-cell {border-width: 0;}
 			.page-break {page-break-before: always;}
+			.foot-note {font-size: 0.55em;}
 		</style>
 	</head>
 	<body onLoad="alert('You can Print this page to fill out manually');">
@@ -103,7 +104,7 @@
 								<tr>
 									<td class="bold">{{ sponsor.full_name }}</td>
 									<td>{{ sponsor.phone_number }}</td>
-									<td class="amount">${{ sponsor.donation|floatformat:2|intcomma }}{% if sponsor.laps %}*{{ sponsor.laps }}{% else %} per lap{% endif %}</td>
+									<td class="amount">${{ sponsor.donation|floatformat:2|intcomma }}{% if sponsor.laps %}*{{ sponsor.laps }}{% else %} <span class="foot-note">per lap</span>{% endif %}</td>
 									<td class="amount">{% if sponsor.paid %}${{ sponsor.total|floatformat:2|intcomma }}{% else %}&nbsp;{% endif %}</td>
 									<td class="amount last-cell">{% if not sponsor.paid %}${{ sponsor.total|floatformat:2|intcomma }}{% else %}&nbsp;{% endif %}</td>
 								</tr>

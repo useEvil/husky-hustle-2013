@@ -16,6 +16,7 @@ framework.
 import os
 import huskyhustle.monitor
 
+
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "huskyhustle.settings")
 
 # This application object is used by any WSGI server configured to use this
@@ -27,6 +28,13 @@ application = get_wsgi_application()
 from django.conf import settings
 if settings.DEBUG == True:
     huskyhustle.monitor.start(interval=1.0)
+
+if settings.DEBUG == False:
+    import newrelic.agent
+    application_path = os.path.dirname(__file__)
+    ini = os.path.join(application_path, 'newrelic.ini')
+    newrelic.agent.initialize(ini)
+    application = newrelic.agent.wsgi_application()(application)
 
 # Apply WSGI middleware here.
 # from helloworld.wsgi import HelloWorldApplication
