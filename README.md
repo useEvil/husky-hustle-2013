@@ -60,10 +60,12 @@ Dependencies
 ------------
 
 * [Python](http://www.python.org/) - http://www.python.org/
+* [Gdata](https://code.google.com/p/gdata-python-client/) - https://code.google.com/p/gdata-python-client/
 * [Django](http://www.djangoproject.com/) - https://www.djangoproject.com/
 * [django-registration](http://www.djangoproject.com/) - http://code.google.com/p/django-registration/
 * [django-socialregistration](https://github.com/flashingpumpkin/django-socialregistration/) - https://github.com/flashingpumpkin/django-socialregistration/
 * [django-picasa](http://code.google.com/p/django-picasa/) - http://code.google.com/p/django-picasa/
+* [djangorestframework==0.4.0](http://django-rest-framework.org/) - http://django-rest-framework.org/
 
 Frameworks
 ----------
@@ -79,6 +81,8 @@ Frameworks
 To Do
 -----
 
+1. Dependencies
+    * update djangorestframework to 2.x
 2. Content
    * Docs (Google Docs)
 3. Payment Processor

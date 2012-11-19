@@ -37,7 +37,7 @@
 							</ul>
 						</div>
 						{% if parent.children.all %}
-						<div class="box">
+						<div class="box left-col2-3">
 							Your sponsors can use the link(s) below to make a direct donation to your child:<br />
 							{% if parent.children.all %}
 								{% for child in parent.children.all %}
@@ -136,11 +136,11 @@
 						<ul>
 							<li>
 								<label for="email_addresses" id="email_addresses_label">Email Addresses</label><br />
-								<input type="text" class="control input" id="email_addresses" name="email_addresses" value="" size="200" placeholder="(comma separated)" />
+								<input type="text" class="input" id="email_addresses" name="email_addresses" value="" size="200" placeholder="(comma separated)" />
 							</li>
 							<li>
 								<label for="custom_message" id="custom_message_label">Custom Message</label><br />
-								<textarea class="control input" id="custom_message" name="custom_message" cols="200" rows="15"></textarea>
+								<textarea class="input" id="custom_message" name="custom_message" cols="200" rows="15"></textarea>
 							</li>
 							<li>
 								<input type="button" style="width: 8em;" class="control input submit_button" id="submit_email" value=" Submit " />

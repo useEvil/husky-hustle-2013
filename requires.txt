@@ -1,0 +1,15 @@
+pytz
+gdata
+python-dateutil
+facebook-sdk
+markdown
+pyyaml
+django
+django_extensions
+django-staticfiles
+django-filter
+django-piston
+django-picasa
+django-socialregistration
+django-registration
+djangorestframework==0.4.0

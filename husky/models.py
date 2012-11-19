@@ -28,7 +28,7 @@ from socialregistration.contrib.openid.models import OpenIDProfile
 
 from husky.helpers import *
 
-DONATION_GOAL     = 30000
+DONATION_GOAL     = 50000
 MAX_BAR_LENGTH    = 225
 MAX_ARROW_HEIGHT  = 275
 BASE_ARROW_HEIGHT = 73
