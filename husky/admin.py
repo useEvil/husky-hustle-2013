@@ -37,8 +37,9 @@ class MostDonationsListFilter(SimpleListFilter):
     def lookups(self, request, model_admin):
         return (
             ('unpaid', _('Unpaid')),
-            ('perlap', _('Per Lap Donation')),
-            ('flat', _('Flat Donation')),
+            ('perlap', _('Per Lap Donations')),
+            ('flat', _('Flat Donations')),
+            ('direct', _('Direct Donations')),
         )
     def queryset(self, request, queryset):
         if self.value() == 'unpaid':
@@ -47,6 +48,8 @@ class MostDonationsListFilter(SimpleListFilter):
             return queryset.filter(per_lap=True).all()
         if self.value() == 'flat':
             return queryset.filter(per_lap=False).all()
+        if self.value() == 'direct':
+            return queryset.filter(child__parents=None).all()
 
 class ChildrenAdmin(admin.ModelAdmin):
     fields = ['first_name', 'last_name', 'teacher', 'identifier', 'laps', 'date_added']

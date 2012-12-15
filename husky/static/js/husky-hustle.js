@@ -230,6 +230,20 @@ function submitForm(event) {
 
 function submitThisForm() {
 	var id = this.id.replace( 'submit_', '' );
+	var reg  = new RegExp( '(\\w+)_(\\w+)' );
+	var got  = id.match( reg );
+	if (got) {
+		id = got[2];
+		if (got[1] == 'parent') {
+			$('#parent_only').val(1);
+			$('#student_last_name').val('');
+			$('#student_first_name').val('');
+		} else {
+			$('#parent_only').val(0);
+			$('#parent_last_name').val('');
+			$('#parent_first_name').val('');
+		}
+	}
 	$('#form_'+ id).submit();
 }
 
@@ -359,13 +373,13 @@ function setPreSetAmount() {
 	var value = $(this).val();
 	if (this.className == 'to-principle') {
 		if (value) {
-			$('#id_first_name').attr('value',value);
+			$('#id_first_name').attr('value', value);
 			$('#id_first_name').attr('readonly', true);
 			$('#id_first_name').show();
 			$('#id_teacher').attr('disabled', true);
 			$('#id_teacher').hide();
 		} else {
-			value = $('#id_teacher :selected').val()
+			value = $('#id_teacher :selected').val();
 			$('#id_first_name').attr('value', value);
 			$('#id_first_name').hide();
 			$('#id_teacher').attr('disabled', false);
@@ -373,11 +387,11 @@ function setPreSetAmount() {
 		}
 	} else if (this.className == 'to-teacher') {
 			value = $('#id_teacher :selected').val()
+			$('#to_principle_teacher').attr('checked', true);
 			$('#id_first_name').attr('value', value);
-			$('#to_teacher').attr('checked', true);
 	} else {
 		if (value) {
-			$('#id_donation').attr('value',value);
+			$('#id_donation').attr('value', value);
 			$('#id_donation').attr('readonly', true);
 		} else {
 			$('#id_donation').attr('value', '');

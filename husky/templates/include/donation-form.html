@@ -16,10 +16,23 @@
 	</ol>
 </form>
 {% else %}
-<form action="/donate/{{ child.identifier }}" method="post">
+<form action="/donate{% if child %}/{{ child.identifier }}{% else %}-direct{% endif %}" method="post">
 	{% if make_donation %}<input type="hidden" name="make_donation" value="1" />{% endif %}
 	{% csrf_token %}
 	<ol>
+		{% if not child %}
+		<li>
+			<label for="id_for_student">Student:</label>
+			<input type="text" name="student_first_name" size="25" value="" placeholder="First Name" />
+			<input type="text" name="student_last_name" size="25" value="" placeholder="Last Name" />
+			<select id="student_teacher_id" name="student_teacher_id">
+				{% for teacher in teachers %}
+				<option value="{{ teacher.id }}">{{ teacher }}</option>
+				{% endfor %}
+			</select>
+		<li>&nbsp;</li>
+		</li>
+		{% endif %}
 		<li><label for="id_first_name"{% if form.first_name.errors %} class="error"{% endif %}>First Name:</label><input id="id_first_name" type="text" name="first_name" value="{{ form.first_name.value }}" size="30" class="required" />{% if form.first_name.errors %}<span class="pad-left10 error">* required</span>{% endif %}</li>
 		<li><label for="id_last_name"{% if form.last_name.errors %} class="error"{% endif %}>Last Name:</label><input id="id_last_name" type="text" name="last_name" value="{{ form.last_name.value }}" size="30" class="required" />{% if form.last_name.errors %}<span class="pad-left10 error">* required</span>{% endif %}</li>
 		<li><label for="id_email_address"{% if form.email_address.errors %} class="error"{% endif %}>Email Address:</label><input id="id_email_address" type="text" name="email_address" value="{{ form.email_address.value }}" size="30" class="required" />{% if form.email_address.errors %}<span class="pad-left10 error">* required</span>{% endif %}</li>

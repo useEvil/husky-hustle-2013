@@ -1,3 +1,4 @@
+{% load custom_filters %}
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
 	<head>
@@ -12,7 +13,7 @@
 						{% if messages %}
 						<ul class="messages">
 							{% for message in messages %}
-							<li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
+							<li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message|fix_err_msg|safe }}</li>
 							{% endfor %}
 							{% if new_key %}
 							<li><a href="/request/key/{{ new_key }}">Request new Key</a></li>
@@ -20,17 +21,17 @@
 						</ul>
 						{% endif %}
 						{% if error %}
-						<span class="error">{{ error }}</span>
+						<span class="error">{{ error|fix_err_msg|safe }}</span>
 						{% endif %}
 						{% if form.errors %}
 							{% for field in form %}
 								{% if field.errors %}
-								<span class="error">{{ field.name }}: {{ field.errors }}</span>
+								<span class="error">{{ field.name|fix_err_msg|safe }}: {{ field.errors|fix_err_msg|safe }}</span>
 								{% endif %}
 							{% endfor %}
 						{% endif %}
 						{% if form.non_field_errors %}
-						<span class="error">{{ form.non_field_errors }}</span>
+						<span class="error">{{ form.non_field_errors|fix_err_msg|safe }}</span>
 						{% endif %}
 						<h3>Register</h3>
 						{% if is_social %}

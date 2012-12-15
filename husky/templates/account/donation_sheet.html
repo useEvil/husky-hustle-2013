@@ -39,7 +39,7 @@
 			.foot-note {font-size: 0.55em;}
 		</style>
 	</head>
-	<body onLoad="alert('You can Print this page to fill out manually');">
+	<body onLoad="alert('You can Print this page to fill out manually.  Or use to turn in with your Pledge Envelope');">
 		<div id="wrapper" style="width: 915px;">
 			<div id="header">
 				<div id="logo">
@@ -70,8 +70,8 @@
 									<td class="amount last-cell">{% if not sponsor.paid %}${{ sponsor.total|floatformat:2|intcomma }}{% else %}&nbsp;{% endif %}</td>
 								</tr>
 								{% endfor %}
-								{% else %}
-								{% for row in '1234567' %}
+								{% endif %}
+								{% for row in '123456789' %}
 								<tr>
 									<td class="bold">&nbsp;</td>
 									<td>&nbsp;</td>
@@ -80,7 +80,6 @@
 									<td class="amount last-cell">&nbsp;</td>
 								</tr>
 								{% endfor %}
-								{% endif %}
 								<tr>
 									<td colspan="4" class="total">Total:</td>
 									<td class="last-cell">&nbsp;</td>
@@ -88,8 +87,7 @@
 							</table>
 							<br class="clearfix" />
 							<span class="bold">
-								Pledge per lap (amounts due will be calculated after completion of the Jog-a-thon the week 
-								of 3/11-3/15)
+								Pledge per lap (amounts due will be calculated after completion of the Jog-a-thon the week of 3/11-3/15)
 							</span>
 							<table class="donations">
 								<tr>
@@ -109,8 +107,8 @@
 									<td class="amount last-cell">{% if not sponsor.paid %}${{ sponsor.total|floatformat:2|intcomma }}{% else %}&nbsp;{% endif %}</td>
 								</tr>
 								{% endfor %}
-								{% else %}
-								{% for row in '1234567' %}
+								{% endif %}
+								{% for row in '12345' %}
 								<tr>
 									<td class="bold">&nbsp;</td>
 									<td>&nbsp;</td>
@@ -119,7 +117,6 @@
 									<td class="amount last-cell">&nbsp;</td>
 								</tr>
 								{% endfor %}
-								{% endif %}
 								<tr>
 									<td colspan="4" class="total">Total:</td>
 									<td class="last-cell">&nbsp;</td>

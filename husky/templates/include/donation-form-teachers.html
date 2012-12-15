@@ -1,4 +1,4 @@
-<form action="/donate/{{ child.identifier }}" method="post">
+<form action="/donate{% if child %}/{{ child.identifier }}{% else %}-direct{% endif %}" method="post">
 	{% if make_donation %}<input type="hidden" name="make_donation" value="1" />{% endif %}
 	<input type="hidden" name="teacher_donation" value="1" />
 	<input type="hidden" name="last_name" value="teacher" />
@@ -7,11 +7,23 @@
 	<input type="hidden" name="per_lap" value="" />
 	{% csrf_token %}
 	<ol>
+		{% if not child %}
+		<li>
+			<label for="id_for_student">For Student:</label>
+			<input type="text" name="student_first_name" size="25" value="" placeholder="First Name" />
+			<input type="text" name="student_last_name" size="25" value="" placeholder="Last Name" />
+			<select id="student_teacher_id" name="student_teacher_id">
+				{% for teacher in teachers %}
+				<option value="{{ teacher.id }}">{{ teacher }}</option>
+				{% endfor %}
+			</select>
+		</li>
+		{% endif %}
 		{% if not child.sponsored_principle %}
 		<li>
 			<label for="id_to_principle">Donate To:</label>
 			<input type="radio" class="to-principle" id="to_principle" name="to-principle" value="Mrs. Agopian" />&nbsp;Mrs. Agopian&nbsp;&nbsp;
-			<input type="radio" class="to-principle" id="to_teacher" name="to-principle" value="" />&nbsp;A Teacher
+			<input type="radio" class="to-principle" id="to_principle_teacher" name="to-principle" value="" />&nbsp;A Teacher
 		</li>
 		{% endif %}
 		<li>

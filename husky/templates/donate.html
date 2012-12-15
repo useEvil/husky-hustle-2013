@@ -26,7 +26,7 @@
 								{% if search %}
 								{% include "include/search-form.html" %}
 								{% elif teacher_donation %}
-								<h3>Make a Donation to a Teacher for: {{ child }}</h3>
+								<h3>Make a Donation to a Teacher{% if child %} for: {{ child }}{% else %}:{% endif %}</h3>
 								{% include "include/donation-form-teachers.html" %}
 								{% else %}
 								<h3>Make a Pledge to: {{ child }}</h3>
@@ -40,10 +40,10 @@
 						{% elif form %}
 						<h4>What to do Next:</h4>
 						<ul style="padding-left: 30px;">
-							<li><span src="{{ child.facebook_share_url }}" class="post-to-social post">Share with your Friends/Family on Facebook<span></li>
-							<li><span src="{{ child.twitter_share_url }}" class="post-to-social post">Share with your Friends/Family on Twitter</span></li>
-							<li><span src="{{ child.google_share_url }}" class="post-to-social post">Share with your Friends/Family on Google+</span></li>
-							<li><span class="send-email post">Share with your Friends/Family via Email</span></li>
+							<li><span src="{{ child.facebook_share_url }}" class="post-to-social post">Share with your Family/Friends on Facebook<span></li>
+							<li><span src="{{ child.twitter_share_url }}" class="post-to-social post">Share with your Family/Friends on Twitter</span></li>
+							<li><span src="{{ child.google_share_url }}" class="post-to-social post">Share with your Family/Friends on Google+</span></li>
+							<li><span class="send-email post">Share with your Family/Friends via Email</span></li>
 							<li><a href="/donation_sheet/" title="Print Form" target="_print">Print a Donation sheet</a></li>
 							<li><a href="/teacher-donation/{{ child.identifier }}">Make a Donation to a Teacher</a></li>
 							<li>
@@ -71,7 +71,7 @@
 					{% csrf_token %}
 					<input type="hidden" id="child_first_name" name="child_first_name" value="{{ child.first_name }}">
 					<fieldset class="form">
-					<legend id="title">Send Email to Friends/Family</legend>
+					<legend id="title">Send Email to Family/Friends</legend>
 					<div class="wrapper">
 						<ul>
 							<li>
