@@ -79,3 +79,10 @@ def is_linked(object, parent=None):
         return 1
     except ObjectDoesNotExist, e:
         return None
+
+@register.filter(name='fix_err_msg')
+def fix_err_msg(text=None):
+    text = str(text)
+    text = text.replace('username', 'email address')
+#    texts = re.findall('<[^>]+>(.+)</[^>]+>', text)
+    return text

@@ -121,7 +121,7 @@ def account(request, identifier=None):
             c['page_title'] = '%s' % (child)
             return render_to_response('account/donations.html', c, context_instance=RequestContext(request))
         except:
-            messages.error(request, 'Could not find Child for identity: %s' % identifier)
+            messages.error(request, 'Could not find Student for identity: %s' % identifier)
     c['messages'] = messages.get_messages(request)
     return render_to_response('account/index.html', c, context_instance=RequestContext(request))
 
@@ -142,7 +142,7 @@ def donation_sheet(request, identifier=None):
             c['child'] = child
             c['page_title'] = 'Pledge Sheet: %s' % (child)
         except:
-            messages.error(request, 'Could not find Child for identity: %s' % identifier)
+            messages.error(request, 'Could not find Student for identity: %s' % identifier)
     c['messages'] = messages.get_messages(request)
     return render_to_response('account/donation_sheet.html', c, context_instance=RequestContext(request))
 
@@ -151,20 +151,25 @@ def make_donation(request, identifier=None):
     c = Context(dict(
             page_title='Donate',
             parent=parent,
+            teachers=Teacher.objects.all(),
             make_donation=True,
     ))
     if identifier == 'search':
         c['search'] = True
         c['parent_only'] = request.GET.get('parent_only')
-        child_name = request.GET.get('student_name')
-        parent_name = request.GET.get('parent_name')
-        if child_name or parent_name:
-            if child_name and parent_name:
-                c['search'] = '%s" and "%s' % (child_name, parent_name)
+        if c['parent_only'] == '1':
+            first_name = request.GET.get('parent_first_name')
+            last_name = request.GET.get('parent_last_name')
+        else:
+            first_name = request.GET.get('student_first_name')
+            last_name = request.GET.get('student_last_name')
+        if first_name or last_name:
+            if first_name and last_name:
+                c['search'] = '%s %s' % (first_name, last_name)
             else:
-                c['search'] = child_name or parent_name
+                c['search'] = first_name or last_name
             try:
-                children = Children().find(child_name, parent_name)
+                children = Children().find(c['parent_only'], first_name, last_name)
                 c['children'] = children
             except Exception, e:
                 messages.error(request, 'Could not find Records matching: %s' % (c['search']))
@@ -172,12 +177,12 @@ def make_donation(request, identifier=None):
             if not children:
                 messages.error(request, 'Could not find Records matching: %s' % (c['search']))
                 c['error'] = True
-    else:
+    elif identifier:
         try:
             child = Children.objects.get(identifier=identifier)
             c['child'] = child
         except:
-            messages.error(request, 'Could not find Child for identity: %s' % identifier)
+            messages.error(request, 'Could not find Student for identity: %s' % identifier)
             c['error'] = True
     c['messages'] = messages.get_messages(request)
     return render_to_response('donate.html', c, context_instance=RequestContext(request))
@@ -187,15 +192,17 @@ def teacher_donation(request, identifier=None):
     c = Context(dict(
             page_title='Donate',
             parent=parent,
-            make_donation=True,
             teachers=Teacher.objects.all(),
             teacher_donation=True,
+            make_donation=True,
     ))
+    if not identifier: 
+        return render_to_response('donate.html', c, context_instance=RequestContext(request))
     try:
         child = Children.objects.get(identifier=identifier)
         c['child'] = child
     except:
-        messages.error(request, 'Could not find Child for identity: %s' % identifier)
+        messages.error(request, 'Could not find Student for identity: %s' % identifier)
         c['error'] = True
     c['messages'] = messages.get_messages(request)
     return render_to_response('donate.html', c, context_instance=RequestContext(request))
@@ -212,6 +219,59 @@ def donate(request, child_id=None):
     if request.POST:
         form = DonationForm(request.POST)
         if form.is_valid():
+            try:
+                donation = Donation(
+                    first_name=request.POST.get('first_name'),
+                    last_name=request.POST.get('last_name'),
+                    email_address=request.POST.get('email_address'),
+                    phone_number=request.POST.get('phone_number'),
+                    per_lap=request.POST.get('per_lap') or 0,
+                    donation=request.POST.get('donation'),
+                    date_added=date.datetime.now(),
+                    child=child,
+                )
+                donation.save()
+                messages.success(request, 'Thank you for making a Pledge')
+                c['success'] = True
+                c['full_name'] = donation.full_name()
+                c['email_address'] = donation.email_address
+                c['child_full_name'] = child.full_name
+                c['child_identifier'] = child.identifier
+                c['subject'] = 'Husky Hustle: Thank you for making a Pledge'
+                c['domain'] = Site.objects.get_current().domain
+                _send_email_teamplate('donate', c)
+            except Exception, e:
+                messages.error(request, str(e))
+        else:
+            messages.error(request, 'Failed to Add Sponsor')
+        c['form'] = form
+    c['messages'] = messages.get_messages(request)
+    if request.POST.get('make_donation') and request.POST.get('teacher_donation'):
+        c['teacher_donation'] = True
+    return render_to_response('donate.html', c, context_instance=RequestContext(request))
+
+def donate_direct(request):
+    c = Context(dict(
+            page_title='Donator',
+            parent=getParent(request),
+            donate=True,
+    ))
+    if request.POST:
+        form = DonationForm(request.POST)
+        if form.is_valid():
+            teacher = Teacher.objects.get(pk=request.POST.get('student_teacher_id'))
+            identifier = '%s-%s-%s'%(replace_space(request.POST.get('student_first_name')), replace_space(request.POST.get('student_last_name')), teacher.room_number)
+            try:
+                child = Children.objects.get(identifier=identifier)
+            except Exception, e:
+                child = Children(
+                    first_name=request.POST.get('student_first_name'),
+                    last_name=request.POST.get('student_last_name'),
+                    date_added=date.datetime.now(),
+                    identifier=identifier,
+                    teacher=teacher,
+                )
+                child.save()
             try:
                 donation = Donation(
                     first_name=request.POST.get('first_name'),
@@ -451,7 +511,7 @@ def add(request, type=None):
                 c['parent_name'] = parent.full_name
                 c['email_address'] = parent.email_address
                 c['child_identifier'] = child.identifier
-                c['subject'] = 'Husky Hustle: Child Registration'
+                c['subject'] = 'Husky Hustle: Student Registration'
                 c['domain'] = Site.objects.get_current().domain
                 _send_email_teamplate('register-child', c)
                 messages.success(request, 'Child Added')
@@ -465,13 +525,14 @@ def add(request, type=None):
                     pass
                 if not current_parent:
                     c['linked'] = other_parent
-                    messages.error(request, 'Child has already been added by another Parent')
+                    c['linked_child'] = child
+                    messages.error(request, 'Student has already been added by another Parent')
                 else:
-                    messages.error(request, 'You have already added this Child')
+                    messages.error(request, 'You have already added this Student')
             except Exception, e:
                 messages.error(request, str(e))
         else:
-            messages.error(request, 'Failed to Add Child')
+            messages.error(request, 'Failed to Add Student')
         c['form'] = form
     c['messages'] = messages.get_messages(request)
 #    return HttpResponseRedirect('/accounts/profile/')
@@ -502,9 +563,9 @@ def edit(request, type=None):
                 child.teacher = teacher
                 child.identifier = '%s-%s-%s'%(replace_space(request.POST.get('first_name')), replace_space(request.POST.get('last_name')), teacher.room_number)
                 child.save()
-                messages.success(request, 'Successfully Updated Child')
+                messages.success(request, 'Successfully Updated Student')
             except Exception, e:
-                messages.error(request, 'Failed to Update Child: %s' % str(e))
+                messages.error(request, 'Failed to Update Student: %s' % str(e))
         elif type == 'profile':
             try:
                 parent = getParent(request)
@@ -637,8 +698,8 @@ def json(request, child_id=None):
 
 def reports(request, type=None):
     json = {'label': [], 'values': []}
+    grades = Grade.objects.all()
     if type == 'most-laps':
-        grades = Grade.objects.all()
         for index, grade in enumerate(grades):
             json['values'].append({'label': grade.title, 'values': [], 'labels': []})
             teachers = Teacher.objects.filter(grade=grade).all()
@@ -647,7 +708,6 @@ def reports(request, type=None):
                 json['values'][index]['values'].append(num_laps['num_laps'] or 0)
                 json['values'][index]['labels'].append(teacher.full_name())
     elif type == 'most-donations':
-        grades = Grade.objects.all()
         for index, grade in enumerate(grades):
             json['values'].append({'label': grade.title, 'values': [], 'labels': []})
             teachers = Teacher.objects.filter(grade=grade).all()
@@ -659,7 +719,6 @@ def reports(request, type=None):
                 json['values'][index]['values'].append(float(total))
                 json['values'][index]['labels'].append(teacher.full_name())
     elif type == 'most-laps-by-child':
-        grades = Grade.objects.all()
         for index, grade in enumerate(grades):
             json['values'].append({'label': grade.title, 'values': [], 'labels': []})
             children = Children.objects.filter(teacher__grade=grade).annotate(max_laps=Max('laps')).order_by('laps')[:20]
@@ -667,7 +726,6 @@ def reports(request, type=None):
                 json['values'][index]['values'].append(child.max_laps or 0)
                 json['values'][index]['labels'].append(child.full_name())
     elif type == 'most-donations-by-child':
-        grades = Grade.objects.all()
         for index, grade in enumerate(grades):
             json['values'].append({'label': grade.title, 'values': [], 'labels': []})
             children = Children.objects.filter(teacher__grade=grade).annotate(max_funds=Max('collected')).order_by('collected')[:20]

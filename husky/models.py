@@ -162,6 +162,9 @@ class Grade(models.Model):
     def __unicode__(self):
         return self.title
 
+    def get_all(self):
+        return Grade.objects.exclude(grade=-1).all()
+
 
 class Teacher(models.Model):
 
@@ -187,6 +190,9 @@ class Teacher(models.Model):
         except ObjectDoesNotExist, e:
             return
 
+    def get_all(self):
+        return Teacher.objects.exclude(grade__grade=-1).all()
+
     def shortened(self):
         if not self.shorten:
             api = bitly.Api(login=settings.BITLY_LOGIN, apikey=settings.BITLY_APIKEY)
@@ -211,14 +217,22 @@ class Children(models.Model):
     def full_name(self):
         return '%s %s' % (self.first_name, self.last_name)
 
-    def find(self, child_name=None, parent_name=None):
+    def find(self, parent_only=None, first_name=None, last_name=None):
         try:
-            if child_name and parent_name:
-                return Children.objects.filter(first_name__icontains=child_name, parents__last_name__icontains=parent_name).distinct().all()
-            elif child_name:
-                return Children.objects.filter(first_name__icontains=child_name).all()
-            elif parent_name:
-                return Children.objects.filter(parents__last_name__icontains=parent_name).distinct().all()
+            if parent_only == '1':
+                if first_name and last_name:
+                    return Children.objects.filter(parents__first_name__icontains=first_name, parents__last_name__icontains=last_name).distinct().all()
+                elif first_name:
+                    return Children.objects.filter(parents__first_name__icontains=first_name).distinct().all()
+                elif last_name:
+                    return Children.objects.filter(parents__last_name__icontains=last_name).distinct().all()
+            else:
+                if first_name and last_name:
+                    return Children.objects.filter(first_name__icontains=first_name, last_name__icontains=last_name).distinct().all()
+                elif first_name:
+                    return Children.objects.filter(first_name__icontains=first_name).distinct().all()
+                elif last_name:
+                    return Children.objects.filter(last_name__icontains=last_name).distinct().all()
         except ObjectDoesNotExist, e:
             return
 
@@ -270,6 +284,9 @@ class Children(models.Model):
 
     def is_default(self, parent):
         return ParentChildren.objects.filter(children=self, parent=parent).get().default
+
+    def has_parents(self):
+        return ParentChildren.objects.filter(children=self).all()
 
     def total_due(self):
         total_due = 0

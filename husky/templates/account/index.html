@@ -17,7 +17,8 @@
 						<li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
 						{% endfor %}
 						{% if linked %}
-						<li style="color: #000000;">Would you like to link your account to: <a id="link_to" href="/request/link/{{ parent.id }}">{{ linked.full_name }}</a>?</li>
+						<li style="color: #000000;">Would you like to link your account to <a id="link_to" href="/request/link/{{ parent.id }}">{{ linked.full_name }}</a>?</li>
+						<li style="color: #000000;">Would you like to make a pledge to <a id="donate_to" href="{{ linked_child.donate_url }}">{{ linked_child.full_name }}</a>?</li>
 						{% endif %}
 					</ul>
 					{% endif %}
@@ -25,7 +26,7 @@
 						<h3>Profile</h3>
 						<div class="box left-col1-3">
 							<ul class="list">
-								<li>{% if parent.guardian == 1 %}Mother{% elif parent.guardian == 2 %}Father{% else %}Guardian{% endif %}: {{ parent.first_name }} {{ parent.last_name }}&nbsp;<img src="/static/images/edit.png" class="show-edit" id="edit_profile_{{ parent.id }}" /></li>
+								<li>{{ parent.first_name }} {{ parent.last_name }} ({% if parent.guardian == 1 %}Mother{% elif parent.guardian == 2 %}Father{% else %}Guardian{% endif %})&nbsp;<img src="/static/images/edit.png" class="show-edit" id="edit_profile_{{ parent.id }}" /></li>
 								<li>{{ parent.email_address }}</li>
 								<li>{{ parent.phone_number }}</li>
 								<li>{{ user_id }}</li>
@@ -38,10 +39,10 @@
 						</div>
 						{% if parent.children.all %}
 						<div class="box left-col2-3">
-							Your sponsors can use the link(s) below to make a direct donation to your child:<br />
+							Your sponsors can use the link(s) below to make a direct donation to the Student:<br />
 							{% if parent.children.all %}
 								{% for child in parent.children.all %}
-								<div id="donate-{{ child.id }}">{{ child.donate_url }}</div>
+								<div id="donate-{{ child.id }}" style="padding-left: 25px;">{{ child.donate_url }}</div>
 								{% endfor %}
 							{% endif %}
 						</div>
@@ -53,7 +54,7 @@
 								<th>Sponsors</th>
 								<th>Teacher</th>
 								<th>Laps</th>
-								<th>Share with Friends/Family</th>
+								<th>Share with Family/Friends</th>
 							</tr>
 							{% for child in parent.children.all %}
 							<tr>
@@ -65,11 +66,11 @@
 								<td style="width: 250px;">{{ child.teacher.full_name }} ({{ child.teacher.room_number }})</td>
 								<td style="width: 10px;">{% if child.laps %}{{ child.laps }}{% else %}0{% endif %}</td>
 								<td nowrap="nowrap">
-									<span src="{{ child.facebook_share_url|safe }}" class="post-to-social post"><img src="/static/images/facebook-share-button.png" width="60" /></span>
-									<a href="https://twitter.com/intent/tweet?button_hashtag=HuskyHustle" class="twitter-hashtag-button" data-related="HuskyHustle" data-url="{{ child.donate_url }}">Post to Twitter #HuskyHustle</a>
+									<span class="send-email post" id="email-{{ child.id }}" title="Share with Family/Friends via Email"><img src="/static/images/email-icon.png" width="20" /></span>
+									<span src="{{ child.facebook_share_url|safe }}" class="post-to-social post" title="Share with Family/Friends on Facebook"><img src="/static/images/facebook-share-button.png" width="60" /></span>
+									<a href="https://twitter.com/intent/tweet?button_hashtag=HuskyHustle" class="twitter-hashtag-button" data-related="HuskyHustle" data-url="{{ child.donate_url }}" alt="Share with Family/Friends on Twitter" title="Share with Family/Friends on Twitter">Post to Twitter #HuskyHustle</a>
 									<g:plus action="share" annotation="none"></g:plus>
-									<a href="/donation_sheet/{{ child.identifier }}" title="Print Form" target="_print"><img src="/static/images/print-icon.png" width="24" alt="Print Form" /></a>
-									<span class="send-email post" id="email-{{ child.id }}"><img src="/static/images/email-icon.png" width="20" /></span>
+									<a href="/donation_sheet/{{ child.identifier }}" title="Print Form" target="_print"><img src="/static/images/print-icon.png" width="24" alt="Print Your Student's Pledge Form" title="Print Your Student's Pledge Form" /></a>
 								</td>
 							</tr>
 							{% endfor %}
@@ -131,7 +132,7 @@
 					{% csrf_token %}
 					<input type="hidden" id="child_first_name" name="child_first_name" value="{{ child.first_name }}">
 					<fieldset class="form">
-					<legend id="title">Send Email to Friends/Family</legend>
+					<legend id="title">Send Email to Family/Friends</legend>
 					<div class="wrapper">
 						<ul>
 							<li>

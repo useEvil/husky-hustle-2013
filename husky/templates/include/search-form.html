@@ -18,23 +18,21 @@
 	</tr>
 	{% endfor %}
 </table>
+<br /><a href="/make-donation/search">Search Again</a>
 {% else %}
-{% if not parent_only %}
 <h3>Search for a Student</h3>
-{% else %}
-<h3>Link to another Account</h3>
-{% endif %}
 <form action="/make-donation/search" method="GET" id="form_search">
-	{% if not parent_only %}
+    <input type="hidden" id="parent_only" name="parent_only" value="0" />
 	<ol>
-		<li style="display: inline;"><label style="width: 200px;" for="student_name"{% if form.student_name.errors %} class="error"{% endif %}>Student First Name:</label><input id="student_name" type="text" name="student_name" value="{{ form.student_name.value }}" size="30" /></li>
+		<li><label style="width: 200px;" for="student_first_name"{% if form.student_first_name.errors %} class="error"{% endif %}>Student First Name:</label><input id="student_first_name" type="text" name="student_first_name" value="{{ form.student_first_name.value }}" size="30" /></li>
+		<li style="display: inline;"><label style="width: 200px;" for="student_last_name"{% if form.student_last_name.errors %} class="error"{% endif %}>Last Name:</label><input id="student_last_name" type="text" name="student_last_name" value="{{ form.student_last_name.value }}" size="30" /></li>
+		<li style="display: inline;padding-left: 15px;"><input type="button" style="width: 8em;" id="submit_child_search" class="control input submit" value=" Search " /></li>
+        <li><br /><h4 style="padding-left: 300px;"> - OR - </h4></li>
 	</ol>
-	{% else %}
-	<input type="hidden" name="parent_only" value="1" />
-	{% endif %}
 	<ol>
-		<li style="display: inline;"><label style="width: 200px;" for="parent_name"{% if form.parent_name.errors %} class="error"{% endif %}>Parent Last Name:</label><input id="parent_name" type="text" name="parent_name" value="{{ form.parent_name.value }}" size="30" /></li>
-		<li style="display: inline;padding-left: 15px;"><input type="button" style="width: 8em;" id="submit_search" class="control input submit" value=" Search " /></li>
+		<li><label style="width: 200px;" for="parent_first_name"{% if form.parent_first_name.errors %} class="error"{% endif %}>Parent First Name:</label><input id="parent_first_name" type="text" name="parent_first_name" value="{{ form.parent_first_name.value }}" size="30" /></li>
+		<li style="display: inline;"><label style="width: 200px;" for="parent_last_name"{% if form.parent_last_name.errors %} class="error"{% endif %}>Last Name:</label><input id="parent_last_name" type="text" name="parent_last_name" value="{{ form.parent_last_name.value }}" size="30" /></li>
+		<li style="display: inline;padding-left: 15px;"><input type="button" style="width: 8em;" id="submit_parent_search" class="control input submit" value=" Search " /></li>
 	</ol>
 </form>
 {% endif %}
