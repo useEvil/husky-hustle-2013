@@ -340,7 +340,7 @@ def register(request):
             try:
                 user = form.save(form['email_address'].data, form['password1'].data)
                 expires = date.datetime.now() + date.timedelta(settings.ACCOUNT_ACTIVATION_DAYS)
-                key = base64.urlsafe_b64encode('%s-%s' % (form['email_address'].data, expires))
+                key = base64.urlsafe_b64encode('%s-%s' % (form['email_address'].data, expires)).replace('=','')
                 parent = Parent(
                                 first_name=form['first_name'].data,
                                 last_name=form['last_name'].data,
@@ -411,7 +411,7 @@ def request(request, type=None, key=None):
     if type == 'key':
         user = User.objects.filter(parent__activation_key=key).get()
         expires = date.datetime.now() + date.timedelta(settings.ACCOUNT_ACTIVATION_DAYS)
-        key = base64.urlsafe_b64encode('%s-%s-%s' % (user.parent.email_address, expires))
+        key = base64.urlsafe_b64encode('%s-%s-%s' % (user.parent.email_address, expires)).replace('=','')
         user.parent.activation_key = key
         user.parent.key_expires = expires
         user.parent.save()
