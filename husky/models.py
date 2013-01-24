@@ -18,6 +18,7 @@ from django.contrib.auth.forms import PasswordResetForm
 from django.contrib.sites.models import Site
 from django import forms
 
+from paypal import PayPal
 from picasa import  PicasaField, PicasaStorage
 from decimal import Decimal
 from registration.forms import RegistrationForm
@@ -534,6 +535,37 @@ class Donation(models.Model):
             for result in results:
                 result.donated = result.total()
                 result.save()
+
+    def thank_you_url(self):
+        site = Site.objects.get_current()
+        thank_you_url = 'http://%s/thank_you' % (site.domain)
+        return thank_you_url
+
+    def button_data(self, amount=None, ids=None):
+        if not amount: amount = self.total()
+        if not ids: ids = self.id
+        site = Site.objects.get_current()
+        data = {
+            'rm': 1,
+            'lc': 'US',
+            'no_note': 0,
+            'no_shipping': 2,
+            'cmd': '_donations',
+            'currency_code': 'USD',
+            'business': settings.PAYPAL_BUS_ID,
+            'item_number': 'husky-hustle-donation-%s' % (ids),
+            'item_name': 'Husky Hustle Online Donations',
+            'return': 'http://%s/thank_you' % (site.domain),
+            'notify_url': 'http://%s/paid/%s' % (site.domain, ids),
+            'cert_id': settings.PAYPAL_CERT_ID,
+            'amount': amount,
+        }
+        return data
+
+    def encrypted_block(self, data=None):
+        if not data: data = self.button_data()
+        paypal = PayPal()
+        return paypal.encrypt(data)
 
 
 class DonationForm(forms.Form):

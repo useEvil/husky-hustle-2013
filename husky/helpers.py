@@ -94,3 +94,10 @@ def getParent(request):
         return Parent.objects.filter(email_address=request.user.email).get()
     except:
         return None
+
+def print_log(message, debug=False):
+    if not debug: return
+    log = file('django.log', 'a')
+    print >>log, message
+    log.flush()
+    log.close()

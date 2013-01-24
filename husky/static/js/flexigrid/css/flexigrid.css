@@ -630,7 +630,7 @@ div.pGroup {
 }
 
 .flexigrid div.fbutton .pdf {
-	background: url(/static/js/flexigrid/css/images/pdf.png) no-repeat center left;
+	background: url(/static/js/flexigrid/css/images/pdf-icon.png) no-repeat center left;
 	background-size: 16px;
 }
 
@@ -640,6 +640,10 @@ div.pGroup {
 
 .flexigrid div.fbutton .reminder {
 	background: url(/static/js/flexigrid/css/images/email.png) no-repeat center left;
+}
+
+.flexigrid div.fbutton .payment {
+	background: url(/static/js/flexigrid/css/images/paypal-icon.png) no-repeat center left;
 }
 
 /* ie adjustments */

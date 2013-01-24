@@ -433,6 +433,30 @@ function sendReminders(event) {
 	}
 }
 
+function makePayment(event) {
+	var payments = 0;
+	var ids = [];
+	$('.set-reminder').each(
+		function () {
+			if ($(this).attr('checked') == 'checked') {
+				var id = this.id.replace( 'reminder-', '' );
+				var text = $('#row'+id+' span[abbr="total"]').text();
+				payments += parseFloat(text);
+				ids.push(id);
+			}
+		}
+	);
+	if (payments) {
+//		$('#payments_form').show();
+//		doOverlayOpen('payments');
+		if (confirm('You are about to make a payment for: $' + payments) == true) {
+			window.location.href = '/payment/brooke-nguyen-408/' + ids.join(',') + '?amount=' + payments;
+		}
+	} else {
+		alert('You must select sponsors to make payments for.');
+	}
+}
+
 function disconnectSocial(event) {
 	$.getJSON($(this).attr('src'), reloadPage);
 	return false;
