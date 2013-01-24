@@ -24,7 +24,7 @@ from django.contrib.sites.models import Site
 from django.contrib.syndication.views import Feed
 from django.views.decorators.debug import sensitive_post_parameters
 from django.views.decorators.cache import never_cache
-from django.views.decorators.csrf import csrf_protect
+from django.views.decorators.csrf import csrf_protect, csrf_exempt
 from django.conf import settings
 
 from socialregistration.contrib.facebook.models import FacebookProfile
@@ -206,6 +206,31 @@ def teacher_donation(request, identifier=None):
         c['error'] = True
     c['messages'] = messages.get_messages(request)
     return render_to_response('donate.html', c, context_instance=RequestContext(request))
+
+def payment(request, identifier=None, id=None):
+    c = Context(dict(
+            page_title='Payment',
+    ))
+    try:
+        child = Children.objects.get(identifier=identifier)
+        c['child'] = child
+    except:
+        messages.error(request, 'Could not find Student for identity: %s' % identifier)
+        c['error'] = True
+    if request.GET.get('amount'):
+        c['encrypted_block'] = Donation().encrypted_block(Donation().button_data(request.GET.get('amount'), id))
+        c['total'] = request.GET.get('amount')
+    else:
+        try:
+            donation = Donation.objects.get(id=id)
+            c['donation'] = donation
+            c['encrypted_block'] = donation.encrypted_block()
+            c['total'] = donation.total()
+        except:
+            messages.error(request, 'Could not find Donation for ID: %s' % id)
+            c['error'] = True
+    c['messages'] = messages.get_messages(request)
+    return render_to_response('payment.html', c, context_instance=RequestContext(request))
 
 @login_required(login_url='/accounts/login/')
 def donate(request, child_id=None):
@@ -629,7 +654,7 @@ def emails(request):
 
 def reminders(request):
     c = Context(dict(
-            subject='Husky Hustle: Parent Registration',
+            subject='Husky Hustle: Payment Reminder',
     ))
     donators = request.POST.getlist('donators')
     if request.POST.get('custom_message'):
@@ -640,6 +665,7 @@ def reminders(request):
         c['email_address'] = donation.email_address
         c['child_name'] = donation.child.full_name
         c['child_identifier'] = donation.child.identifier
+        c['donation_id'] = donation.id
         c['domain'] = Site.objects.get_current().domain
         _send_email_teamplate('reminder', c)
     messages.success(request, 'Successfully Sent Reminders')
@@ -660,13 +686,42 @@ def disconnect(request, parent_id=None, social=None):
     return HttpResponse(simplejson.dumps({'result': 'OK', 'status': 200}), mimetype='application/json')
 
 def paid(request, donation_id=None):
-    try:
-        object = Donation.objects.get(pk=donation_id)
-        object.paid = True
-        object.save()
-        messages.success(request, 'Successfully set Sponsor to Paid')
-    except Exception, e:
-        messages.error(request, 'Failed to set Sponsor to Paid: %s' % str(e))
+    for id in donation_id.split(','):
+        try:
+            object = Donation.objects.get(pk=id)
+            object.paid = True
+            object.save()
+            messages.success(request, 'Successfully set Sponsor to Paid')
+        except Exception, e:
+            messages.error(request, 'Failed to set Sponsor to Paid: %s' % str(e))
+    return HttpResponse(simplejson.dumps({'result': 'OK', 'status': 200}), mimetype='application/json')
+
+@csrf_exempt
+def thank_you(request, donation_id=None):
+    c = Context(dict(
+            page_title='Thank You',
+    ))
+    print_log('==== request.POST [%s]' % request.POST, settings.DEBUG)
+    print_log('==== request.GET [%s]' % request.GET, settings.DEBUG)
+    if donation_id:
+        try:
+            object = Donation.objects.get(pk=donation_id)
+            object.paid = True
+            object.save()
+            messages.success(request, 'Successfully set Sponsor to Paid')
+        except Exception, e:
+            messages.error(request, 'Failed to set Sponsor to Paid: %s' % str(e))
+    elif request.GET.get('custom') or request.POST.get('custom'):
+        donation_id = request.GET.get('custom')
+        try:
+            object = Donation.objects.get(pk=donation_id)
+            object.paid = True
+            object.save()
+            messages.success(request, 'Successfully set Sponsor to Paid')
+        except Exception, e:
+            messages.error(request, 'Failed to set Sponsor to Paid: %s' % str(e))
+    else:
+        return render_to_response('thank_you.html', c, context_instance=RequestContext(request))
     return HttpResponse(simplejson.dumps({'result': 'OK', 'status': 200}), mimetype='application/json')
 
 @csrf_protect
@@ -767,14 +822,14 @@ def _formatData(data, total):
             row['cell'].append(donation.phone_number)
             row['cell'].append(donation.child.laps or 0)
         row['cell'].append("%01.2f" % (donation.donation or 0))
-        row['cell'].append("%01.2f" % (donation.total()))
+        row['cell'].append('<span abbr="total">%01.2f</span>' % (donation.total()))
         if donation.last_name == 'teacher':
             row['cell'].append('<span class="hidden">no</span>')
         else:
             row['cell'].append(donation.per_lap and 'yes' or 'no')
         row['cell'].append(donation.date_added.strftime('%m/%d/%Y'))
         row['cell'].append(donation.paid and '<span class="success">Paid</span>' or '<input type="checkbox" value="paid" name="paid" id="paid-%s" class="set-paid" alt="Mark as Paid" />' % donation.id)
-        row['cell'].append('<input type="checkbox" value="%s" name="reminder" id="reminder-%s" class="set-reminder" />' % (donation.id, donation.id))
+        row['cell'].append(donation.paid and '<span class="success">&nbsp;</span>' or '<input type="checkbox" value="%s" name="reminder" id="reminder-%s" class="set-reminder" />' % (donation.id, donation.id))
         result['rows'].append(row)
         count += 1
     return result
@@ -819,5 +874,4 @@ class BlogFeed(Feed):
     def item_link(self, item):
         domain = Site.objects.get_current().domain
         return 'http://%s/nav/blog/%d' % (domain, item.id)
-
 

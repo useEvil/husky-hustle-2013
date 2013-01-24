@@ -707,6 +707,10 @@ fieldset {
 	display: none;
 }
 
+.center {
+	text-align: center;
+}
+
 .input {
 	padding: 0.15em;
 	width: 40em;
