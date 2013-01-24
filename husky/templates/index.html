@@ -40,7 +40,7 @@
 							<img class="image aligntop full" src="/static/images/welcome2.jpg" width="430" height="155" alt="" />
 							<p>
 								<div class="title">{{ motd.title }}</div>
-								<div class="content">{{ motd.content }}</div>
+								<div class="content">{{ motd.content|safe }}</div>
 								<div class="author">by {{ motd.author }} on {{ motd.date_added }}</div>
 							</p>
 						</div>
