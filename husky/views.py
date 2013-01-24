@@ -55,7 +55,7 @@ def index(request):
             my_facebook=my_twitter,
             my_twitter=my_twitter,
             my_google=my_google,
-            motd=Message.objects.get(),
+            motd=Message.objects.latest('date_added'),
             content=Content.objects.filter(page='index').get(),
             bar_height=Donation().bar_height(),
             arrow_height=Donation().arrow_height(),
