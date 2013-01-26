@@ -143,7 +143,7 @@ SOCIALREGISTRATION_GENERATE_USERNAME = False
 BITLY_LOGIN = ''
 BITLY_APIKEY = ''
 
-PAYPAL_PAYPAL_CERT = 'certs/paypal_cert_prod.pem'
+PAYPAL_PAYPAL_CERT = 'certs/paypal_cert.pem'
 PAYPAL_PRIVATE_KEY = 'certs/private_key.pem'
 PAYPAL_PUBLIC_KEY = 'certs/public_key.pem'
 PAYPAL_CERT_ID = base64.b64decode('')
