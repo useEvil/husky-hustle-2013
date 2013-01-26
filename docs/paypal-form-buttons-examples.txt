@@ -1,0 +1,57 @@
+<form action="https://www.paypal.com/cgi-bin/webscr" method="post">
+    <input type="hidden" name="cmd" value="_donations">
+    <input type="hidden" name="business" value="H7TPHT5LWNK3W">
+    <input type="hidden" name="lc" value="US">
+    <input type="hidden" name="item_name" value="Husky Hustle Online Donations">
+    <input type="hidden" name="item_number" value="husky-hustle-donation">
+    <input type="hidden" name="amount" value="10.00">
+    <input type="hidden" name="currency_code" value="USD">
+    <input type="hidden" name="no_note" value="0">
+    <input type="hidden" name="cn" value="Add special instructions to the seller:">
+    <input type="hidden" name="no_shipping" value="2">
+    <input type="hidden" name="rm" value="1">
+    <input type="hidden" name="return" value="http://huskyhustle.thaiandhien.com/thank_you">
+    <input type="hidden" name="currency_code" value="USD">
+    <input type="image" src="https://www.paypalobjects.com/en_US/i/btn/btn_donateCC_LG.gif" border="0" name="submit" alt="PayPal - The safer, easier way to pay online!">
+    <img alt="" border="0" src="https://www.paypalobjects.com/en_US/i/scr/pixel.gif" width="1" height="1">
+</form>
+
+form  = '<form action="https://www.sandbox.paypal.com/cgi-bin/webscr" method="post">'
+form += '<input type="hidden" name="cmd" value="_s-xclick">'
+form += '<input type="hidden" name="hosted_button_id" value="VQKCUYTHHFZB4">'
+form += '<input type="hidden" name="notify_url" value="' + notify_url + '">'
+form += '<input type="image" src="https://www.sandbox.paypal.com/en_US/i/btn/btn_donateCC_LG.gif" border="0" name="submit" alt="PayPal - The safer, easier way to pay online!">'
+form += '<img alt="" border="0" src="https://www.sandbox.paypal.com/en_US/i/scr/pixel.gif" width="1" height="1">'
+form += '</form>'
+
+<form target="paypal" action="https://www.paypal.com/cgi-bin/webscr" method="post">
+    <input type="hidden" name="cmd" value="_s-xclick" />
+    <input type="hidden" name="encrypted" value="{{ donation.encrypted_block }}" />
+    <input class="button pay" type="submit" name="submit" value=" Make Payment " />
+</form>
+
+
+if __name__ == '__main__':
+    paypal = PayPal()
+    data = {
+        'cert_id': settings.PAYPAL_CERT_ID,
+        'cmd': '_donations',
+        'business': 'useEvil@gmail.com',
+        'item_name': 'Handheld Computer',
+        'item_number': 1234,
+        'custom': 'husky-hustle-donations',
+        'amount': 500.00,
+        'currency_code': 'USD',
+        'tax': 41.25,
+        'shipping': 20.00,
+        'address_override': 1,
+        'address1': '123 Main St',
+        'city': 'Austin',
+        'state': 'TX',
+        'zip': 94085,
+        'country': 'US',
+        'no_note': 1,
+        'cancel_return': 'http://www.company.com/cancel.htm'
+    }
+    text = paypal.encrypt(data)
+    print "Encrypted = %s" % text
