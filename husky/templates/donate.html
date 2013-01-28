@@ -18,6 +18,9 @@
 							{% endfor %}
 							{% if success %}
 							<li class="success">You will be notified via email at a later date on how to make your payment.</li>
+							{% if not is_per_lap %}
+							<li class="success">Or you can make your payment now using this link: <a href="{{ payment_url }}">Make your Payment</a>.</li>
+							{% endif %}
 							{% endif %}
 						</ul>
 						{% endif %}

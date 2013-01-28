@@ -13,6 +13,7 @@
 			<input type="text" name="student_first_name" size="25" value="" placeholder="First Name" />
 			<input type="text" name="student_last_name" size="25" value="" placeholder="Last Name" />
 			<select id="student_teacher_id" name="student_teacher_id">
+				<option value="">Select Teacher</option>
 				{% for teacher in teachers %}
 				<option value="{{ teacher.id }}">{{ teacher }}</option>
 				{% endfor %}
@@ -30,6 +31,7 @@
 			<label for="teacher">Teacher:</label>
 			<input id="id_first_name" type="text" name="first_name" value="{{ form.first_name.value }}" class="hidden" />
 			<select id="id_teacher" name="teacher" class="to-teacher">
+				<option value="">Select Teacher</option>
 				{% for teacher in teachers %}
 				<option value="{{ teacher.full_name }}">{{ teacher }}</option>
 				{% endfor %}

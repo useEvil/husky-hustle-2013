@@ -252,7 +252,7 @@ def donate(request, child_id=None):
                     phone_number=request.POST.get('phone_number'),
                     per_lap=request.POST.get('per_lap') or 0,
                     donation=request.POST.get('donation'),
-                    date_added=date.datetime.now(),
+                    date_added=date.datetime.now(pytz.utc),
                     child=child,
                 )
                 donation.save()
@@ -262,9 +262,12 @@ def donate(request, child_id=None):
                 c['email_address'] = donation.email_address
                 c['child_full_name'] = child.full_name
                 c['child_identifier'] = child.identifier
+                c['is_per_lap'] = donation.per_lap
+                c['payment_url'] = donation.payment_url()
                 c['subject'] = 'Husky Hustle: Thank you for making a Pledge'
                 c['domain'] = Site.objects.get_current().domain
-                _send_email_teamplate('donate', c)
+                if not request.POST.get('teacher_donation'):
+                    _send_email_teamplate('donate', c)
             except Exception, e:
                 messages.error(request, str(e))
         else:
@@ -292,7 +295,7 @@ def donate_direct(request):
                 child = Children(
                     first_name=request.POST.get('student_first_name'),
                     last_name=request.POST.get('student_last_name'),
-                    date_added=date.datetime.now(),
+                    date_added=date.datetime.now(pytz.utc),
                     identifier=identifier,
                     teacher=teacher,
                 )
@@ -305,7 +308,7 @@ def donate_direct(request):
                     phone_number=request.POST.get('phone_number'),
                     per_lap=request.POST.get('per_lap') or 0,
                     donation=request.POST.get('donation'),
-                    date_added=date.datetime.now(),
+                    date_added=date.datetime.now(pytz.utc),
                     child=child,
                 )
                 donation.save()
@@ -364,7 +367,7 @@ def register(request):
         if form.is_valid():
             try:
                 user = form.save(form['email_address'].data, form['password1'].data)
-                expires = date.datetime.now() + date.timedelta(settings.ACCOUNT_ACTIVATION_DAYS)
+                expires = date.datetime.now(pytz.utc) + date.timedelta(settings.ACCOUNT_ACTIVATION_DAYS)
                 key = base64.urlsafe_b64encode('%s-%s' % (form['email_address'].data, expires)).replace('=','')
                 parent = Parent(
                                 first_name=form['first_name'].data,
@@ -374,7 +377,7 @@ def register(request):
                                 guardian=post.get('guardian'),
                                 activation_key=key,
                                 key_expires=expires,
-                                date_added=date.datetime.now(),
+                                date_added=date.datetime.now(pytz.utc),
                                 site=Site.objects.get_current(),
                                 user=user,
                             )
@@ -435,7 +438,7 @@ def request(request, type=None, key=None):
     ))
     if type == 'key':
         user = User.objects.filter(parent__activation_key=key).get()
-        expires = date.datetime.now() + date.timedelta(settings.ACCOUNT_ACTIVATION_DAYS)
+        expires = date.datetime.now(pytz.utc) + date.timedelta(settings.ACCOUNT_ACTIVATION_DAYS)
         key = base64.urlsafe_b64encode('%s-%s-%s' % (user.parent.email_address, expires)).replace('=','')
         user.parent.activation_key = key
         user.parent.key_expires = expires
@@ -526,7 +529,7 @@ def add(request, type=None):
                     first_name=request.POST.get('first_name'),
                     last_name=request.POST.get('last_name'),
                     identifier='%s-%s-%s'%(replace_space(request.POST.get('first_name')), replace_space(request.POST.get('last_name')), teacher.room_number),
-                    date_added=date.datetime.now(),
+                    date_added=date.datetime.now(pytz.utc),
                     teacher=teacher,
                 )
                 child.save()
@@ -666,6 +669,7 @@ def reminders(request):
         c['child_name'] = donation.child.full_name
         c['child_identifier'] = donation.child.identifier
         c['donation_id'] = donation.id
+        c['payment_url'] = donation.payment_url()
         c['domain'] = Site.objects.get_current().domain
         _send_email_teamplate('reminder', c)
     messages.success(request, 'Successfully Sent Reminders')
