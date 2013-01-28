@@ -320,7 +320,8 @@ def donate_direct(request):
                 c['child_identifier'] = child.identifier
                 c['subject'] = 'Husky Hustle: Thank you for making a Pledge'
                 c['domain'] = Site.objects.get_current().domain
-                _send_email_teamplate('donate', c)
+                if not request.POST.get('teacher_donation'):
+                    _send_email_teamplate('donate', c)
             except Exception, e:
                 messages.error(request, str(e))
         else:
