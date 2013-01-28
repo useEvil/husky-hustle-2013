@@ -22,6 +22,7 @@ $('.pre-set-amount').live('click', setPreSetAmount);
 $('.to-principle').live('click', setPreSetAmount);
 $('.to-teacher').live('change', setPreSetAmount);
 $('.run-calculations').live('click', runCalculations);
+$('.tooltip').live('click', showTooltip);
 $('#link_to').live('click', linkToParent);
 $('body').keyup(cancelOverlay);
 
@@ -146,9 +147,27 @@ function reloadPage(event, id) {
 }
 
 function showFormDonate(event, id) {
-	url = window.location.href;
-	url = url.replace('account', 'donate');
-	window.location.href = url;
+	$('#overlay-box-add').dialog({
+		closeOnEscape: true,
+		minWidth: 600,
+		minHeight: 100,
+		modal: true,
+		dialogClass: 'tooltip',
+		resizable: false,
+		close: function(event, ui) { cancelForm(); }
+	});
+}
+
+function showFormTeacher(event, id) {
+	$('#overlay-box-teacher').dialog({
+		closeOnEscape: true,
+		minWidth: 600,
+		minHeight: 100,
+		modal: true,
+		dialogClass: 'tooltip',
+		resizable: false,
+		close: function(event, ui) { cancelForm(); }
+	});
 }
 
 function showEdit(event) {
@@ -162,9 +181,13 @@ function showEdit(event) {
 		$('#sponsor').show();
 		$('#sponsor input').each(
 			function () {
-				var text = $('#row'+id+' td[abbr="'+this.id+'"]').text();
-				if (this.id == 'per_lap') {
-					if (text == 'yes') $(this).attr('checked', true);
+				var text = $('#row'+id+' td[abbr="'+this.name+'"]').text();
+				if (this.name == 'per_lap') {
+					if (text == 'yes') {
+						$('#per_lap_yes').attr('checked', true);
+					} else {
+						$('#per_lap_no').attr('checked', true);
+					}
 				} else if (text) {
 					$(this).val( text );
 				}
@@ -173,11 +196,31 @@ function showEdit(event) {
 	} else {
 		$('#'+form+'_'+id).show();
 	}
-	doOverlayOpen(edit);
+	$('#overlay-box-edit').dialog({
+		closeOnEscape: true,
+		minWidth: 600,
+		minHeight: 100,
+		modal: true,
+		dialogClass: 'tooltip',
+		resizable: false,
+		close: function(event, ui) { $('.form-edit').hide(); }
+	});
 }
 
 function showBarChart(type) {
 	$.getJSON('/admin/reports/' + type, initBarChart);
+}
+
+function showTooltip(event) {
+	var id = this.id.replace( '_tooltip', '' );
+	$('#tooltip_'+id).dialog({
+		closeOnEscape: true,
+		minWidth: 500,
+		minHeight: 100,
+//		modal: true
+		dialogClass: 'tooltip',
+		resizable: false
+	});
 }
 
 function addItem(event) {
@@ -282,9 +325,9 @@ function cancelOverlay(e) {
 		} else {
 			$('#'+formID+'_form .cancel_button').trigger('click');
 		}
+		cancelForm(formID, formID);
+		formID  = '';
 	}
-	cancelForm(formID, formID);
-	formID  = '';
 }
 
 function cancelForm(event, cssClass) {
@@ -312,6 +355,12 @@ function cancelForm(event, cssClass) {
 			var form = id.replace( 'cancel_', '' );
 			$('#'+form+'_form').hide();
 		}
+	} else if (id && typeof(id) === 'object' && id.name === 'id') {
+		$('.input-field').each(
+			function () {
+				$(this).attr('value', '');
+			}
+		);
 	} else if (this.id && typeof(this.id) != 'object') {
 		var form = this.id.replace( 'cancel_', '' );
 		$('#'+form+'_form').hide();
@@ -407,7 +456,16 @@ function sendEmail(event) {
 	msg = msg.replace( /{first_name}/g, $('#first_name-'+id).text() );
 	$('#custom_message').html( msg );
 	$('#email_form').show();
-	doOverlayOpen('email');
+	$('#overlay-box-email').dialog({
+		closeOnEscape: true,
+		minWidth: 790,
+		minHeight: 400,
+		modal: true,
+		dialogClass: 'tooltip',
+		resizable: false,
+		close: function(event, ui) { cancelForm(event, ui); }
+	});
+//	doOverlayOpen('email');
 }
 
 function sendReminders(event) {
@@ -427,7 +485,16 @@ function sendReminders(event) {
 	);
 	if (senders) {
 		$('#reminder_form').show();
-		doOverlayOpen('reminder');
+		$('#overlay-box-reminder').dialog({
+			closeOnEscape: true,
+			minWidth: 790,
+			minHeight: 400,
+			modal: true,
+			dialogClass: 'tooltip',
+			resizable: false,
+			close: function(event, ui) { cancelForm(event, ui); }
+		});
+//		doOverlayOpen('reminder');
 	} else {
 		alert('You must select sponsors to email.  You cannot send Reminders to Teachers.');
 	}

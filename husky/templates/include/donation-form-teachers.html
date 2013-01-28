@@ -1,5 +1,6 @@
 <form action="/donate{% if child %}/{{ child.identifier }}{% else %}-direct{% endif %}" method="post">
 	{% if make_donation %}<input type="hidden" name="make_donation" value="1" />{% endif %}
+	{% if from_account %}<input type="hidden" name="from_account" value="1" />{% endif %}
 	<input type="hidden" name="teacher_donation" value="1" />
 	<input type="hidden" name="last_name" value="teacher" />
 	<input type="hidden" name="phone_number" value="(000) 000-0000" />
@@ -45,7 +46,8 @@
 			<input type="radio" class="pre-set-amount" name="pre-set-amount" value="20.00" />&nbsp;$20&nbsp;&nbsp;
 			<input type="radio" class="pre-set-amount" name="pre-set-amount" value="" />&nbsp;Other&nbsp;&nbsp;
 		</li>
-		<li><label for="id_donation"{% if form.donation.errors %} class="error"{% endif %}>Donation:</label><input id="id_donation" type="text" name="donation" value="{{ form.donation.value }}" size="10" class="required" placeholder="xxxx.xx" readonly="readonly" />{% if form.donation.errors %}<span class="pad-left10 error">* required</span>{% endif %}</li>
+		<li><label for="id_donation"{% if form.donation.errors %} class="error"{% endif %}>Donation:</label><input id="id_donation" type="text" name="donation" value="{{ form.donation.value }}" size="10" class="input-field required" placeholder="xxxx.xx" readonly="readonly" />{% if form.donation.errors %}<span class="pad-left10 error">* required</span>{% endif %}</li>
+		<li>&nbsp;</li>
 		<li><input type="submit" value=" Make Donation " /></li>
 	</ol>
 </form>

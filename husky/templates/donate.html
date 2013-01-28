@@ -39,8 +39,16 @@
 								{% endif %}
 							{% else %}
 								{% include "include/search-form.html" %}
+								<br class="clearfix" />
+								<h4>Make a Donation Directly</h4>
+								<div class="box">
+									<form>
+										<a href="/make-donation/">Make a Donation to a Student</a><br />
+										<a href="/teacher-donation/">Make a Donation to a Teacher</a>
+									</form>
+								</div>
 							{% endif %}
-						{% elif form %}
+						{% elif form and not error %}
 						<h4>What to do Next:</h4>
 						<ul style="padding-left: 30px;">
 							<li><span src="{{ child.facebook_share_url }}" class="post-to-social post">Share with your Family/Friends on Facebook<span></li>

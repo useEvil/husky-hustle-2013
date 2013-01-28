@@ -6,9 +6,13 @@ You can now manage your sponsors online.  You can add new sponsors, mark if they
 
 We will periodically send updates to your email address at: {{ email_address }}.  Please make sure our email address husky@huskyhustle.com is in your contact list.
 
-If you would like to invite family and friends to sponsor {{ child_name }}, please use the link below.
+If you would like to invite family and friends to sponsor {{ child_name }}, you can forward the link below:
 
-http://{{ domain }}/donate/{{ child_identifier }}
+{{ donate_url }}
+
+You can use the link below to manage your Student's sponsors and send email reminders:
+
+{{ manage_url }}
 
 Regards,
 

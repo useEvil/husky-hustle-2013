@@ -242,6 +242,11 @@ class Children(models.Model):
         donate_url = 'http://%s/make-donation/%s' % (site.domain, self.identifier)
         return donate_url
 
+    def manage_url(self):
+        site = Site.objects.get_current()
+        manage_url = 'http://%s/account/%s' % (site.domain, self.identifier)
+        return manage_url
+
     def facebook_share_url(self):
         site = Site.objects.get_current()
         params = 'app_id=' + settings.FACEBOOK_APP_ID + '&link=' + self.donate_url() + '&picture=' + ('http://%s/static/images/hickslogo-1.jpg' % site.domain) + '&name=' + urllib.quote('Husky Hustle') + '&caption=' + urllib.quote('Donate to %s' % self.full_name()) + '&description=' + urllib.quote("Donate and help further our children's education.") + '&redirect_uri=' + 'http://%s/' % site.domain
@@ -364,6 +369,17 @@ class Parent(models.Model):
     def get_my_children(self):
         return Children.objects.filter(parent=self, parentchildren__default=1).all()
 
+    def activate_url(self):
+        site = Site.objects.get_current()
+        activate_url = 'http://%s/activate/%s' % (site.domain, self.activation_key)
+        return activate_url
+
+    def link_url(self, request_id=None):
+        if not request_id: request_id = self.id
+        site = Site.objects.get_current()
+        link_url = 'http://%s/link/%s' % (site.domain, request_id)
+        return link_url
+
     def links(self):
         try:
             child = self.children.all()[0]
@@ -427,7 +443,7 @@ class Donation(models.Model):
     first_name = models.CharField(max_length=50)
     last_name = models.CharField(max_length=50)
     email_address = models.CharField(max_length=100)
-    phone_number = models.CharField(max_length=25, blank=True, null=True)
+    phone_number = models.CharField(max_length=25, blank=False, null=False)
     child = models.ForeignKey(Children, related_name='sponsors')
     donation = CurrencyField(blank=True, null=True)
     donated = CurrencyField(blank=True, null=True)
@@ -577,6 +593,7 @@ class DonationForm(forms.Form):
 
     first_name = forms.CharField(max_length=50)
     last_name = forms.CharField(max_length=50)
+    phone_number = forms.CharField(max_length=25)
     email_address = forms.EmailField(max_length=100)
     donation = CurrencyField()
 

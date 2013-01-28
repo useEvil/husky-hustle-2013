@@ -8,16 +8,20 @@
 		<li><label for="email_address">Email Address:</label><input id="email_address" type="text" name="email_address" value="" size="30" class="required" /><span class="hidden pad-left10 error">* required</span></li>
 		<li><label for="phone_number">Phone Number:</label><input id="phone_number" type="text" name="phone_number" value="" size="15" class="required" placeholder="(xxx) xxx-xxxx" /><span class="hidden pad-left10 error">* required</span></li>
 		<li><label for="donation">Donation:</label><input id="donation" type="text" name="donation" value="" size="10" class="required" placeholder="xxxx.xx" /><span class="hidden pad-left10 error">* required</span></li>
-		<li><label for="per_lap">Per Lap:</label><input id="per_lap" type="checkbox" name="per_lap" value="1" /></li>
+		<li><label for="per_lap">&nbsp;</label><input id="per_lap_yes" type="radio" name="per_lap" value="1" />&nbsp;Per Lap&nbsp;&nbsp;<input id="per_lap_no" type="radio" name="per_lap" value="" />&nbsp;Flat</li>
+		<li>&nbsp;</li>
 		<li>
 			<input type="button" style="width: 8em;" class="control input submit_edit submit_sponsor" id="submit_sponsor" value=" Update Profile " />
+<!-- 
 			<input type="button" style="width: 8em;" class="control input cancel_button" id="cancel_sponsor" value=" Cancel " />
+ -->
 		</li>
 	</ol>
 </form>
 {% else %}
-<form action="/donate{% if child %}/{{ child.identifier }}{% else %}-direct{% endif %}" method="post">
+<form action="/donate{% if child %}/{{ child.identifier }}{% else %}-direct{% endif %}" method="post" class="form-add">
 	{% if make_donation %}<input type="hidden" name="make_donation" value="1" />{% endif %}
+	{% if from_account %}<input type="hidden" name="from_account" value="1" />{% endif %}
 	{% csrf_token %}
 	<ol>
 		{% if not child %}
@@ -33,12 +37,13 @@
 		</li>
 		<li>&nbsp;</li>
 		{% endif %}
-		<li><label for="id_first_name"{% if form.first_name.errors %} class="error"{% endif %}>First Name:</label><input id="id_first_name" type="text" name="first_name" value="{{ form.first_name.value }}" size="30" class="required" />{% if form.first_name.errors %}<span class="pad-left10 error">* required</span>{% endif %}</li>
-		<li><label for="id_last_name"{% if form.last_name.errors %} class="error"{% endif %}>Last Name:</label><input id="id_last_name" type="text" name="last_name" value="{{ form.last_name.value }}" size="30" class="required" />{% if form.last_name.errors %}<span class="pad-left10 error">* required</span>{% endif %}</li>
-		<li><label for="id_email_address"{% if form.email_address.errors %} class="error"{% endif %}>Email Address:</label><input id="id_email_address" type="text" name="email_address" value="{{ form.email_address.value }}" size="30" class="required" />{% if form.email_address.errors %}<span class="pad-left10 error">* required</span>{% endif %}</li>
-		<li><label for="id_phone_number"{% if form.phone_number.errors %} class="error"{% endif %}>Phone Number:</label><input id="id_phone_number" type="text" name="phone_number" value="{{ form.phone_number.value }}" size="15" class="required" placeholder="(xxx) xxx-xxxx" />{% if form.phone_number.errors %}<span class="pad-left10 error">* required</span>{% endif %}</li>
-		<li><label for="id_donation"{% if form.donation.errors %} class="error"{% endif %}>Donation:</label><input id="id_donation" type="text" name="donation" value="{{ form.donation.value }}" size="10" class="required" placeholder="xxxx.xx" />{% if form.donation.errors %}<span class="pad-left10 error">* required</span>{% endif %}</li>
-		<li><label for="id_per_lap"{% if form.per_lap.errors %} class="error"{% endif %}>Per Lap:</label><input id="id_per_lap" type="checkbox" name="per_lap" value="1" /></li>
+		<li><label for="form_id_first_name"{% if form.first_name.errors %} class="error"{% endif %}>First Name:</label><input id="form_id_first_name" type="text" name="first_name" value="{{ form.first_name.value }}" size="30" class="input-field required" />{% if form.first_name.errors %}<span class="pad-left10 error">* required</span>{% endif %}</li>
+		<li><label for="form_id_last_name"{% if form.last_name.errors %} class="error"{% endif %}>Last Name:</label><input id="form_id_last_name" type="text" name="last_name" value="{{ form.last_name.value }}" size="30" class="input-field required" />{% if form.last_name.errors %}<span class="pad-left10 error">* required</span>{% endif %}</li>
+		<li><label for="form_id_email_address"{% if form.email_address.errors %} class="error"{% endif %}>Email Address:</label><input id="form_id_email_address" type="text" name="email_address" value="{{ form.email_address.value }}" size="30" class="input-field required" />{% if form.email_address.errors %}<span class="pad-left10 error">* required</span>{% endif %}</li>
+		<li><label for="form_id_phone_number"{% if form.phone_number.errors %} class="error"{% endif %}>Phone Number:</label><input id="form_id_phone_number" type="text" name="phone_number" value="{{ form.phone_number.value }}" size="15" class="input-field required" placeholder="(xxx) xxx-xxxx" />{% if form.phone_number.errors %}<span class="pad-left10 error">* required</span>{% endif %}</li>
+		<li><label for="form_id_donation"{% if form.donation.errors %} class="error"{% endif %}>Donation:</label><input id="form_id_donation" type="text" name="donation" value="{{ form.donation.value }}" size="10" class="input-field required" placeholder="xxxx.xx" />{% if form.donation.errors %}<span class="pad-left10 error">* required</span>{% endif %}</li>
+		<li><label for="form_id_per_lap"{% if form.per_lap.errors %} class="error"{% endif %}>&nbsp;</label><input id="form_id_per_lap_yes" type="radio" name="per_lap" value="1" />&nbsp;Per Lap&nbsp;&nbsp;&nbsp;<input id="form_id_per_lap_yes" type="radio" name="per_lap" value="" />&nbsp;Flat</li>
+		<li>&nbsp;</li>
 		<li><input type="submit" value=" {% if make_donation %}Make Donation{% else %}Add Sponsor{% endif %} " /></li>
 	</ol>
 </form>
