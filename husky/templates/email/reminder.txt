@@ -8,7 +8,7 @@ Your contribution ensures that the students at Hicks Canyon will continue to rec
 
 The Jog-A-Thon has concluded and it is now time to pay the donation you pledged.  Please refer to the link below to make your payment.
 
-http://{{ domain }}/payment/{{ child_identifier }}/{{ donation_id }}
+{{ payment_url }}
 
 Regards,
 
