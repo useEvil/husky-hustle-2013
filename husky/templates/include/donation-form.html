@@ -30,8 +30,8 @@
 				<option value="{{ teacher.id }}">{{ teacher }}</option>
 				{% endfor %}
 			</select>
-		<li>&nbsp;</li>
 		</li>
+		<li>&nbsp;</li>
 		{% endif %}
 		<li><label for="id_first_name"{% if form.first_name.errors %} class="error"{% endif %}>First Name:</label><input id="id_first_name" type="text" name="first_name" value="{{ form.first_name.value }}" size="30" class="required" />{% if form.first_name.errors %}<span class="pad-left10 error">* required</span>{% endif %}</li>
 		<li><label for="id_last_name"{% if form.last_name.errors %} class="error"{% endif %}>Last Name:</label><input id="id_last_name" type="text" name="last_name" value="{{ form.last_name.value }}" size="30" class="required" />{% if form.last_name.errors %}<span class="pad-left10 error">* required</span>{% endif %}</li>
