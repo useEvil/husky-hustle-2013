@@ -5,7 +5,7 @@
 		</div>
 		<nav class="clearfix">
 			{% if request.user.is_authenticated %}
-			<div style="float: right;padding-right: 10px;font-size: 0.75em;">logged in as: {{ parent.full_name }}</div>
+			<div style="float: right;padding-right: 10px;font-size: 0.75em;line-height: 1.5em;">Logged in as: {{ parent.full_name }}<br /><a href="/accounts/logout/">Logout</a></div>
 			<br class="clearfix" />
 			{% endif %}
 			<ul role="navigation">
@@ -26,7 +26,7 @@
 </header>
 <div id="header">
 	{% if request.user.is_authenticated %}
-	<div style="float: right;font-size: 0.75em;">logged in as: {{ parent.full_name }}</div>
+	<div style="float: right;font-size: 0.75em;line-height: 1.5em;">Logged in as: {{ parent.full_name }}<br /><a href="/accounts/logout/">Logout</a></div>
 	{% endif %}
 	<div id="logo">
 		<h1><a href="#">Husky Hustle</a></h1>

@@ -19,6 +19,14 @@
 						{% if linked %}
 						<li style="color: #000000;">Would you like to link your account to <a id="link_to" href="/request/link/{{ parent.id }}">{{ linked.full_name }}</a>?</li>
 						<li style="color: #000000;">Would you like to make a pledge to <a id="donate_to" href="{{ linked_child.donate_url }}">{{ linked_child.full_name }}</a>?</li>
+						<a href="#" id="linking_tooltip" class="tooltip">What is linking?</a>
+						<div id="tooltip_linking" title="What is Linking?" class="hidden">
+							<p class="linking">
+								Linking is a way for Parents to view a Student's donation list.  Since Students can only be registered 
+								once, only one Parent or Guardian can register a Student.  Other Parents or Guardians will have to make 
+								a request to be linked.
+							</p>
+						</div>
 						{% endif %}
 					</ul>
 					{% endif %}
@@ -31,6 +39,7 @@
 								<li>{{ parent.phone_number }}</li>
 								<li>{{ user_id }}</li>
 								<li>{{ user_email }}</li>
+								<li><a href="/accounts/logout/">Logout</a></li>
 								<li>&nbsp;</li>
 								{% for link in parent.links %}
 								<li>Linked to: {{ link.full_name }} ({{ link.is_guardian }})</li>
@@ -101,8 +110,6 @@
 						</ol>
 						{% if facebook or twitter or messages %}
 						<h3><a href="{% url socialregistration:logout %}">Logout</a></h3>
-						{% else %}
-						<h3><a href="/accounts/logout/">Logout</a></h3>
 						{% endif %}
 					</div>
 				</div>
@@ -120,19 +127,17 @@
 				<iframe id="post-iframe" style="width: 550px; height: 330px;" src="" scrolling="no" frameborder="0" name="post-iframe" marginwidth="0" marginheight="0" vspace="0" hspace="0"></iframe>
 			</div>
 		</div>
-		<div id="overlay-box-edit" class="overlay-box">
+		<div id="overlay-box-edit" class="overlay-box" title="Edit" style="z-index: 1010;">
 			<div class="overlay-content">
 				{% include "include/register-form.html" with edit=1 %}
 				{% include "include/child-form.html" with edit=1 %}
 			</div>
 		</div>
-		<div id="overlay-box-email" class="overlay-box">
+		<div id="overlay-box-email" class="overlay-box" title="Send Email to Family/Friends" style="z-index: 1010;">
 			<div class="overlay-content">
 				<form id="email_form" action="/emails" action="post">
 					{% csrf_token %}
 					<input type="hidden" id="child_first_name" name="child_first_name" value="{{ child.first_name }}">
-					<fieldset class="form">
-					<legend id="title">Send Email to Family/Friends</legend>
 					<div class="wrapper">
 						<ul>
 							<li>
@@ -145,11 +150,12 @@
 							</li>
 							<li>
 								<input type="button" style="width: 8em;" class="control input submit_button" id="submit_email" value=" Submit " />
+<!-- 
 								<input type="button" style="width: 8em;" class="control input cancel_button" id="cancel_email" value=" Cancel " />
+ -->
 							</li>
 						</ul>
 					</div>
-					</fieldset>
 				</form>
 				<span id="message" class="hidden">Dear Friends and Family,
 

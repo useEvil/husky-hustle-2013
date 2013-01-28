@@ -35,12 +35,10 @@
 		<div id="footer">
 			{% include "include/page-footer.html" %}
 		</div>
-		<div id="overlay-box-reminder" class="overlay-box">
+		<div id="overlay-box-reminder" class="overlay-box" title="Send Reminder to Selected Sponsors" style="z-index: 1010;">
 			<div class="overlay-content">
 				<form id="reminder_form" action="/reminders" action="post">
 					{% csrf_token %}
-					<fieldset class="form">
-					<legend id="title">Send Reminder to Selected Sponsors</legend>
 					<div class="wrapper">
 						<ul>
 							<li>
@@ -49,17 +47,28 @@
 							</li>
 							<li>
 								<input type="button" style="width: 8em;" class="control input submit_button" id="submit_reminder" value=" Submit " />
+<!-- 
 								<input type="button" style="width: 8em;" class="control input cancel_button" id="cancel_reminder" value=" Cancel " />
+ -->
 							</li>
 						</ul>
 					</div>
-					</fieldset>
 				</form>
 			</div>
 		</div>
-		<div id="overlay-box-edit" class="overlay-box">
+		<div id="overlay-box-edit" class="overlay-box" title="Edit Sponsor" style="z-index: 1010;">
 			<div class="overlay-content">
 				{% include "include/donation-form.html" with edit=1 %}
+			</div>
+		</div>
+		<div id="overlay-box-add" class="overlay-box" title="Add Sponsor" style="z-index: 1010;">
+			<div class="overlay-content">
+				{% include "include/donation-form.html" with from_account=1 %}
+			</div>
+		</div>
+		<div id="overlay-box-teacher" class="overlay-box" title="Teacher Donation" style="z-index: 1010;">
+			<div class="overlay-content">
+				{% include "include/donation-form-teachers.html" with make_donation=1 from_account=1 %}
 			</div>
 		</div>
 		<form id="delete_form" action="/delete/sponsor">
@@ -106,6 +115,8 @@
 						{name: 'Reload', bclass: 'reset', onpress: reloadPage},
 						{separator: true},
 						{name: 'Add Sponsor', bclass: 'add', onpress: showFormDonate},
+						{separator: true},
+						{name: 'Teacher Donation', bclass: 'add', onpress: showFormTeacher},
 						{separator: true},
 						{name: 'Delete', bclass: 'delete', onpress: deleteSponsors},
 						{separator: true},

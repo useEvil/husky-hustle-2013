@@ -115,7 +115,7 @@ def account(request, identifier=None):
     ))
     if identifier:
         try:
-            child  = Children.objects.get(identifier=identifier)
+            child = Children.objects.get(identifier=identifier)
             c['child'] = child
             c['messages'] = messages.get_messages(request)
             c['page_title'] = '%s' % (child)
@@ -238,10 +238,14 @@ def donate(request, child_id=None):
     c = Context(dict(
             page_title='Donator',
             parent=getParent(request),
+            teachers=Teacher.objects.all(),
             child=child,
             donate=True,
     ))
     if request.POST:
+        from_account = request.POST.get('from_account')
+        make_donation = request.POST.get('make_donation')
+        teacher_donation = request.POST.get('teacher_donation')
         form = DonationForm(request.POST)
         if form.is_valid():
             try:
@@ -256,27 +260,35 @@ def donate(request, child_id=None):
                     child=child,
                 )
                 donation.save()
-                messages.success(request, 'Thank you for making a Pledge')
+                messages.success(request, from_account and 'Donation Added Successfully' or 'Thank you for making a Pledge')
                 c['success'] = True
-                c['full_name'] = donation.full_name()
-                c['email_address'] = donation.email_address
+                c['donate_url'] = child.donate_url()
                 c['child_full_name'] = child.full_name
                 c['child_identifier'] = child.identifier
+                c['amount'] = donation.donation
+                c['full_name'] = donation.full_name()
                 c['is_per_lap'] = donation.per_lap
                 c['payment_url'] = donation.payment_url()
+                c['email_address'] = donation.email_address
                 c['subject'] = 'Husky Hustle: Thank you for making a Pledge'
                 c['domain'] = Site.objects.get_current().domain
-                if not request.POST.get('teacher_donation'):
+                if not teacher_donation:
                     _send_email_teamplate('donate', c)
             except Exception, e:
+                c['make_donation'] = make_donation or False
+                if from_account: c['error'] = True
                 messages.error(request, str(e))
         else:
-            messages.error(request, 'Failed to Add Sponsor')
+            c['make_donation'] = make_donation or False
+            if from_account: c['error'] = True
+            messages.error(request, 'Failed to Add %s' % (teacher_donation and 'Donation' or 'Sponsor'))
         c['form'] = form
     c['messages'] = messages.get_messages(request)
-    if request.POST.get('make_donation') and request.POST.get('teacher_donation'):
-        c['teacher_donation'] = True
-    return render_to_response('donate.html', c, context_instance=RequestContext(request))
+    c['teacher_donation'] = teacher_donation or False
+    if from_account:
+        return HttpResponseRedirect('/account/%s' % child.identifier)
+    else:
+        return render_to_response('donate.html', c, context_instance=RequestContext(request))
 
 def donate_direct(request):
     c = Context(dict(
@@ -385,6 +397,7 @@ def register(request):
                 parent.save()
                 c['key'] = key
                 c['parent_name'] = parent.full_name
+                c['activate_url'] = parent.activate_url()
                 c['email_address'] = parent.email_address
                 c['subject'] = 'Husky Hustle: Parent Registration'
                 c['domain'] = Site.objects.get_current().domain
@@ -433,9 +446,10 @@ def activate(request, key=None):
     return render_to_response(template, c, context_instance=RequestContext(request))
 
 def request(request, type=None, key=None):
+    parent = getParent(request)
     c = Context(dict(
             page_title='Home',
-            parent=getParent(request),
+            parent=parent,
     ))
     if type == 'key':
         user = User.objects.filter(parent__activation_key=key).get()
@@ -455,10 +469,11 @@ def request(request, type=None, key=None):
         return render_to_response('registration/registration_complete.html', c, context_instance=RequestContext(request))
     elif type == 'link':
         link = Parent.objects.get(id=key)
-        c['email_address'] = link.email_address
+        c['link_url'] = parent.link_url()
         c['full_name'] = link.full_name
-        c['request_full_name'] = parent.full_name
         c['request_id'] = parent.id
+        c['email_address'] = link.email_address
+        c['request_full_name'] = parent.full_name
         c['subject'] = 'Husky Hustle: Account Link Request'
         c['domain'] = Site.objects.get_current().domain
         _send_email_teamplate('account-link', c)
@@ -540,6 +555,8 @@ def add(request, type=None):
                 c['parent_name'] = parent.full_name
                 c['email_address'] = parent.email_address
                 c['child_identifier'] = child.identifier
+                c['donate_url'] = child.donate_url()
+                c['manage_url'] = child.manage_url()
                 c['subject'] = 'Husky Hustle: Student Registration'
                 c['domain'] = Site.objects.get_current().domain
                 _send_email_teamplate('register-child', c)
