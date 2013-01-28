@@ -842,3 +842,19 @@ fieldset {
 	cursor: pointer;
 	width: 100px;
 }
+
+/* ---------- FAQ styles start here ----------------------- */
+
+ol.faq, ul.faq {
+	line-height: 0.25em;
+	margin-left: 20px;
+	list-style: none;
+	font-size: 0.95em;
+}
+
+ol.faq li {
+	margin-left: 20px;
+	list-style-type: decimal;
+	font-size: 0.95em;
+}
+
