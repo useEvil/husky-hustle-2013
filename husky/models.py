@@ -443,7 +443,7 @@ class Donation(models.Model):
     first_name = models.CharField(max_length=50)
     last_name = models.CharField(max_length=50)
     email_address = models.CharField(max_length=100)
-    phone_number = models.CharField(max_length=25, blank=False, null=False)
+    phone_number = models.CharField(max_length=25, blank=True, null=True)
     child = models.ForeignKey(Children, related_name='sponsors')
     donation = CurrencyField(blank=True, null=True)
     donated = CurrencyField(blank=True, null=True)
@@ -593,7 +593,6 @@ class DonationForm(forms.Form):
 
     first_name = forms.CharField(max_length=50)
     last_name = forms.CharField(max_length=50)
-    phone_number = forms.CharField(max_length=25)
     email_address = forms.EmailField(max_length=100)
     donation = CurrencyField()
 

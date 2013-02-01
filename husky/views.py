@@ -424,6 +424,8 @@ def activate(request, key=None):
     template = 'registration/login.html'
     if not key:
         key = request.GET.get('key')
+    if not key:
+        return render_to_response('registration/registration_complete.html', c, context_instance=RequestContext(request))
     try:
         user = User.objects.filter(parent__activation_key=key).get()
     except Exception, e:
@@ -595,6 +597,10 @@ def link(request, parent_id=None):
         for child in parent.children.all():
             pc = ParentChildren(parent=linked, children=child, default=0)
             pc.save()
+        c['full_name'] = parent.full_name
+        c['linked_full_name'] = linked.full_name
+        c['subject'] = 'Husky Hustle: Account Link Request'
+        _send_email_teamplate('account-link-accepted', c)
         messages.success(request, 'Successfully Linked Account')
     except Exception, e:
         messages.error(request, 'Failed to Link Account: %s' % str(e))
@@ -604,46 +610,52 @@ def link(request, parent_id=None):
 def edit(request, type=None):
     if request.POST:
         if type == 'child':
-            try:
-                teacher = Teacher.objects.get(pk=request.POST.get('teacher'))
-                child = Children.objects.get(pk=request.POST.get('id'))
-                child.first_name = request.POST.get('first_name')
-                child.last_name = request.POST.get('last_name')
-                child.teacher = teacher
-                child.identifier = '%s-%s-%s'%(replace_space(request.POST.get('first_name')), replace_space(request.POST.get('last_name')), teacher.room_number)
-                child.save()
-                messages.success(request, 'Successfully Updated Student')
-            except Exception, e:
-                messages.error(request, 'Failed to Update Student: %s' % str(e))
+            form = ChildrenRegistrationForm(request.POST)
+            if form.is_valid():
+                try:
+                    teacher = Teacher.objects.get(pk=request.POST.get('teacher'))
+                    child = Children.objects.get(pk=request.POST.get('id'))
+                    child.first_name = request.POST.get('first_name')
+                    child.last_name = request.POST.get('last_name')
+                    child.teacher = teacher
+                    child.identifier = '%s-%s-%s'%(replace_space(request.POST.get('first_name')), replace_space(request.POST.get('last_name')), teacher.room_number)
+                    child.save()
+                    messages.success(request, 'Successfully Updated Student')
+                except Exception, e:
+                    messages.error(request, 'Failed to Update Student: %s' % str(e))
         elif type == 'profile':
-            try:
-                parent = getParent(request)
-                parent.first_name = request.POST.get('first_name')
-                parent.last_name = request.POST.get('last_name')
-                parent.email_address = request.POST.get('email_address')
-                parent.phone_number = request.POST.get('phone_number')
-                parent.guardian = request.POST.get('guardian')
-                user = parent.user
-                user.email = request.POST.get('email_address')
-                user.username = request.POST.get('email_address')
-                user.save()
-                parent.save()
-                messages.success(request, 'Successfully Updated Profile')
-            except Exception, e:
-                messages.error(request, 'Failed to Update Profile: %s' % str(e))
+            form = ParentRegistrationForm(post)
+            if form.is_valid():
+                try:
+                    parent = getParent(request)
+                    parent.first_name = request.POST.get('first_name')
+                    parent.last_name = request.POST.get('last_name')
+                    parent.email_address = request.POST.get('email_address')
+                    parent.phone_number = request.POST.get('phone_number')
+                    parent.guardian = request.POST.get('guardian')
+                    user = parent.user
+                    user.email = request.POST.get('email_address')
+                    user.username = request.POST.get('email_address')
+                    user.save()
+                    parent.save()
+                    messages.success(request, 'Successfully Updated Profile')
+                except Exception, e:
+                    messages.error(request, 'Failed to Update Profile: %s' % str(e))
         elif type == 'sponsor':
-            try:
-                donation = Donation.objects.get(pk=request.POST.get('id'))
-                donation.first_name = request.POST.get('first_name')
-                donation.last_name = request.POST.get('last_name')
-                donation.email_address = request.POST.get('email_address')
-                donation.phone_number = request.POST.get('phone_number')
-                donation.donation = request.POST.get('donation')
-                donation.per_lap = request.POST.get('per_lap') or 0
-                donation.save()
-                messages.success(request, 'Successfully Updated Sponsor')
-            except Exception, e:
-                messages.error(request, 'Failed to Update Sponsor: %s' % str(e))
+            form = DonationForm(request.POST)
+            if form.is_valid():
+                try:
+                    donation = Donation.objects.get(pk=request.POST.get('id'))
+                    donation.first_name = request.POST.get('first_name')
+                    donation.last_name = request.POST.get('last_name')
+                    donation.email_address = request.POST.get('email_address')
+                    donation.phone_number = request.POST.get('phone_number')
+                    donation.donation = request.POST.get('donation')
+                    donation.per_lap = request.POST.get('per_lap') or 0
+                    donation.save()
+                    messages.success(request, 'Successfully Updated Sponsor')
+                except Exception, e:
+                    messages.error(request, 'Failed to Update Sponsor: %s' % str(e))
     return HttpResponse(simplejson.dumps({'result': 'OK', 'status': 200}), mimetype='application/json')
 
 @login_required(login_url='/accounts/login/')
@@ -841,7 +853,7 @@ def _formatData(data, total):
             row['cell'].append('<span class="hidden">%s</span>' % donation.phone_number)
             row['cell'].append('<span class="hidden">0</span>')
         else:
-            row['cell'].append('<a href="#" class="show-edit" id="edit_sponsor_%s">%s</a>' % (donation.id, donation.first_name))
+            row['cell'].append(donation.paid and donation.first_name or '<a href="#" class="show-edit" id="edit_sponsor_%s">%s</a>' % (donation.id, donation.first_name))
             row['cell'].append(donation.last_name)
             row['cell'].append(donation.email_address)
             row['cell'].append(donation.phone_number)
@@ -853,8 +865,8 @@ def _formatData(data, total):
         else:
             row['cell'].append(donation.per_lap and 'yes' or 'no')
         row['cell'].append(donation.date_added.strftime('%m/%d/%Y'))
-        row['cell'].append(donation.paid and '<span class="success">Paid</span>' or '<input type="checkbox" value="paid" name="paid" id="paid-%s" class="set-paid" alt="Mark as Paid" />' % donation.id)
-        row['cell'].append(donation.paid and '<span class="success">&nbsp;</span>' or '<input type="checkbox" value="%s" name="reminder" id="reminder-%s" class="set-reminder" />' % (donation.id, donation.id))
+        row['cell'].append(donation.paid and '<span class="success">Paid</span>' or '<input type="checkbox" value="paid" name="paid" id="paid-%s" class="set-paid" title="If your Sponsor has paid you, you can makr their Donation as Paid." />' % donation.id)
+        row['cell'].append('<input type="checkbox" value="%s" name="reminder" id="reminder-%s" class="set-reminder" />' % (donation.id, donation.id))
         result['rows'].append(row)
         count += 1
     return result
