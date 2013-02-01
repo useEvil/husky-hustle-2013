@@ -325,10 +325,13 @@ def donate_direct(request):
                 donation.save()
                 messages.success(request, 'Thank you for making a Pledge')
                 c['success'] = True
-                c['full_name'] = donation.full_name()
-                c['email_address'] = donation.email_address
+                c['donate_url'] = child.donate_url()
                 c['child_full_name'] = child.full_name
                 c['child_identifier'] = child.identifier
+                c['amount'] = donation.donation
+                c['full_name'] = donation.full_name()
+                c['is_per_lap'] = donation.per_lap
+                c['email_address'] = donation.email_address
                 c['subject'] = 'Husky Hustle: Thank you for making a Pledge'
                 c['domain'] = Site.objects.get_current().domain
                 if not request.POST.get('teacher_donation'):
