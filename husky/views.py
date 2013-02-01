@@ -331,6 +331,7 @@ def donate_direct(request):
                 c['amount'] = donation.donation
                 c['full_name'] = donation.full_name()
                 c['is_per_lap'] = donation.per_lap
+                c['payment_url'] = donation.payment_url()
                 c['email_address'] = donation.email_address
                 c['subject'] = 'Husky Hustle: Thank you for making a Pledge'
                 c['domain'] = Site.objects.get_current().domain
