@@ -406,7 +406,11 @@ function linkToParent(event) {
 
 function setPaid(event) {
 	var id = this.id.replace( 'paid-', '' );
-	$.getJSON('/paid/' + id);
+	if (confirm("Are you sure you wan to reconcile this Donation as Paid?\n\nMark the Donation as Paid if your Sponsor has paid you in person.") == true) {
+		$.getJSON('/paid/' + id, function () { $(this).parent().html('<span class="success">Paid</span>'); });
+	} else {
+		$(this).attr('checked', false);
+	}
 }
 
 function setAllReminders() {

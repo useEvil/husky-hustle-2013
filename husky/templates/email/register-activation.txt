@@ -2,11 +2,15 @@ Dear {{ parent_name }},
 
 Thank you for registering with Husky Hustle.
 
-Activation Key: {{ key }}
-
 Please activate your account using the link below to get started.
 
 {{ activate_url }}
+
+If the link doesn't work copy/paste the activation key into the activation form at the link below.
+
+Activation Key: {{ key }}
+
+http://{{ domain }}/activate/
 
 Regards,
 

@@ -17,7 +17,7 @@
 						<li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
 						{% endfor %}
 						{% if linked %}
-						<li style="color: #000000;">Would you like to link your account to <a id="link_to" href="/request/link/{{ parent.id }}">{{ linked.full_name }}</a>?</li>
+						<li style="color: #000000;">Would you like to link your account to <a id="link_to" href="/request/link/{{ linked.id }}">{{ linked.full_name }}</a>?</li>
 						<li style="color: #000000;">Would you like to make a pledge to <a id="donate_to" href="{{ linked_child.donate_url }}">{{ linked_child.full_name }}</a>?</li>
 						<a href="#" id="linking_tooltip" class="tooltip">What is linking?</a>
 						<div id="tooltip_linking" title="What is Linking?" class="hidden">
