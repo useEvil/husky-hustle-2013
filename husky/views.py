@@ -232,7 +232,6 @@ def payment(request, identifier=None, id=None):
     c['messages'] = messages.get_messages(request)
     return render_to_response('payment.html', c, context_instance=RequestContext(request))
 
-@login_required(login_url='/accounts/login/')
 def donate(request, child_id=None):
     child = Children.objects.get(identifier=child_id)
     c = Context(dict(
