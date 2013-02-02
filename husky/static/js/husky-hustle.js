@@ -143,7 +143,10 @@ function doOverlaySwap(close_overlay, open_overlay) {
 
 /* Main Functions */
 function reloadPage(event, id) {
-	window.location.reload();
+	var url = window.location.href;
+//alert( url );
+	window.location = url;
+//	window.location.reload();
 }
 
 function showFormDonate(event, id) {
@@ -380,7 +383,6 @@ function populateMenu(data, type) {
 function updatePage(data) {
 	updateStatus(data);
 	if (data['status'] != 200) return;
-//	cancelUserForm();
 	cancelFormDetails(data['form']);
 	path  = '/admin/index';
 	path += '/limit/' + ($('#limit').val() ? $('#limit').val() : '10');
@@ -458,6 +460,7 @@ function sendEmail(event) {
 	var msg = $('#message').text();
 	msg = msg.replace( /{donate_url}/g, $('#donate-'+id).text() );
 	msg = msg.replace( /{first_name}/g, $('#first_name-'+id).text() );
+	$('#child_first_name').val( $('#first_name-'+id).text() );
 	$('#custom_message').html( msg );
 	$('#email_form').show();
 	$('#overlay-box-email').dialog({
@@ -469,7 +472,6 @@ function sendEmail(event) {
 		resizable: false,
 		close: function(event, ui) { cancelForm(event, ui); }
 	});
-//	doOverlayOpen('email');
 }
 
 function sendReminders(event) {
@@ -498,7 +500,6 @@ function sendReminders(event) {
 			resizable: false,
 			close: function(event, ui) { cancelForm(event, ui); }
 		});
-//		doOverlayOpen('reminder');
 	} else {
 		alert('You must select sponsors to email.  You cannot send Reminders to Teachers.');
 	}
@@ -518,8 +519,6 @@ function makePayment(event) {
 		}
 	);
 	if (payments) {
-//		$('#payments_form').show();
-//		doOverlayOpen('payments');
 		if (confirm('You are about to make a payment for: $' + payments) == true) {
 			window.location.href = '/payment/brooke-nguyen-408/' + ids.join(',') + '?amount=' + payments;
 		}
