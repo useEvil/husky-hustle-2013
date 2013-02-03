@@ -85,6 +85,8 @@ def nav(request, page='index', id=None):
             bar_height=Donation().bar_height(),
             arrow_height=Donation().arrow_height(),
     ))
+    print_log('==== bar_height [%s]' % Donation().bar_height(), settings.DEBUG)
+    print_log('==== arrow_height [%s]' % Donation().arrow_height(), settings.DEBUG)
     if page == 'photos':
         c['albums'] = Album()
         c['content'] = Content.objects.filter(page=page).get()
@@ -727,6 +729,7 @@ def paid(request, donation_id=None):
         try:
             object = Donation.objects.get(pk=id)
             object.paid = True
+            object.donated = object.total()
             object.save()
             messages.success(request, 'Successfully set Sponsor to Paid')
         except Exception, e:
@@ -808,7 +811,7 @@ def reports(request, type=None):
                 children = Children.objects.filter(teacher=teacher).all()
                 total = 0
                 for child in children:
-                    total += child.collected
+                    total += child.collected or 0
                 json['values'][index]['values'].append(float(total))
                 json['values'][index]['labels'].append(teacher.full_name())
     elif type == 'most-laps-by-child':
@@ -823,7 +826,7 @@ def reports(request, type=None):
             json['values'].append({'label': grade.title, 'values': [], 'labels': []})
             children = Children.objects.filter(teacher__grade=grade).annotate(max_funds=Max('collected')).order_by('collected')[:20]
             for child in children:
-                json['values'][index]['values'].append(float(child.collected))
+                json['values'][index]['values'].append(float(child.collected or 0))
                 json['values'][index]['labels'].append(child.full_name())
     return HttpResponse(simplejson.dumps(json), mimetype='application/json')
 
