@@ -776,6 +776,7 @@ def reset_confirm(request, uidb36=None, token=None):
 def reset_complete(request):
     return password_reset_complete(request, template_name='registration/reset_password_complete.html')
 
+@never_cache
 def json(request, child_id=None):
     offset     = request.GET.get('offset') or 0
     limit      = request.GET.get('limit')  or 30
