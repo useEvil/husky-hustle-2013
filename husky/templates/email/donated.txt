@@ -1,0 +1,15 @@
+Dear {{ parent_full_name }},
+
+{{ full_name }} has just made a Pledge to sponsor {{ child_full_name }}.
+{% if is_per_lap %}
+They chose to donate ${{ amount }} for each lap.
+{% else %}
+They chose to donate a flat amount of ${{ amount }}.
+{% endif %}
+
+Regards,
+
+The Husky Hustle Team
+
+http://www.huskyhustle.com
+husky@huskyhustle.com
