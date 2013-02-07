@@ -262,6 +262,7 @@ def donate(request, child_id=None):
                 )
                 donation.save()
                 messages.success(request, from_account and 'Donation Added Successfully' or 'Thank you for making a Pledge')
+                c_parent = child.parent()
                 c['success'] = True
                 c['donate_url'] = child.donate_url()
                 c['child_full_name'] = child.full_name
@@ -275,9 +276,9 @@ def donate(request, child_id=None):
                 c['domain'] = Site.objects.get_current().domain
                 if not teacher_donation:
                     _send_email_teamplate('donate', c)
-                if child.parent():
-                    c['email_address'] = child.parent().email_address
-                    c['parent_full_name'] = child.parent().full_name
+                if c_parent:
+                    c['email_address'] = c_parent.email_address
+                    c['parent_full_name'] = c_parent.full_name
                     c['subject'] = 'Husky Hustle: Congratulations %s just got a Donation'
                     _send_email_teamplate('donated', c)
             except Exception, e:
@@ -331,6 +332,7 @@ def donate_direct(request):
                 )
                 donation.save()
                 messages.success(request, 'Thank you for making a Pledge')
+                c_parent = child.parent()
                 c['success'] = True
                 c['donate_url'] = child.donate_url()
                 c['child_full_name'] = child.full_name
@@ -344,9 +346,9 @@ def donate_direct(request):
                 c['domain'] = Site.objects.get_current().domain
                 if not request.POST.get('teacher_donation'):
                     _send_email_teamplate('donate', c)
-                if child.parent():
-                    c['email_address'] = child.parent().email_address
-                    c['parent_full_name'] = child.parent().full_name
+                if c_parent:
+                    c['email_address'] = c_parent.email_address
+                    c['parent_full_name'] = c_parent.full_name
                     c['subject'] = 'Husky Hustle: Congratulations %s just got a Donation'
                     _send_email_teamplate('donated', c)
             except Exception, e:
