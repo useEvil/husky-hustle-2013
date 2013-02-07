@@ -275,9 +275,9 @@ def donate(request, child_id=None):
                 c['domain'] = Site.objects.get_current().domain
                 if not teacher_donation:
                     _send_email_teamplate('donate', c)
-                if child.parent:
-                    c['email_address'] = child.parent.email_address
-                    c['parent_full_name'] = child.parent.full_name
+                if child.parent():
+                    c['email_address'] = child.parent().email_address
+                    c['parent_full_name'] = child.parent().full_name
                     c['subject'] = 'Husky Hustle: Congratulations %s just got a Donation'
                     _send_email_teamplate('donated', c)
             except Exception, e:
@@ -344,9 +344,9 @@ def donate_direct(request):
                 c['domain'] = Site.objects.get_current().domain
                 if not request.POST.get('teacher_donation'):
                     _send_email_teamplate('donate', c)
-                if child.parent:
-                    c['email_address'] = child.parent.email_address
-                    c['parent_full_name'] = child.parent.full_name
+                if child.parent():
+                    c['email_address'] = child.parent().email_address
+                    c['parent_full_name'] = child.parent().full_name
                     c['subject'] = 'Husky Hustle: Congratulations %s just got a Donation'
                     _send_email_teamplate('donated', c)
             except Exception, e:
