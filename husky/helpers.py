@@ -97,7 +97,7 @@ def getParent(request):
 
 def print_log(message, debug=False):
     if not debug: return
-    log = file('django.log', 'a')
+    log = file('/home/useevil/logs/django.log', 'a')
     print >>log, message
     log.flush()
     log.close()
