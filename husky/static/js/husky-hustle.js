@@ -251,6 +251,12 @@ function submitForm(event) {
 	var form = $('#'+ id +'_form');
 	var params = form.serialize();
 	var action = form.attr('action');
+	if (id === 'email') {
+		if (!$('#email_addresses').val()) {
+			alert('You must provide email addresses');
+			return false;
+		}
+	}
 	if (id === 'reminder') {
 		$('.set-reminder').each(
 			function () {
@@ -398,7 +404,7 @@ function updateStatus(data) {
 	} else {
 		status_msg.css('color','green');
 	}
-	status_msg.html(data['message']);
+	status_msg.html(data['status_message']);
 	clearMessage();
 }
 

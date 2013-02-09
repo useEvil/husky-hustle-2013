@@ -1,4 +1,3 @@
-import re
 import pytz
 import base64
 import django.contrib.staticfiles
@@ -279,7 +278,7 @@ def donate(request, child_id=None):
                 if c_parent:
                     c['email_address'] = c_parent.email_address
                     c['parent_full_name'] = c_parent.full_name
-                    c['subject'] = 'Husky Hustle: Congratulations %s just got a Donation'
+                    c['subject'] = 'Husky Hustle: Congratulations %s just got a Donation' % (child.first_name)
                     _send_email_teamplate('donated', c)
             except Exception, e:
                 c['make_donation'] = make_donation or False
@@ -349,7 +348,7 @@ def donate_direct(request):
                 if c_parent:
                     c['email_address'] = c_parent.email_address
                     c['parent_full_name'] = c_parent.full_name
-                    c['subject'] = 'Husky Hustle: Congratulations %s just got a Donation'
+                    c['subject'] = 'Husky Hustle: Congratulations %s just got a Donation' % (child.first_name)
                     _send_email_teamplate('donated', c)
             except Exception, e:
                 messages.error(request, str(e))
@@ -692,7 +691,10 @@ def emails(request):
             body=request.POST.get('custom_message')
     ))
     addresses = request.POST.get('email_addresses')
-    p = re.compile(r'\s*,\s*')
+    if not addresses:
+        messages.success(request, 'You must provide email addresses')
+        return HttpResponse(simplejson.dumps({'result': 'NOTOK', 'status': 400, 'message': 'You must provide email addresses.'}), mimetype='application/json')
+    p = regexp.compile(r'\s*,\s*')
     addresses = filter(None, p.split(addresses))
     data = []
     for address in addresses:
@@ -709,6 +711,7 @@ def reminders(request):
     donators = request.POST.getlist('donators')
     if request.POST.get('custom_message'):
         c['custom_message'] = request.POST.get('custom_message')
+    data = []
     for donator in donators:
         donation = Donation.objects.get(pk=donator)
         c['name'] = donation.full_name
@@ -718,7 +721,8 @@ def reminders(request):
         c['donation_id'] = donation.id
         c['payment_url'] = donation.payment_url()
         c['domain'] = Site.objects.get_current().domain
-        _send_email_teamplate('reminder', c)
+        data.append(_send_email_teamplate('reminder', c, 1))
+    send_mass_mail(data)
     messages.success(request, 'Successfully Sent Reminders')
     return HttpResponse(simplejson.dumps({'result': 'OK', 'status': 200}), mimetype='application/json')
 
@@ -900,7 +904,7 @@ def _send_email_teamplate(template, data, mass=None):
 
 def replace_space(string):
      # Replace all runs of whitespace with a single dash
-     string = re.sub(r"\s+", '-', string.lower())
+     string = regexp.sub(r"\s+", '-', string.lower())
 
      return string
 
