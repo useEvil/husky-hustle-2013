@@ -1,3 +1,4 @@
+{% autoescape off %}
 Dear {{ parent_name }},
 
 Thank you for registering with Husky Hustle.
@@ -14,3 +15,4 @@ The Husky Hustle Team
 
 http://www.huskyhustle.com
 husky@huskyhustle.com
+{% endautoescape %}

@@ -1,3 +1,4 @@
+{% autoescape off %}
 Dear {{ full_name }},
 
 Thank you for sponsoring {{ child_full_name }} and Hicks Canyon.
@@ -26,3 +27,4 @@ The Husky Hustle Team
 
 http://www.huskyhustle.com
 husky@huskyhustle.com
+{% endautoescape %}

@@ -1,3 +1,4 @@
+{% autoescape off %}
 Dear {{ full_name }},
 
 {{ request_full_name }} has requested to link their account to yours.  If you would like to accept this request click the link below:
@@ -10,3 +11,4 @@ The Husky Hustle Team
 
 http://www.huskyhustle.com
 husky@huskyhustle.com
+{% endautoescape %}
