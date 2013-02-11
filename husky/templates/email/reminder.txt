@@ -1,3 +1,4 @@
+{% autoescape off %}
 Dear {{ name }},
 
 {{ custom_message }}
@@ -16,3 +17,4 @@ The Husky Hustle Team
 
 http://www.huskyhustle.com
 husky@huskyhustle.com
+{% endautoescape %}

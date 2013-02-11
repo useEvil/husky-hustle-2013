@@ -1,3 +1,4 @@
+{% autoescape off %}
 Dear {{ parent_full_name }},
 
 {{ full_name }} has just made a Pledge to sponsor {{ child_full_name }}.
@@ -13,3 +14,4 @@ The Husky Hustle Team
 
 http://www.huskyhustle.com
 husky@huskyhustle.com
+{% endautoescape %}
