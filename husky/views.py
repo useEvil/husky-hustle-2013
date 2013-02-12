@@ -111,7 +111,7 @@ def account(request, identifier=None):
             my_facebook=parent.facebook,
             my_twitter=parent.twitter,
             my_google=parent.google,
-            teachers=Teacher.objects.all(),
+            teachers=Teacher().get_list(),
             facebook_api=settings.FACEBOOK_APP_ID
     ))
     if identifier:
@@ -120,6 +120,7 @@ def account(request, identifier=None):
             c['child'] = child
             c['messages'] = messages.get_messages(request)
             c['page_title'] = '%s' % (child)
+            c['teachers'] = Teacher().get_donate_list()
             return render_to_response('account/donations.html', c, context_instance=RequestContext(request))
         except:
             messages.error(request, 'Could not find Student for identity: %s' % identifier)
@@ -152,7 +153,7 @@ def make_donation(request, identifier=None):
     c = Context(dict(
             page_title='Donate',
             parent=parent,
-            teachers=Teacher.objects.all(),
+            teachers=Teacher().get_donate_list(),
             make_donation=True,
     ))
     if identifier == 'search':
@@ -193,7 +194,7 @@ def teacher_donation(request, identifier=None):
     c = Context(dict(
             page_title='Donate',
             parent=parent,
-            teachers=Teacher.objects.all(),
+            teachers=Teacher().get_donate_list(),
             teacher_donation=True,
             make_donation=True,
     ))
@@ -238,7 +239,7 @@ def donate(request, child_id=None):
     c = Context(dict(
             page_title='Donator',
             parent=getParent(request),
-            teachers=Teacher.objects.all(),
+            teachers=Teacher().get_donate_list(),
             child=child,
             donate=True,
     ))
@@ -289,8 +290,8 @@ def donate(request, child_id=None):
             if from_account: c['error'] = True
             messages.error(request, 'Failed to Add %s' % (teacher_donation and 'Donation' or 'Sponsor'))
         c['form'] = form
+        c['teacher_donation'] = teacher_donation or False
     c['messages'] = messages.get_messages(request)
-    c['teacher_donation'] = teacher_donation or False
     if from_account:
         return HttpResponseRedirect('/account/%s' % child.identifier)
     else:
@@ -551,7 +552,7 @@ def add(request, type=None):
             my_facebook=parent.facebook,
             my_twitter=parent.twitter,
             my_google=parent.google,
-            teachers=Teacher.objects.all(),
+            teachers=Teacher().get_list(),
             facebook_api=settings.FACEBOOK_APP_ID
     ))
     if request.POST:
@@ -814,7 +815,7 @@ def reports(request, type=None):
     if type == 'most-laps':
         for index, grade in enumerate(grades):
             json['values'].append({'label': grade.title, 'values': [], 'labels': []})
-            teachers = Teacher.objects.filter(grade=grade).all()
+            teachers = Teacher.objects.filter(grade=grade).exclude(list_type=3).all()
             for teacher in teachers:
                 num_laps = Children.objects.filter(teacher=teacher).aggregate(num_laps=Sum('laps'))
                 json['values'][index]['values'].append(num_laps['num_laps'] or 0)
@@ -822,7 +823,7 @@ def reports(request, type=None):
     elif type == 'most-donations':
         for index, grade in enumerate(grades):
             json['values'].append({'label': grade.title, 'values': [], 'labels': []})
-            teachers = Teacher.objects.filter(grade=grade).all()
+            teachers = Teacher.objects.filter(grade=grade).exclude(list_type=3).all()
             for teacher in teachers:
                 children = Children.objects.filter(teacher=teacher).all()
                 total = 0
