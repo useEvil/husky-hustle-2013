@@ -178,6 +178,7 @@ class Teacher(models.Model):
     website = models.CharField(max_length=255, blank=True, null=True)
     shorten = models.CharField(max_length=255, blank=True, null=True)
     grade = models.ForeignKey(Grade, related_name='teachers')
+    list_type = models.IntegerField(blank=True, null=True)
 
     def __unicode__(self):
         return '%s (%s) %s' % (self.full_name(), self.room_number, self.grade)
@@ -193,6 +194,12 @@ class Teacher(models.Model):
 
     def get_all(self):
         return Teacher.objects.exclude(grade__grade=-1).all()
+
+    def get_donate_list(self):
+        return Teacher.objects.exclude(list_type=2).order_by('grade','room_number').all()
+
+    def get_list(self):
+        return Teacher.objects.exclude(list_type=3).order_by('grade','room_number').all()
 
     def shortened(self):
         if not self.shorten:
