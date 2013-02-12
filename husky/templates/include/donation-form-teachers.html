@@ -34,7 +34,7 @@
 			<input id="id_first_name" type="text" name="first_name" value="{{ form.first_name.value }}" class="hidden" />
 			<select id="id_teacher" name="teacher" class="to-teacher">
 				<option value="">Select Teacher</option>
-				{% for teacher in teachers %}
+				{% for teacher in teachers_donate %}
 				<option value="{{ teacher.full_name }}">{{ teacher }}</option>
 				{% endfor %}
 			</select>
