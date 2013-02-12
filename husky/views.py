@@ -194,7 +194,8 @@ def teacher_donation(request, identifier=None):
     c = Context(dict(
             page_title='Donate',
             parent=parent,
-            teachers=Teacher().get_donate_list(),
+            teachers=Teacher().get_list(),
+            teachers_donate=Teacher().get_donate_list(),
             teacher_donation=True,
             make_donation=True,
     ))
