@@ -49,7 +49,7 @@ var toggleContent = function(e)
 /* Overlay Functions */
 function clearMessage(out) {
 	if (!out) out = timeOut;
-	tID = setTimeout(function(){ $('#message').html('') }, out);
+	tID = setTimeout(function(){ $('#message').html(''); }, out);
 }
 
 function showOverlay(overlay) {
@@ -71,7 +71,7 @@ function hideOverlay(overlay, out) {
 
 function showOverlayBox(overlay, layer) {
 	//if box is not set to open then don't do anything
-	if (isOpen == false) return;
+	if (isOpen === false) return;
 	// set the properties of the overlay box, the left and top positions
 	$(overlay).css({
 		display: 'block',
@@ -97,7 +97,7 @@ function showOverlayBox(overlay, layer) {
 }
 
 function doOverlayOpen(overlay, layer) {
-	formID  = overlay
+	formID  = overlay;
 	overlay = '#overlay-box-'+overlay;
 	//set status to open
 	isOpen = true;
@@ -273,7 +273,7 @@ function submitForm(event) {
 			dataType: 'json',
 			data: params,
 			timeout: 15000,
-			success: reloadPage,
+			success: reloadPage
 		}
 	);
 	doOverlayOpen('none', 50);
@@ -314,14 +314,14 @@ function submitFormEdit(event) {
 			dataType: 'json',
 			data: params,
 			timeout: 15000,
-			success: reloadPage,
+			success: reloadPage
 		}
 	);
 }
 
 function cancelOverlay(e) {
 	var keyCode;
-	if (e == null) {
+	if (e === null) {
 		keyCode = event.keyCode;
 	} else { // mozilla
 		keyCode = e.which;
@@ -341,6 +341,7 @@ function cancelOverlay(e) {
 
 function cancelForm(event, cssClass) {
 	var id  = $(this).attr('id');
+	var form;
 	if (id && typeof(id) != 'object') {
 		doOverlayClose(id);
 		if (id == 'cancel_child' || id == 'cancel_profile') {
@@ -361,7 +362,7 @@ function cancelForm(event, cssClass) {
 				}
 			);
 		} else {
-			var form = id.replace( 'cancel_', '' );
+			form = id.replace( 'cancel_', '' );
 			$('#'+form+'_form').hide();
 		}
 	} else if (id && typeof(id) === 'object' && id.name === 'id') {
@@ -371,7 +372,7 @@ function cancelForm(event, cssClass) {
 			}
 		);
 	} else if (this.id && typeof(this.id) != 'object') {
-		var form = this.id.replace( 'cancel_', '' );
+		form = this.id.replace( 'cancel_', '' );
 		$('#'+form+'_form').hide();
 	}
 }
@@ -393,7 +394,7 @@ function updatePage(data) {
 	path  = '/admin/index';
 	path += '/limit/' + ($('#limit').val() ? $('#limit').val() : '10');
 	path += '/offset/' + ($('#offset').val() ? $('#offset').val() : '0');
-	setTimeout(function(){ top.location.href = path }, 1200);
+	setTimeout(function(){ top.location.href = path; }, 1200);
 }
 
 function updateStatus(data) {
@@ -414,7 +415,7 @@ function linkToParent(event) {
 
 function setPaid(event) {
 	var id = this.id.replace( 'paid-', '' );
-	if (confirm("Are you sure you wan to reconcile this Donation as Paid?\n\nMark the Donation as Paid if your Sponsor has paid you in person.") == true) {
+	if (confirm("Are you sure you wan to reconcile this Donation as Paid?\n\nMark the Donation as Paid if your Sponsor has paid you in person.") === true) {
 		$.getJSON('/paid/' + id, function () { $(this).parent().html('<span class="success">Paid</span>'); });
 	} else {
 		$(this).attr('checked', false);
@@ -447,7 +448,7 @@ function setPreSetAmount() {
 			$('#id_teacher').show();
 		}
 	} else if (this.className == 'to-teacher') {
-			value = $('#id_teacher :selected').val()
+			value = $('#id_teacher :selected').val();
 			$('#to_principle_teacher').attr('checked', true);
 			$('#id_first_name').attr('value', value);
 	} else {
@@ -525,7 +526,7 @@ function makePayment(event) {
 		}
 	);
 	if (payments) {
-		if (confirm('You are about to make a payment for: $' + payments) == true) {
+		if (confirm('You are about to make a payment for: $' + payments) === true) {
 			window.location.href = '/payment/brooke-nguyen-408/' + ids.join(',') + '?amount=' + payments;
 		}
 	} else {
@@ -545,13 +546,13 @@ function runCalculations() {
 }
 
 function postToSocial(event) {
-	window.open($(this).attr('src'), '_social', 'height=200,width=550,resizable=yes,scrollbars=yes')
+	window.open($(this).attr('src'), '_social', 'height=200,width=550,resizable=yes,scrollbars=yes');
 //	$('#post-iframe').attr('src', $(this).attr('src'));
 //	doOverlayOpen('post');
 }
 
 function deleteSponsors(event) {
-	if (confirm('Are you sure you want to delete the selected Sponsors?') == false) {
+	if (confirm('Are you sure you want to delete the selected Sponsors?') === false) {
 		return;
 	}
 	var params = $('#delete_form').serialize();
@@ -570,7 +571,7 @@ function deleteSponsors(event) {
 			dataType: 'json',
 			data: params,
 			timeout: 15000,
-			success: reloadPage,
+			success: reloadPage
 		}
 	);
 }

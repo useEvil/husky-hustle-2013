@@ -237,6 +237,8 @@ def payment(request, identifier=None, id=None):
 
 def donate(request, child_id=None):
     child = Children.objects.get(identifier=child_id)
+    from_account = None
+    teacher_donation = None
     c = Context(dict(
             page_title='Donator',
             parent=getParent(request),
@@ -291,8 +293,8 @@ def donate(request, child_id=None):
             if from_account: c['error'] = True
             messages.error(request, 'Failed to Add %s' % (teacher_donation and 'Donation' or 'Sponsor'))
         c['form'] = form
-        c['teacher_donation'] = teacher_donation or False
     c['messages'] = messages.get_messages(request)
+    c['teacher_donation'] = teacher_donation or False
     if from_account:
         return HttpResponseRedirect('/account/%s' % child.identifier)
     else:
