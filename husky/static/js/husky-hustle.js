@@ -10,6 +10,7 @@ $('.remove_item').live('click', removeItem);
 $('.add_item').live('click', addItem);
 $('.cancel_button').live('click', cancelForm);
 $('.submit_button').live('click', submitForm);
+$('.submit_form').live('click', submitFormAction);
 $('.submit').live('click', submitThisForm);
 $('.submit_edit').live('click', submitFormEdit);
 $('.set-paid').live('click', setPaid);
@@ -61,6 +62,16 @@ function showOverlay(overlay) {
 	$('#message').css('margin-left','10px');
 	$('#message').css('font-weight','bold');
 	$('#message').html('Loading...Please Wait!');
+}
+
+function showOverlayTop(event) {
+	$('.background-cover-top').css({
+		display: 'block',
+		width: '100%',
+		height: $(document).height(),
+		opacity: 0,
+		'z-index': 1050
+	}).animate({opacity: 0.5, backgroundColor: '#000'});
 }
 
 function hideOverlay(overlay, out) {
@@ -143,10 +154,8 @@ function doOverlaySwap(close_overlay, open_overlay) {
 
 /* Main Functions */
 function reloadPage(event, id) {
-	var url = window.location.href;
-//alert( url );
+	var url = window.location.href.replace( '#', '' );
 	window.location = url;
-//	window.location.reload();
 }
 
 function showFormDonate(event, id) {
@@ -272,18 +281,25 @@ function submitForm(event) {
 			type: 'post',
 			dataType: 'json',
 			data: params,
-			timeout: 15000,
+			timeout: 35000,
 			success: reloadPage
 		}
 	);
-	doOverlayOpen('none', 50);
+	showOverlayTop();
 	return false;
 }
 
-function submitThisForm() {
+function submitFormAction(event) {
 	var id = this.id.replace( 'submit_', '' );
-	var reg  = new RegExp( '(\\w+)_(\\w+)' );
-	var got  = id.match( reg );
+	var form = $('#'+ id +'_form');
+	showOverlayTop();
+	setTimeout(function(){ form.submit(); }, 1000);
+}
+
+function submitThisForm() {
+	var id  = this.id.replace( 'submit_', '' );
+	var reg = new RegExp( '(\\w+)_(\\w+)' );
+	var got = id.match( reg );
 	if (got) {
 		id = got[2];
 		if (got[1] == 'parent') {
@@ -296,7 +312,8 @@ function submitThisForm() {
 			$('#parent_first_name').val('');
 		}
 	}
-	$('#form_'+ id).submit();
+	showOverlayTop();
+	setTimeout(function(){ $('#form_'+ id).submit(); }, 1000);
 }
 
 function submitFormEdit(event) {
@@ -306,7 +323,6 @@ function submitFormEdit(event) {
 	if (got[1] == 'sponsor') {
 		params = $('#sponsor').serialize();
 	}
-	doOverlayOpen('none', 50);
 	$.ajax(
 		{
 			url: '/edit/'+got[1],
@@ -317,6 +333,7 @@ function submitFormEdit(event) {
 			success: reloadPage
 		}
 	);
+	showOverlayTop();
 }
 
 function cancelOverlay(e) {
@@ -415,7 +432,7 @@ function linkToParent(event) {
 
 function setPaid(event) {
 	var id = this.id.replace( 'paid-', '' );
-	if (confirm("Are you sure you wan to reconcile this Donation as Paid?\n\nMark the Donation as Paid if your Sponsor has paid you in person.") === true) {
+	if (confirm("Are you sure you want to reconcile this Donation as Paid?\n\nMark the Donation as Paid if your Sponsor has already paid.") === true) {
 		$.getJSON('/paid/' + id, reloadPage);
 	} else {
 		$(this).attr('checked', false);

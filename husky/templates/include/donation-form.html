@@ -10,13 +10,11 @@
 		<li><label for="donation">Donation:</label><input id="donation" type="text" name="donation" value="" size="10" class="required" placeholder="xxxx.xx" /><span class="hidden pad-left10 error">* required</span></li>
 		<li><label for="per_lap">&nbsp;</label><input id="per_lap_yes" type="radio" name="per_lap" value="1" />&nbsp;Per Lap&nbsp;&nbsp;<input id="per_lap_no" type="radio" name="per_lap" value="" />&nbsp;Flat</li>
 		<li>&nbsp;</li>
-		<li>
-			<input type="button" style="width: 8em;" class="control input submit_edit submit_sponsor" id="submit_sponsor" value=" Update Profile " />
-		</li>
+		<li><input type="button" style="width: 8em;" class="control input submit_edit submit_sponsor" id="submit_sponsor" value=" Update Profile " /></li>
 	</ol>
 </form>
 {% else %}
-<form action="/donate{% if child %}/{{ child.identifier }}{% else %}-direct{% endif %}" method="post" class="form-add">
+<form action="/donate{% if child %}/{{ child.identifier }}{% else %}-direct{% endif %}" method="post" class="form-add" id="add_sponsor_form">
 	{% if make_donation %}<input type="hidden" name="make_donation" value="1" />{% endif %}
 	{% if from_account %}<input type="hidden" name="from_account" value="1" />{% endif %}
 	{% csrf_token %}
@@ -41,7 +39,7 @@
 		<li><label for="form_id_donation"{% if form.donation.errors %} class="error"{% endif %}>Donation:</label><input id="form_id_donation" type="text" name="donation" value="{{ form.donation.value }}" size="10" class="input-field required" placeholder="xxxx.xx" />{% if form.donation.errors %}<span class="pad-left10 error">* required</span>{% endif %}</li>
 		<li><label for="form_id_per_lap"{% if form.per_lap.errors %} class="error"{% endif %}>&nbsp;</label><input id="form_id_per_lap_yes" type="radio" name="per_lap" value="1" />&nbsp;Per Lap&nbsp;&nbsp;&nbsp;<input id="form_id_per_lap_yes" type="radio" name="per_lap" value="" />&nbsp;Flat</li>
 		<li>&nbsp;</li>
-		<li><input type="submit" value=" {% if make_donation %}Make Donation{% else %}Add Sponsor{% endif %} " /></li>
+		<li><input type="button" style="width: 10em;" class="control input submit_form" id="submit_add_sponsor" value=" {% if make_donation %}Make Donation{% else %}Add Sponsor{% endif %} " /></li>
 	</ol>
 </form>
 {% endif %}
