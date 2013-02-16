@@ -573,6 +573,9 @@ def add(request, type=None):
                 child.save()
                 pc = ParentChildren(parent=parent, children=child, default=1)
                 pc.save()
+                for p in parent.links():
+                    pc = ParentChildren(parent=p, children=child, default=0)
+                    pc.save()
                 c['child_name'] = child.full_name
                 c['parent_name'] = parent.full_name
                 c['email_address'] = parent.email_address
