@@ -10,6 +10,9 @@ import locale
 import datetime as date
 
 from functools import wraps
+from urllib import urlencode
+from urllib2 import Request, urlopen
+from socket import setdefaulttimeout
 from django.http import HttpResponse, HttpResponseRedirect
 
 try:
@@ -95,9 +98,19 @@ def getParent(request):
     except:
         return None
 
-def print_log(message, debug=False):
+def printLog(message, debug=False):
     if not debug: return
     log = file('/home/useevil/logs/django.log', 'a')
     print >>log, message
     log.flush()
     log.close()
+
+def getHttpRequest(uri=None, data=None):
+    if data: data = urlencode(data)
+    setdefaulttimeout(3)
+    req = Request(uri, data)
+    response = urlopen(req)
+    content = ''
+    try: content = response.read()
+    except Exception, e: print "Failed to content: "%(e.reason)
+    return content
