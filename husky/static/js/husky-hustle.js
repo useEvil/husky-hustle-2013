@@ -530,19 +530,21 @@ function sendReminders(event) {
 }
 
 function makePayment(event) {
-	var payments = 0;
-	var ids = [];
+	var payments = 0, paid = 0, ids = [], id, text;
 	$('.set-reminder').each(
 		function () {
 			if ($(this).attr('checked') == 'checked') {
-				var id = this.id.replace( 'reminder-', '' );
-				var text = $('#row'+id+' span[abbr="total"]').text();
+				id   = this.id.replace( 'reminder-', '' );
+				text = $('#row'+id+' span[abbr="total"]').text();
+				if ( $('#row'+id+' .success').text() ==='Paid' ) paid += 1;
 				payments += parseFloat(text);
 				ids.push(id);
 			}
 		}
 	);
-	if (payments) {
+	if (paid) {
+		alert('You have selected one or more donations that have already been Paid.');
+	} else if (payments) {
 		if (confirm('You are about to make a payment for: $' + payments) === true) {
 			window.location.href = '/payment/brooke-nguyen-408/' + ids.join(',') + '?amount=' + payments;
 		}
