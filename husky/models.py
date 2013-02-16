@@ -438,6 +438,13 @@ class Parent(models.Model):
             if choice[0] == self.guardian:
                 return choice[1]
 
+    def has_child(self, child=None):
+        try:
+            ParentChildren.objects.filter(parent=self, children=child).get()
+            return 1
+        except ObjectDoesNotExist, e:
+            return 0
+
 
 class ParentChildren(models.Model):
     parent = models.ForeignKey(Parent)

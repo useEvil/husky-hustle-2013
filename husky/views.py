@@ -108,9 +108,9 @@ def account(request, identifier=None):
     c = Context(dict(
             page_title='Profile',
             parent=parent,
-            my_facebook=parent.facebook,
-            my_twitter=parent.twitter,
-            my_google=parent.google,
+            my_facebook=parent.facebook(),
+            my_twitter=parent.twitter(),
+            my_google=parent.google(),
             teachers=Teacher().get_list(),
             facebook_api=settings.FACEBOOK_APP_ID,
     ))
@@ -552,9 +552,9 @@ def add(request, type=None):
     c = Context(dict(
             page_title='Profile',
             parent=parent,
-            my_facebook=parent.facebook,
-            my_twitter=parent.twitter,
-            my_google=parent.google,
+            my_facebook=parent.facebook(),
+            my_twitter=parent.twitter(),
+            my_google=parent.google(),
             teachers=Teacher().get_list(),
             facebook_api=settings.FACEBOOK_APP_ID,
     ))
@@ -608,15 +608,21 @@ def add(request, type=None):
 
 @login_required(login_url='/accounts/login/')
 def link(request, parent_id=None):
+    parent = getParent(request)
+    c = Context(dict(
+            page_title='Profile',
+            parent=parent,
+    ))
     try:
-        parent = getParent(request)
         linked = Parent.objects.get(pk=parent_id)
         for child in parent.children.all():
-            pc = ParentChildren(parent=linked, children=child, default=0)
-            pc.save()
-        c['full_name'] = parent.full_name
-        c['linked_full_name'] = linked.full_name
-        c['subject'] = 'Husky Hustle: Account Link Request'
+            if not linked.has_child(child):
+                pc = ParentChildren(parent=linked, children=child, default=0)
+                pc.save()
+        c['full_name'] = linked.full_name
+        c['email_address'] = linked.email_address
+        c['linked_full_name'] = parent.full_name
+        c['subject'] = 'Husky Hustle: Account Link Accepted'
         _send_email_teamplate('account-link-accepted', c)
         messages.success(request, 'Successfully Linked Account')
     except Exception, e:
