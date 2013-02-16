@@ -744,6 +744,7 @@ def disconnect(request, parent_id=None, social=None):
         messages.error(request, 'Failed to Disconnect: %s' % str(e))
     return HttpResponse(simplejson.dumps({'result': 'OK', 'status': 200}), mimetype='application/json')
 
+@csrf_exempt
 def paid(request, donation_id=None):
     for id in donation_id.split(','):
         try:
@@ -754,11 +755,11 @@ def paid(request, donation_id=None):
             messages.success(request, 'Successfully set Sponsor to Paid')
         except Exception, e:
             messages.error(request, 'Failed to set Sponsor to Paid: %s' % str(e))
-    try:
-        getHttpRequest(settings.PAYPAL_IPN_URL + request.GET.urlencode())
-    except Exception, e:
-        printLog('Failed to send IPN response')
-
+    if request.POST:
+        try:
+            getHttpRequest(settings.PAYPAL_IPN_URL, 'cmd=_notify-validate&%s' % request.POST.urlencode())
+        except Exception, e:
+            printLog('Failed to send IPN response')
     return HttpResponse(simplejson.dumps({'result': 'OK', 'status': 200}), mimetype='application/json')
 
 @csrf_exempt

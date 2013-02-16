@@ -15,16 +15,6 @@
 
 {% block content %}
 <div id="content-main">
-	{% if type == 'most-laps' or type == 'all' %}
-	<span class="bold">Total Laps By Grade:</span>
-	<iframe src="/admin/reporting/most-laps" height="600" width="900"></iframe>
-	{% endif %}
-
-	{% if type == 'most-laps-by-child' or type == 'all' %}
-	<span class="bold">Most Laps By Child By Grade:</span>
-	<iframe src="/admin/reporting/most-laps-by-child" height="600" width="900"></iframe>
-	{% endif %}
-
 	{% if type == 'most-donations' or type == 'all' %}
 	<span class="bold">Total Donations By Grade:</span>
 	<iframe src="/admin/reporting/most-donations" height="600" width="900"></iframe>
@@ -33,6 +23,16 @@
 	{% if type == 'most-donations-by-child' or type == 'all' %}
 	<span class="bold">Most Donations By Child By Grade:</span>
 	<iframe src="/admin/reporting/most-donations-by-child" height="600" width="900"></iframe>
+	{% endif %}
+
+	{% if type == 'most-laps' or type == 'all' %}
+	<span class="bold">Total Laps By Grade:</span>
+	<iframe src="/admin/reporting/most-laps" height="600" width="900"></iframe>
+	{% endif %}
+
+	{% if type == 'most-laps-by-child' or type == 'all' %}
+	<span class="bold">Most Laps By Child By Grade:</span>
+	<iframe src="/admin/reporting/most-laps-by-child" height="600" width="900"></iframe>
 	{% endif %}
 </div>
 {% endblock %} 
