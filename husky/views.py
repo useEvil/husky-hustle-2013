@@ -8,7 +8,7 @@ import re as regexp
 
 from django.db.models import Count, Sum, Avg, Max
 from django.db import IntegrityError
-from django.core.mail import send_mail, send_mass_mail
+from django.core import mail
 from django.template import Context, loader, RequestContext
 from django.shortcuts import render_to_response
 from django.http import HttpResponse, HttpResponseRedirect
@@ -112,7 +112,7 @@ def account(request, identifier=None):
             my_twitter=parent.twitter,
             my_google=parent.google,
             teachers=Teacher().get_list(),
-            facebook_api=settings.FACEBOOK_APP_ID
+            facebook_api=settings.FACEBOOK_APP_ID,
     ))
     if identifier:
         try:
@@ -369,7 +369,7 @@ def album(request, album_id=None):
     c = Context(dict(
             page_title=album.title.text,
             parent=getParent(request),
-            album=album
+            album=album,
     ))
     return render_to_response('photos.html', c, context_instance=RequestContext(request))
 
@@ -383,7 +383,7 @@ def photo(request, album_id=None, photo_id=None):
             photo=photo,
             prev=prevPhoto(album.entry, request.GET.get('index')),
             next=nextPhoto(album.entry, request.GET.get('index')),
-            index=int(request.GET.get('index'))
+            index=int(request.GET.get('index')),
     ))
     return render_to_response('photos.html', c, context_instance=RequestContext(request))
 
@@ -519,7 +519,7 @@ def contact(request):
             recipients = [settings.PICASA_STORAGE_OPTIONS['email']]
             if cc_myself:
                 recipients.append(sender)
-            send_mail(subject, message, sender, recipients)
+            mail.send_mail(subject, message, sender, recipients)
             messages.success(request, 'Successfully Sent')
     else:
         form = ContactForm()
@@ -556,7 +556,7 @@ def add(request, type=None):
             my_twitter=parent.twitter,
             my_google=parent.google,
             teachers=Teacher().get_list(),
-            facebook_api=settings.FACEBOOK_APP_ID
+            facebook_api=settings.FACEBOOK_APP_ID,
     ))
     if request.POST:
         form = ChildrenRegistrationForm(request.POST)
@@ -582,7 +582,7 @@ def add(request, type=None):
                 c['subject'] = 'Husky Hustle: Student Registration'
                 c['domain'] = Site.objects.get_current().domain
                 _send_email_teamplate('register-child', c)
-                messages.success(request, 'Child Added')
+                messages.success(request, 'Student Added Successfully')
             except IntegrityError, e:
                 other_parent = None
                 current_parent = None
@@ -690,9 +690,11 @@ def delete(request, type=None):
     return HttpResponse(simplejson.dumps({'result': 'OK', 'status': 200}), mimetype='application/json')
 
 def emails(request):
+    parent = getParent(request)
     c = Context(dict(
             subject='Husky Hustle: Help Support %s' % request.POST.get('child_first_name'),
-            body=request.POST.get('custom_message')
+            body=request.POST.get('custom_message'),
+            reply_to=parent.email_address,
     ))
     addresses = request.POST.get('email_addresses')
     if not addresses:
@@ -704,13 +706,16 @@ def emails(request):
     for address in addresses:
         c['email_address'] = address
         data.append(_send_email_teamplate('emails', c, 1))
-    send_mass_mail(data)
+    _send_mass_mail(data)
     messages.success(request, 'Successfully Sent Emails')
     return HttpResponse(simplejson.dumps({'result': 'OK', 'status': 200}), mimetype='application/json')
 
 def reminders(request):
+    parent = getParent(request)
     c = Context(dict(
             subject='Husky Hustle: Payment Reminder',
+            domain=Site.objects.get_current().domain,
+            reply_to=parent.email_address,
     ))
     donators = request.POST.getlist('donators')
     if request.POST.get('custom_message'):
@@ -724,9 +729,8 @@ def reminders(request):
         c['child_identifier'] = donation.child.identifier
         c['donation_id'] = donation.id
         c['payment_url'] = donation.payment_url()
-        c['domain'] = Site.objects.get_current().domain
         data.append(_send_email_teamplate('reminder', c, 1))
-    send_mass_mail(data)
+    _send_mass_mail(data)
     messages.success(request, 'Successfully Sent Reminders')
     return HttpResponse(simplejson.dumps({'result': 'OK', 'status': 200}), mimetype='application/json')
 
@@ -824,7 +828,7 @@ def reports(request, type=None):
     if type == 'most-laps':
         for index, grade in enumerate(grades):
             json['values'].append({'label': grade.title, 'values': [], 'labels': []})
-            teachers = Teacher.objects.filter(grade=grade).exclude(list_type=3).all()
+            teachers = Teacher.objects.filter(grade=grade).exclude(list_type=2).all()
             for teacher in teachers:
                 num_laps = Children.objects.filter(teacher=teacher).aggregate(num_laps=Sum('laps'))
                 json['values'][index]['values'].append(num_laps['num_laps'] or 0)
@@ -832,7 +836,7 @@ def reports(request, type=None):
     elif type == 'most-donations':
         for index, grade in enumerate(grades):
             json['values'].append({'label': grade.title, 'values': [], 'labels': []})
-            teachers = Teacher.objects.filter(grade=grade).exclude(list_type=3).all()
+            teachers = Teacher.objects.filter(grade=grade).exclude(list_type=2).all()
             for teacher in teachers:
                 children = Children.objects.filter(teacher=teacher).all()
                 total = 0
@@ -908,9 +912,13 @@ def _send_email_teamplate(template, data, mass=None):
         t = loader.get_template('email/%s.txt' % template)
         body = t.render(data)
     if mass:
-        return data['subject'], body, settings.EMAIL_HOST_USER, [data['email_address']]
+        return mail.EmailMessage(data['subject'], body, settings.EMAIL_HOST_USER, [data['email_address']], headers={'Reply-To': data['reply_to']})
     else:
-        send_mail(data['subject'], body, settings.EMAIL_HOST_USER, [data['email_address']])
+        mail.send_mail(data['subject'], body, settings.EMAIL_HOST_USER, [data['email_address']])
+
+def _send_mass_mail(messages):
+    connection = mail.get_connection()
+    connection.send_messages(messages)
 
 def replace_space(string):
      # Replace all runs of whitespace with a single dash

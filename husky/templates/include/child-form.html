@@ -22,7 +22,7 @@
 </form>
 {% endfor %}
 {% else %}
-<form action="/add/child" method="post">
+<form action="/add/child" method="post" id="form_child">
 	{% csrf_token %}
 	<ol>
 		<li><label for="id_first_name"{% if form.first_name.errors %} class="error"{% endif %}>First Name:</label><input id="id_first_name" type="text" name="first_name" value="" size="30" class="required" />{% if form.first_name.errors %}<span class="pad-left10 error">* required</span>{% endif %}</li>
@@ -35,7 +35,7 @@
 				{% endfor %}
 			</select>
 		</li>
-		<li><input type="submit" style="width: 8em;" class="control input" value=" Add Student " /></li>
+		<li><input type="button" style="width: 8em;" class="control input submit" id="submit_child" value=" Add Student " /></li>
 	</ol>
 </form>
 {% endif %}
