@@ -143,6 +143,13 @@ SOCIALREGISTRATION_GENERATE_USERNAME = False
 BITLY_LOGIN = ''
 BITLY_APIKEY = ''
 
+PAYPAL_PAYPAL_CERT = 'certs/paypal_cert.pem'
+PAYPAL_PRIVATE_KEY = 'certs/private_key.pem'
+PAYPAL_PUBLIC_KEY = 'certs/public_key.pem'
+PAYPAL_IPN_URL = 'https://www.sandbox.paypal.com/cgi-bin/webscr?cmd=_notify-validate&'
+PAYPAL_CERT_ID = base64.b64decode('')
+PAYPAL_BUS_ID = base64.b64decode('')
+
 PICASA_STORAGE_OPTIONS = {
     'email': 'you@example.com',
     'source': 'example',

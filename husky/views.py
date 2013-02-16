@@ -84,8 +84,8 @@ def nav(request, page='index', id=None):
             bar_height=Donation().bar_height(),
             arrow_height=Donation().arrow_height(),
     ))
-    print_log('==== bar_height [%s]' % Donation().bar_height(), settings.DEBUG)
-    print_log('==== arrow_height [%s]' % Donation().arrow_height(), settings.DEBUG)
+    printLog('==== bar_height [%s]' % Donation().bar_height(), settings.DEBUG)
+    printLog('==== arrow_height [%s]' % Donation().arrow_height(), settings.DEBUG)
     if page == 'photos':
         c['albums'] = Album()
         c['content'] = Content.objects.filter(page=page).get()
@@ -754,6 +754,11 @@ def paid(request, donation_id=None):
             messages.success(request, 'Successfully set Sponsor to Paid')
         except Exception, e:
             messages.error(request, 'Failed to set Sponsor to Paid: %s' % str(e))
+    try:
+        getHttpRequest(settings.PAYPAL_IPN_URL + request.GET.urlencode())
+    except Exception, e:
+        printLog('Failed to send IPN response')
+
     return HttpResponse(simplejson.dumps({'result': 'OK', 'status': 200}), mimetype='application/json')
 
 @csrf_exempt
@@ -761,8 +766,8 @@ def thank_you(request, donation_id=None):
     c = Context(dict(
             page_title='Thank You',
     ))
-    print_log('==== request.POST [%s]' % request.POST, settings.DEBUG)
-    print_log('==== request.GET [%s]' % request.GET, settings.DEBUG)
+    printLog('==== request.POST [%s]' % request.POST, settings.DEBUG)
+    printLog('==== request.GET [%s]' % request.GET, settings.DEBUG)
     if donation_id:
         try:
             object = Donation.objects.get(pk=donation_id)
