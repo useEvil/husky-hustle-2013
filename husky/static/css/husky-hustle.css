@@ -703,6 +703,14 @@ fieldset {
 	padding: 4px 0 4px 0;
 }
 
+.centered {
+	position: fixed;
+	top: 50%;
+	left: 50%;
+	margin-top: -50px;
+	margin-left: -100px;
+}
+
 .hidden {
 	display: none;
 }

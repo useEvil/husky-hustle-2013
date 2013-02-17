@@ -1,0 +1,17 @@
+{% autoescape off %}
+Dear {{ name }},
+
+{{ custom_message }}
+
+
+----------------------------
+
+As the Husky Hustle Team we would also like to extend our gratitude for your generosity.
+
+Thank You Again,
+
+The Husky Hustle Team
+
+http://www.huskyhustle.com
+husky@huskyhustle.com
+{% endautoescape %}

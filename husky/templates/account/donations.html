@@ -6,7 +6,9 @@
 	</head>
 	<body>
 		<div class="background-cover"></div>
-		<div class="background-cover-top"></div>
+		<div class="background-cover-top">
+			<img src="/static/images/loading_circle_lg.gif" class="centered" />
+		</div>
 		<div id="wrapper">
 			{% include "include/menu.html" %}
 			<div id="inner">
@@ -46,7 +48,37 @@
 								<textarea class="input" id="custom_message" name="custom_message" value="" cols="200" rows="10"></textarea>
 							</li>
 							<li>
+								Sample:
+								<pre style="font-size: 0.8em;line-height: 1.2em;">
+									{% include "email/reminder.txt" with name='"Donor Name"' child_name='"Student Name"' payment_url='"http://payment_url/"' custom_message='"Your Custom Message"' %}
+								</pre>
+							</li>
+							<li>
 								<input type="button" style="width: 8em;" class="control input submit_button" id="submit_reminder" value=" Submit " />
+							</li>
+						</ul>
+					</div>
+				</form>
+			</div>
+		</div>
+		<div id="overlay-box-thanks" class="overlay-box" title="Send a Thank You to Selected Sponsors" style="z-index: 1010;">
+			<div class="overlay-content">
+				<form id="thanks_form" action="/thanks" action="post">
+					{% csrf_token %}
+					<div class="wrapper">
+						<ul>
+							<li>
+								<label for="custom_message" id="custom_message_label">Custom Message</label><br />
+								<textarea class="input" id="custom_message" name="custom_message" value="" cols="200" rows="10"></textarea>
+							</li>
+							<li>
+								Sample:
+								<pre style="font-size: 0.8em;line-height: 1.2em;">
+									{% include "email/thanks.txt" with name='"Donor Name"' custom_message='"Your Custom Message"' %}
+								</pre>
+							</li>
+							<li>
+								<input type="button" style="width: 8em;" class="control input submit_button" id="submit_thanks" value=" Submit " />
 							</li>
 						</ul>
 					</div>
@@ -118,6 +150,8 @@
 						{name: 'Delete', bclass: 'delete', onpress: deleteSponsors},
 						{separator: true},
 						{name: 'Print', bclass: 'print', onpress: function() { window.open('/donation_sheet/{{ child.identifier }}', '_print') }},
+						{separator: true},
+						{name: 'Send Thank You', bclass: 'reminder', onpress: sendThanks},
 						{separator: true},
 						{name: 'Send Reminders', bclass: 'reminder', onpress: sendReminders},
 						{separator: true},

@@ -743,6 +743,26 @@ def reminders(request):
     messages.success(request, 'Successfully Sent Reminders')
     return HttpResponse(simplejson.dumps({'result': 'OK', 'status': 200}), mimetype='application/json')
 
+def thanks(request):
+    parent = getParent(request)
+    c = Context(dict(
+            subject='Husky Hustle: Thank You',
+            domain=Site.objects.get_current().domain,
+            reply_to=parent.email_address,
+    ))
+    donators = request.POST.getlist('donators')
+    if request.POST.get('custom_message'):
+        c['custom_message'] = request.POST.get('custom_message')
+    data = []
+    for donator in donators:
+        donation = Donation.objects.get(pk=donator)
+        c['name'] = donation.full_name
+        c['email_address'] = donation.email_address
+        data.append(_send_email_teamplate('thanks', c, 1))
+    _send_mass_mail(data)
+    messages.success(request, 'Successfully Sent Thank You Emails')
+    return HttpResponse(simplejson.dumps({'result': 'OK', 'status': 200}), mimetype='application/json')
+
 def disconnect(request, parent_id=None, social=None):
     parent = Parent.objects.get(pk=parent_id)
     try:
