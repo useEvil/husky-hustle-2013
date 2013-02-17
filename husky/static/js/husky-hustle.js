@@ -36,7 +36,7 @@ $(document).ready(
 var toggleContent = function(e)
 {
 	var targetContent = $('div.itemContent', this.parentNode.parentNode);
-	if (targetContent.css('display') == 'none') {
+	if (targetContent.css('display') === 'none') {
 		targetContent.slideDown(300);
 		$(this).html('<img src="/static/images/btn_collapse.gif" border="0" alt="collapse" title="collapse" />');
 	} else {
@@ -188,14 +188,14 @@ function showEdit(event) {
 	var edit = got[1];
 	var form = got[2];
 	var id   = got[3];
-	if (form == 'sponsor') {
+	if (form === 'sponsor') {
 		$('.submit_sponsor').attr('id', 'submit_sponsor_'+id);
 		$('#sponsor').show();
 		$('#sponsor input').each(
 			function () {
 				var text = $('#row'+id+' td[abbr="'+this.name+'"]').text();
-				if (this.name == 'per_lap') {
-					if (text == 'yes') {
+				if (this.name === 'per_lap') {
+					if (text === 'yes') {
 						$('#per_lap_yes').attr('checked', true);
 					} else {
 						$('#per_lap_no').attr('checked', true);
@@ -266,10 +266,10 @@ function submitForm(event) {
 			return false;
 		}
 	}
-	if (id === 'reminder') {
+	if (id === 'reminder' || id === 'thanks') {
 		$('.set-reminder').each(
 			function () {
-				if ($(this).attr('checked') == 'checked') {
+				if ($(this).attr('checked') === 'checked') {
 					params += '&donators=' + $(this).val();
 				}
 			}
@@ -302,7 +302,7 @@ function submitThisForm() {
 	var got = id.match( reg );
 	if (got) {
 		id = got[2];
-		if (got[1] == 'parent') {
+		if (got[1] === 'parent') {
 			$('#parent_only').val(1);
 			$('#student_last_name').val('');
 			$('#student_first_name').val('');
@@ -320,7 +320,7 @@ function submitFormEdit(event) {
 	var reg  = new RegExp( '\\w+_(\\w+)_(\\d+)' );
 	var got  = this.id.match( reg );
 	var params = $('#'+got[1]+'_'+got[2]).serialize();
-	if (got[1] == 'sponsor') {
+	if (got[1] === 'sponsor') {
 		params = $('#sponsor').serialize();
 	}
 	$.ajax(
@@ -343,10 +343,10 @@ function cancelOverlay(e) {
 	} else { // mozilla
 		keyCode = e.which;
 	}
-	if (keyCode == 27) {
+	if (keyCode === 27) {
 		if (formID.match('_form')) {
 			$('#'+formID+' .cancel_button').trigger('click');
-		} else if (formID == 'edit') {
+		} else if (formID === 'edit') {
 			$('.form-'+formID+' .cancel_button').trigger('click');
 		} else {
 			$('#'+formID+'_form .cancel_button').trigger('click');
@@ -361,16 +361,16 @@ function cancelForm(event, cssClass) {
 	var form;
 	if (id && typeof(id) != 'object') {
 		doOverlayClose(id);
-		if (id == 'cancel_child' || id == 'cancel_profile') {
+		if (id === 'cancel_child' || id === 'cancel_profile') {
 			$('.form-edit').hide();
-		} else if (id == 'cancel_sponsor') {
+		} else if (id === 'cancel_sponsor') {
 			var sponsor_id = $('#id').val();
 			$('#sponsor').hide();
 			$('#sponsor input').each(
 				function () {
 					if (this.id) {
 						var text = $('#row'+sponsor_id+' td[abbr="'+this.id+'"]').text();
-						if (this.id == 'per_lap') {
+						if (this.id === 'per_lap') {
 							$(this).attr('checked', false);
 						} else if (text) {
 							$(this).attr('value', '');
@@ -450,7 +450,7 @@ function setAllReminders() {
 
 function setPreSetAmount() {
 	var value = $(this).val();
-	if (this.className == 'to-principle') {
+	if (this.className === 'to-principle') {
 		if (value) {
 			$('#id_first_name').attr('value', value);
 			$('#id_first_name').attr('readonly', true);
@@ -464,7 +464,7 @@ function setPreSetAmount() {
 			$('#id_teacher').attr('disabled', false);
 			$('#id_teacher').show();
 		}
-	} else if (this.className == 'to-teacher') {
+	} else if (this.className === 'to-teacher') {
 			value = $('#id_teacher :selected').val();
 			$('#to_principle_teacher').attr('checked', true);
 			$('#id_first_name').attr('value', value);
@@ -502,10 +502,10 @@ function sendReminders(event) {
 	var senders = false;
 	$('.set-reminder').each(
 		function () {
-			if ($(this).attr('checked') == 'checked') {
+			if ($(this).attr('checked') === 'checked') {
 				var id = this.id.replace( 'reminder-', '' );
 				var text = $('#row'+id+' td[abbr="last_name"]').text();
-				if (text == 'teacher') {
+				if (text === 'teacher') {
 					$(this).attr('checked', false);
 				} else {
 					senders = true;
@@ -529,11 +529,42 @@ function sendReminders(event) {
 	}
 }
 
+function sendThanks(event) {
+	var senders = false;
+	$('.set-reminder').each(
+		function () {
+			if ($(this).attr('checked') === 'checked') {
+				var id = this.id.replace( 'reminder-', '' );
+				var text = $('#row'+id+' td[abbr="last_name"]').text();
+				if (text === 'teacher') {
+					$(this).attr('checked', false);
+				} else {
+					senders = true;
+				}
+			}
+		}
+	);
+	if (senders) {
+		$('#thanks_form').show();
+		$('#overlay-box-thanks').dialog({
+			closeOnEscape: true,
+			minWidth: 790,
+			minHeight: 400,
+			modal: true,
+			dialogClass: 'tooltip',
+			resizable: false,
+			close: function(event, ui) { cancelForm(event, ui); }
+		});
+	} else {
+		alert('You must select sponsors to email.  You cannot send a Thank You to Teachers.');
+	}
+}
+
 function makePayment(event) {
 	var payments = 0, paid = 0, ids = [], id, text;
 	$('.set-reminder').each(
 		function () {
-			if ($(this).attr('checked') == 'checked') {
+			if ($(this).attr('checked') === 'checked') {
 				id   = this.id.replace( 'reminder-', '' );
 				text = $('#row'+id+' span[abbr="total"]').text();
 				if ( $('#row'+id+' .success').text() ==='Paid' ) paid += 1;
@@ -577,7 +608,7 @@ function deleteSponsors(event) {
 	var params = $('#delete_form').serialize();
 	$('.set-reminder').each(
 		function () {
-			if ($(this).attr('checked') == 'checked') {
+			if ($(this).attr('checked') === 'checked') {
 				params += '&donators=' + $(this).val();
 			}
 		}
@@ -599,10 +630,10 @@ function deleteSponsors(event) {
 	var ua = navigator.userAgent,
 		iStuff = ua.match(/iPhone/i) || ua.match(/iPad/i),
 		typeOfCanvas = typeof HTMLCanvasElement,
-		nativeCanvasSupport = (typeOfCanvas == 'object' || typeOfCanvas == 'function'),
-		textSupport = nativeCanvasSupport && (typeof document.createElement('canvas').getContext('2d').fillText == 'function');
+		nativeCanvasSupport = (typeOfCanvas === 'object' || typeOfCanvas === 'function'),
+		textSupport = nativeCanvasSupport && (typeof document.createElement('canvas').getContext('2d').fillText === 'function');
 	labelType = (!nativeCanvasSupport || (textSupport && !iStuff))? 'Native' : 'HTML';
-	nativeTextSupport = labelType == 'Native';
+	nativeTextSupport = labelType === 'Native';
 	useGradients = nativeCanvasSupport;
 	animate = !(iStuff || !nativeCanvasSupport);
 })();
