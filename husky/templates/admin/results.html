@@ -25,6 +25,11 @@
 	<iframe src="/admin/reporting/most-donations-by-child" height="600" width="900"></iframe>
 	{% endif %}
 
+	{% if type == 'most-donations-by-day' or type == 'all' %}
+	<span class="bold">Total Donations By Day For Last 10 Days:</span>
+	<iframe src="/admin/reporting/most-donations-by-day" height="600" width="900"></iframe>
+	{% endif %}
+
 	{% if type == 'most-laps' or type == 'all' %}
 	<span class="bold">Total Laps By Grade:</span>
 	<iframe src="/admin/reporting/most-laps" height="600" width="900"></iframe>

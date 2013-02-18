@@ -873,6 +873,15 @@ def reports(request, type=None):
                     total += child.collected or 0
                 json['values'][index]['values'].append(float(total))
                 json['values'][index]['labels'].append(teacher.full_name())
+    elif type == 'most-donations-by-day':
+        for index in range(1, 11):
+            end = date.datetime.now(pytz.utc) - date.timedelta(index)
+            start = date.datetime.now(pytz.utc) - date.timedelta(index+1)
+            json['values'].append({'label': start.strftime('%m/%d/%Y'), 'values': [], 'labels': []})
+            results = Donation.objects.filter(date_added__range=(start, end)).all().aggregate(donated=Sum('donated'))
+            total   = results['donated'] or 0
+            json['values'][index-1]['values'].append(float(total))
+            json['values'][index-1]['labels'].append(start.strftime('%m/%d/%Y'))
     elif type == 'most-laps-by-child':
         for index, grade in enumerate(grades):
             json['values'].append({'label': grade.title, 'values': [], 'labels': []})
