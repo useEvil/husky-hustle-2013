@@ -883,13 +883,15 @@ def reports(request, type=None):
                 json['values'][index-1]['values'].append(float(result.donated or 0))
                 json['values'][index-1]['labels'].append('<span id="%d">%s (%s)</span>'%(result.id, result.full_name(), result.child))
     elif type == 'most-donations-by-day':
+        total = Donation.objects.all().aggregate(donated=Sum('donated'))
+        json['values'].append({'label': 'To Date', 'values': [float(total['donated'] or 0)], 'labels': ['Total To Date']})
         for index in range(1, 11):
             end = date.datetime.now(pytz.utc) - date.timedelta(index-1)
             start = date.datetime.now(pytz.utc) - date.timedelta(index)
             json['values'].append({'label': start.strftime('%m/%d/%Y'), 'values': [], 'labels': []})
             results = Donation.objects.filter(date_added__range=(start, end)).all().aggregate(donated=Sum('donated'))
-            json['values'][index-1]['values'].append(float(results['donated'] or 0))
-            json['values'][index-1]['labels'].append(start.strftime('%m/%d/%Y'))
+            json['values'][index]['values'].append(float(results['donated'] or 0))
+            json['values'][index]['labels'].append(start.strftime('%m/%d/%Y'))
     elif type == 'most-laps-by-child':
         for index, grade in enumerate(grades):
             json['values'].append({'label': grade.title, 'values': [], 'labels': []})
