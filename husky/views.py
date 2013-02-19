@@ -873,10 +873,19 @@ def reports(request, type=None):
                     total += child.collected or 0
                 json['values'][index]['values'].append(float(total))
                 json['values'][index]['labels'].append(teacher.full_name())
+    elif type == 'most-donations-by-day-by-sponsor':
+        for index in range(1, 11):
+            end = date.datetime.now(pytz.utc) - date.timedelta(index-1)
+            start = date.datetime.now(pytz.utc) - date.timedelta(index)
+            json['values'].append({'label': start.strftime('%m/%d/%Y'), 'values': [], 'labels': []})
+            results = Donation.objects.filter(date_added__range=(start, end)).exclude(last_name='teacher').order_by('donated')
+            for result in results:
+                json['values'][index-1]['values'].append(float(result.donated))
+                json['values'][index-1]['labels'].append('<span id="%d">%s (%s)</span>'%(result.id, result.full_name(), result.child))
     elif type == 'most-donations-by-day':
         for index in range(1, 11):
-            end = date.datetime.now(pytz.utc) - date.timedelta(index)
-            start = date.datetime.now(pytz.utc) - date.timedelta(index+1)
+            end = date.datetime.now(pytz.utc) - date.timedelta(index-1)
+            start = date.datetime.now(pytz.utc) - date.timedelta(index)
             json['values'].append({'label': start.strftime('%m/%d/%Y'), 'values': [], 'labels': []})
             results = Donation.objects.filter(date_added__range=(start, end)).all().aggregate(donated=Sum('donated'))
             total   = results['donated'] or 0
