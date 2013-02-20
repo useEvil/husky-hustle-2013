@@ -779,6 +779,9 @@ def disconnect(request, parent_id=None, social=None):
 
 @csrf_exempt
 def paid(request, donation_id=None):
+    c = Context(dict(
+            subject='Husky Hustle: Payment Received',
+    ))
     result = None
     if request.POST:
         try:
@@ -797,19 +800,29 @@ def paid(request, donation_id=None):
                 c['code'] = result
                 c['name'] = object.full_name
                 c['amount'] = object.donated
-                c['subject'] = 'Payment Received'
+                c['subject'] = 'Husky Hustle: Payment Received'
                 c['email_address'] = settings.EMAIL_HOST_USER
                 data.append(_send_email_teamplate('paid', c, 1))
             except Exception, e:
                 messages.error(request, 'Failed to set Sponsor to Paid: %s' % str(e))
         _send_mass_mail(data)
-    else:
+    elif result:
         c['code'] = result
         c['name'] = 'Sponsor Name'
         c['amount'] = '0.00'
-        c['subject'] = 'Payment Failed'
+        c['subject'] = 'Husky Hustle: Payment Failed'
         c['email_address'] = settings.EMAIL_HOST_USER
         _send_email_teamplate('paid', c)
+    else:
+        for id in donation_id.split(','):
+            try:
+                object = Donation.objects.get(pk=id)
+                object.paid = True
+                object.donated = object.total()
+                object.save()
+                messages.success(request, 'Successfully set Sponsor to Paid')
+            except Exception, e:
+                messages.error(request, 'Failed to set Sponsor to Paid: %s' % str(e))
     return HttpResponse(simplejson.dumps({'result': 'OK', 'status': 200, 'code': result}), mimetype='application/json')
 
 @csrf_exempt
