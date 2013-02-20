@@ -1,5 +1,5 @@
 {% autoescape off %}
-{{ name }}, has successfully made a payment of {{ amount }}.
+{{ name }}, has {% if amount %}successfully{% else %}unsuccessfully{% endif %} made a payment of {{ amount }}.
 
 {{ code }}
 {% endautoescape %}
