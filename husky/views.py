@@ -796,13 +796,20 @@ def paid(request, donation_id=None):
                 messages.success(request, 'Successfully set Sponsor to Paid')
                 c['code'] = result
                 c['name'] = object.full_name
-                c['amount'] = object.full_name
+                c['amount'] = object.donated
                 c['subject'] = 'Payment Received'
                 c['email_address'] = settings.EMAIL_HOST_USER
                 data.append(_send_email_teamplate('paid', c, 1))
             except Exception, e:
                 messages.error(request, 'Failed to set Sponsor to Paid: %s' % str(e))
         _send_mass_mail(data)
+    else:
+        c['code'] = result
+        c['name'] = 'Sponsor Name'
+        c['amount'] = '0.00'
+        c['subject'] = 'Payment Failed'
+        c['email_address'] = settings.EMAIL_HOST_USER
+        _send_email_teamplate('paid', c)
     return HttpResponse(simplejson.dumps({'result': 'OK', 'status': 200, 'code': result}), mimetype='application/json')
 
 @csrf_exempt
