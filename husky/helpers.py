@@ -106,14 +106,10 @@ def printLog(message, debug=False):
     log.close()
 
 def getHttpRequest(uri=None, data=None):
-    print '==== uri [%s]'%(uri)
-    print '==== data [%s]'%(data)
     setdefaulttimeout(3)
     req = Request(uri, data)
     response = urlopen(req)
     content = ''
-    print '==== content [%s]'%(response.read())
     try: content = response.read()
     except Exception, e: print "Failed to content: "%(e.reason)
-    print '==== content [%s]'%(content)
     return content

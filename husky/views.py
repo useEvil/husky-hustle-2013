@@ -779,21 +779,31 @@ def disconnect(request, parent_id=None, social=None):
 
 @csrf_exempt
 def paid(request, donation_id=None):
-    for id in donation_id.split(','):
-        try:
-            object = Donation.objects.get(pk=id)
-            object.paid = True
-            object.donated = object.total()
-            object.save()
-            messages.success(request, 'Successfully set Sponsor to Paid')
-        except Exception, e:
-            messages.error(request, 'Failed to set Sponsor to Paid: %s' % str(e))
+    result = None
     if request.POST:
         try:
-            getHttpRequest(settings.PAYPAL_IPN_URL, 'cmd=_notify-validate&%s' % request.POST.urlencode())
+            result = getHttpRequest(settings.PAYPAL_IPN_URL, 'cmd=_notify-validate&%s' % request.POST.urlencode())
         except Exception, e:
-            printLog('Failed to send IPN response')
-    return HttpResponse(simplejson.dumps({'result': 'OK', 'status': 200}), mimetype='application/json')
+            printLog('Failed to IPN handshake')
+    if result == 'VERIFIED':
+        data = []
+        for id in donation_id.split(','):
+            try:
+                object = Donation.objects.get(pk=id)
+                object.paid = True
+                object.donated = object.total()
+                object.save()
+                messages.success(request, 'Successfully set Sponsor to Paid')
+                c['code'] = result
+                c['name'] = object.full_name
+                c['amount'] = object.full_name
+                c['subject'] = 'Payment Received'
+                c['email_address'] = settings.EMAIL_HOST_USER
+                data.append(_send_email_teamplate('paid', c, 1))
+            except Exception, e:
+                messages.error(request, 'Failed to set Sponsor to Paid: %s' % str(e))
+        _send_mass_mail(data)
+    return HttpResponse(simplejson.dumps({'result': 'OK', 'status': 200, 'code': result}), mimetype='application/json')
 
 @csrf_exempt
 def thank_you(request, donation_id=None):
