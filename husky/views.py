@@ -268,7 +268,7 @@ def donate(request, child_id=None):
                 c_parent = child.parent()
                 c['success'] = True
                 c['donate_url'] = child.donate_url()
-                c['child_full_name'] = child.full_name
+                c['child_full_name'] = child.full_name()
                 c['child_identifier'] = child.identifier
                 c['amount'] = donation.donation
                 c['full_name'] = donation.full_name()
@@ -281,7 +281,7 @@ def donate(request, child_id=None):
                     _send_email_teamplate('donate', c)
                 if c_parent:
                     c['email_address'] = c_parent.email_address
-                    c['parent_full_name'] = c_parent.full_name
+                    c['parent_full_name'] = c_parent.full_name()
                     c['subject'] = 'Husky Hustle: Congratulations %s just got a Donation' % (child.first_name)
                     _send_email_teamplate('donated', c)
             except Exception, e:
@@ -338,7 +338,7 @@ def donate_direct(request):
                 c_parent = child.parent()
                 c['success'] = True
                 c['donate_url'] = child.donate_url()
-                c['child_full_name'] = child.full_name
+                c['child_full_name'] = child.full_name()
                 c['child_identifier'] = child.identifier
                 c['amount'] = donation.donation
                 c['full_name'] = donation.full_name()
@@ -351,7 +351,7 @@ def donate_direct(request):
                     _send_email_teamplate('donate', c)
                 if c_parent:
                     c['email_address'] = c_parent.email_address
-                    c['parent_full_name'] = c_parent.full_name
+                    c['parent_full_name'] = c_parent.full_name()
                     c['subject'] = 'Husky Hustle: Congratulations %s just got a Donation' % (child.first_name)
                     _send_email_teamplate('donated', c)
             except Exception, e:
@@ -416,7 +416,7 @@ def register(request):
                             )
                 parent.save()
                 c['key'] = key
-                c['parent_name'] = parent.full_name
+                c['parent_name'] = parent.full_name()
                 c['activate_url'] = parent.activate_url()
                 c['email_address'] = parent.email_address
                 c['subject'] = 'Husky Hustle: Parent Registration'
@@ -459,7 +459,7 @@ def activate(request, key=None):
             user.is_active = True
             user.save()
             c['subject'] = 'Husky Hustle: Account Activated'
-            c['parent_name'] = user.parent.full_name
+            c['parent_name'] = user.parent.full_name()
             c['email_address'] = user.parent.email_address
             c['domain'] = Site.objects.get_current().domain
             _send_email_teamplate('register-parent', c)
@@ -481,7 +481,7 @@ def request(request, type=None, key=None):
         user.parent.key_expires = expires
         user.parent.save()
         c['key'] = key
-        c['parent_name'] = user.parent.full_name
+        c['parent_name'] = user.parent.full_name()
         c['email_address'] = user.parent.email_address
         c['subject'] = 'Husky Hustle: Parent Activation'
         c['domain'] = Site.objects.get_current().domain
@@ -492,10 +492,10 @@ def request(request, type=None, key=None):
     elif type == 'link':
         link = Parent.objects.get(id=key)
         c['link_url'] = parent.link_url()
-        c['full_name'] = link.full_name
+        c['full_name'] = link.full_name()
         c['request_id'] = parent.id
         c['email_address'] = link.email_address
-        c['request_full_name'] = parent.full_name
+        c['request_full_name'] = parent.full_name()
         c['subject'] = 'Husky Hustle: Account Link Request'
         c['domain'] = Site.objects.get_current().domain
         _send_email_teamplate('account-link', c)
@@ -576,8 +576,8 @@ def add(request, type=None):
                 for p in parent.links():
                     pc = ParentChildren(parent=p, children=child, default=0)
                     pc.save()
-                c['child_name'] = child.full_name
-                c['parent_name'] = parent.full_name
+                c['child_name'] = child.full_name()
+                c['parent_name'] = parent.full_name()
                 c['email_address'] = parent.email_address
                 c['child_identifier'] = child.identifier
                 c['donate_url'] = child.donate_url()
@@ -622,9 +622,9 @@ def link(request, parent_id=None):
             if not linked.has_child(child):
                 pc = ParentChildren(parent=linked, children=child, default=0)
                 pc.save()
-        c['full_name'] = linked.full_name
+        c['full_name'] = linked.full_name()
         c['email_address'] = linked.email_address
-        c['linked_full_name'] = parent.full_name
+        c['linked_full_name'] = parent.full_name()
         c['subject'] = 'Husky Hustle: Account Link Accepted'
         _send_email_teamplate('account-link-accepted', c)
         messages.success(request, 'Successfully Linked Account')
@@ -732,9 +732,9 @@ def reminders(request):
     data = []
     for donator in donators:
         donation = Donation.objects.get(pk=donator)
-        c['name'] = donation.full_name
+        c['name'] = donation.full_name()
         c['email_address'] = donation.email_address
-        c['child_name'] = donation.child.full_name
+        c['child_name'] = donation.child.full_name()
         c['child_identifier'] = donation.child.identifier
         c['donation_id'] = donation.id
         c['payment_url'] = donation.payment_url()
@@ -756,7 +756,7 @@ def thanks(request):
     data = []
     for donator in donators:
         donation = Donation.objects.get(pk=donator)
-        c['name'] = donation.full_name
+        c['name'] = donation.full_name()
         c['email_address'] = donation.email_address
         data.append(_send_email_teamplate('thanks', c, 1))
     _send_mass_mail(data)
@@ -780,7 +780,9 @@ def disconnect(request, parent_id=None, social=None):
 @csrf_exempt
 def paid(request, donation_id=None):
     c = Context(dict(
-            subject='Husky Hustle: Payment Received',
+        subject='Husky Hustle: Payment Received',
+        email_address=settings.EMAIL_HOST_USER,
+        subject='Husky Hustle: Payment Received',
     ))
     result = None
     if request.POST:
@@ -798,10 +800,8 @@ def paid(request, donation_id=None):
                 object.save()
                 messages.success(request, 'Successfully set Sponsor to Paid')
                 c['code'] = result
-                c['name'] = object.full_name
+                c['name'] = object.full_name()
                 c['amount'] = object.donated
-                c['subject'] = 'Husky Hustle: Payment Received'
-                c['email_address'] = settings.EMAIL_HOST_USER
                 data.append(_send_email_teamplate('paid', c, 1))
             except Exception, e:
                 messages.error(request, 'Failed to set Sponsor to Paid: %s' % str(e))
@@ -811,7 +811,6 @@ def paid(request, donation_id=None):
         c['name'] = 'Sponsor Name'
         c['amount'] = '0.00'
         c['subject'] = 'Husky Hustle: Payment Failed'
-        c['email_address'] = settings.EMAIL_HOST_USER
         _send_email_teamplate('paid', c)
     else:
         for id in donation_id.split(','):
