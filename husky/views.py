@@ -782,12 +782,12 @@ def paid(request, donation_id=None):
     c = Context(dict(
         subject='Husky Hustle: Payment Received',
         email_address=settings.EMAIL_HOST_USER,
-        subject='Husky Hustle: Payment Received',
     ))
     result = None
-    if request.POST:
+    query  = request.POST and request.POST.urlencode() or request.GET.urlencode() or None
+    if query:
         try:
-            result = getHttpRequest(settings.PAYPAL_IPN_URL, 'cmd=_notify-validate&%s' % request.POST.urlencode())
+            result = getHttpRequest(settings.PAYPAL_IPN_URL, 'cmd=_notify-validate&%s' % query)
         except Exception, e:
             printLog('Failed to IPN handshake')
     if result == 'VERIFIED':
