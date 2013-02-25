@@ -3,11 +3,11 @@ Dear {{ parent_name }},
 
 Thank you for registering with Husky Hustle.
 
-You can now manage your children and your children's sponsors online.  You can add new sponsors, mark if they have paid and send out reminders to sponsors.
+You can now manage your student and your student's sponsors online.  You can add new sponsors, mark if they have paid and send out reminders to sponsors.
 
 We will periodically send updates to your email address at: {{ email_address }}.  Please make sure our email address husky@huskyhustle.com is in your contact list.
 
-Please register your children if you have not done so already.
+Please register your student if you have not done so already.
 
 Regards,
 
