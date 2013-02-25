@@ -120,7 +120,7 @@ def account(request, identifier=None):
             c['child'] = child
             c['messages'] = messages.get_messages(request)
             c['page_title'] = '%s' % (child)
-            c['teachers'] = Teacher().get_donate_list()
+            c['teachers_donate'] = Teacher().get_donate_list()
             return render_to_response('account/donations.html', c, context_instance=RequestContext(request))
         except:
             messages.error(request, 'Could not find Student for identity: %s' % identifier)
@@ -789,7 +789,7 @@ def paid(request, donation_id=None):
         try:
             result = getHttpRequest(settings.PAYPAL_IPN_URL, 'cmd=_notify-validate&%s' % query)
         except Exception, e:
-            printLog('Failed to IPN handshake')
+            printLog('Failed IPN handshake')
     if result == 'VERIFIED':
         data = []
         for id in donation_id.split(','):
@@ -903,10 +903,11 @@ def reports(request, type=None):
                 json['values'][index]['values'].append(float(total))
                 json['values'][index]['labels'].append(teacher.full_name())
     elif type == 'most-donations-by-day-by-sponsor':
+        now = date.datetime.now(pytz.utc)
         for index in range(1, 11):
-            end = date.datetime.now(pytz.utc) - date.timedelta(index-1)
-            start = date.datetime.now(pytz.utc) - date.timedelta(index)
-            json['values'].append({'label': start.strftime('%m/%d/%Y'), 'values': [], 'labels': []})
+            end = date.datetime(now.year, now.month, now.day, 23, 59, 59, 0, pytz.utc) - date.timedelta(index-1)
+            start = date.datetime(now.year, now.month, now.day, 23, 59, 59, 0, pytz.utc) - date.timedelta(index)
+            json['values'].append({'label': end.strftime('%m/%d/%Y'), 'values': [], 'labels': []})
             results = Donation.objects.filter(date_added__range=(start, end)).exclude(last_name='teacher').order_by('donated')
             for result in results:
                 json['values'][index-1]['values'].append(float(result.donated or 0))
@@ -914,10 +915,11 @@ def reports(request, type=None):
     elif type == 'most-donations-by-day':
         total = Donation.objects.all().aggregate(donated=Sum('donated'))
         json['values'].append({'label': 'To Date', 'values': [float(total['donated'] or 0)], 'labels': ['Total To Date']})
+        now = date.datetime.now(pytz.utc)
         for index in range(1, 11):
-            end = date.datetime.now(pytz.utc) - date.timedelta(index-1)
-            start = date.datetime.now(pytz.utc) - date.timedelta(index)
-            json['values'].append({'label': start.strftime('%m/%d/%Y'), 'values': [], 'labels': []})
+            end = date.datetime(now.year, now.month, now.day, 23, 59, 59, 0, pytz.utc) - date.timedelta(index-1)
+            start = date.datetime(now.year, now.month, now.day, 23, 59, 59, 0, pytz.utc) - date.timedelta(index)
+            json['values'].append({'label': end.strftime('%m/%d/%Y'), 'values': [], 'labels': []})
             results = Donation.objects.filter(date_added__range=(start, end)).all().aggregate(donated=Sum('donated'))
             json['values'][index]['values'].append(float(results['donated'] or 0))
             json['values'][index]['labels'].append(start.strftime('%m/%d/%Y'))
