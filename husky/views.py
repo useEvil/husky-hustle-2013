@@ -280,6 +280,8 @@ def donate(request, child_id=None):
                 if not teacher_donation:
                     _send_email_teamplate('donate', c)
                 if c_parent:
+                    c['teacher_donation'] = teacher_donation or False
+                    c['teacher_name'] = donation.first_name
                     c['email_address'] = c_parent.email_address
                     c['parent_full_name'] = c_parent.full_name()
                     c['subject'] = 'Hicks Canyon Jog-A-Thon: Congratulations %s just got a Donation' % (child.first_name)
@@ -978,20 +980,24 @@ def reports(request, type=None):
 
 def send_teacher_reports(request):
     c = Context(dict(
-        subject='Hicks Canyon Jog-A-Thon: Donations',
+        subject='Hicks Canyon Jog-A-Thon: Sponsor List',
     ))
     teachers = Teacher.objects.exclude(list_type=2).all()
     data = []
     for teacher in teachers:
+        sponsors  = []
         donations = teacher.get_donations()
-        c['donations'] = donations
-        c['reports_url'] = teacher.reports_url()
-        c['teacher_name'] = teacher.full_name()
-        c['email_address'] = settings.EMAIL_HOST_USER
         c['reply_to'] = settings.EMAIL_HOST_USER
-#        c['email_address'] = teacher.email_address
-        data.append(_send_email_teamplate('reports-teacher', c, 1))
-        break
+        c['teacher_name'] = teacher.full_name()
+        c['email_address'] = settings.DEBUG and settings.EMAIL_HOST_USER or teacher.email_address
+        donations = Donation.objects.filter(first_name__contains=teacher.last_name)
+        for donation in donations:
+            full_name = donation.child.full_name()
+            if full_name not in sponsors:
+                sponsors.append(full_name)
+        if len(sponsors) > 0:
+            c['sponsors'] = sponsors
+            data.append(_send_email_teamplate('reports-teacher', c, 1))
     _send_mass_mail(data)
     return HttpResponse(simplejson.dumps({'result': 'OK', 'status': 200}), mimetype='application/json')
 

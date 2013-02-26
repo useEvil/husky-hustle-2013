@@ -1,11 +1,10 @@
 {% autoescape off %}
 Dear {{ teacher_name }},
 
-Your total donations as of today:  ${{ donations }}
+Here is the list of Student Sponsors as of today:
 
-You can view a list of your donations at:
-
-{{ reports_url }}
+{% for sponsor in sponsors %}{{ sponsor }}
+{% endfor %}
 
 ----------------------------
 The Husky Hustle Team
