@@ -275,14 +275,14 @@ def donate(request, child_id=None):
                 c['is_per_lap'] = donation.per_lap
                 c['payment_url'] = donation.payment_url()
                 c['email_address'] = donation.email_address
-                c['subject'] = 'Husky Hustle: Thank you for making a Pledge'
+                c['subject'] = 'Hicks Canyon Jog-A-Thon: Thank you for making a Pledge'
                 c['domain'] = Site.objects.get_current().domain
                 if not teacher_donation:
                     _send_email_teamplate('donate', c)
                 if c_parent:
                     c['email_address'] = c_parent.email_address
                     c['parent_full_name'] = c_parent.full_name()
-                    c['subject'] = 'Husky Hustle: Congratulations %s just got a Donation' % (child.first_name)
+                    c['subject'] = 'Hicks Canyon Jog-A-Thon: Congratulations %s just got a Donation' % (child.first_name)
                     _send_email_teamplate('donated', c)
             except Exception, e:
                 c['make_donation'] = make_donation or False
@@ -345,14 +345,14 @@ def donate_direct(request):
                 c['is_per_lap'] = donation.per_lap
                 c['payment_url'] = donation.payment_url()
                 c['email_address'] = donation.email_address
-                c['subject'] = 'Husky Hustle: Thank you for making a Pledge'
+                c['subject'] = 'Hicks Canyon Jog-A-Thon: Thank you for making a Pledge'
                 c['domain'] = Site.objects.get_current().domain
                 if not request.POST.get('teacher_donation'):
                     _send_email_teamplate('donate', c)
                 if c_parent:
                     c['email_address'] = c_parent.email_address
                     c['parent_full_name'] = c_parent.full_name()
-                    c['subject'] = 'Husky Hustle: Congratulations %s just got a Donation' % (child.first_name)
+                    c['subject'] = 'Hicks Canyon Jog-A-Thon: Congratulations %s just got a Donation' % (child.first_name)
                     _send_email_teamplate('donated', c)
             except Exception, e:
                 messages.error(request, str(e))
@@ -419,7 +419,7 @@ def register(request):
                 c['parent_name'] = parent.full_name()
                 c['activate_url'] = parent.activate_url()
                 c['email_address'] = parent.email_address
-                c['subject'] = 'Husky Hustle: Parent Registration'
+                c['subject'] = 'Hicks Canyon Jog-A-Thon: Parent Registration'
                 c['domain'] = Site.objects.get_current().domain
                 _send_email_teamplate('register-activation', c)
                 return render_to_response('registration/registration_complete.html', c, context_instance=RequestContext(request))
@@ -458,7 +458,7 @@ def activate(request, key=None):
         else:
             user.is_active = True
             user.save()
-            c['subject'] = 'Husky Hustle: Account Activated'
+            c['subject'] = 'Hicks Canyon Jog-A-Thon: Account Activated'
             c['parent_name'] = user.parent.full_name()
             c['email_address'] = user.parent.email_address
             c['domain'] = Site.objects.get_current().domain
@@ -483,7 +483,7 @@ def request(request, type=None, key=None):
         c['key'] = key
         c['parent_name'] = user.parent.full_name()
         c['email_address'] = user.parent.email_address
-        c['subject'] = 'Husky Hustle: Parent Activation'
+        c['subject'] = 'Hicks Canyon Jog-A-Thon: Parent Activation'
         c['domain'] = Site.objects.get_current().domain
         _send_email_teamplate('register-activation', c)
         messages.success(request, 'New Activation Key Sent')
@@ -496,7 +496,7 @@ def request(request, type=None, key=None):
         c['request_id'] = parent.id
         c['email_address'] = link.email_address
         c['request_full_name'] = parent.full_name()
-        c['subject'] = 'Husky Hustle: Account Link Request'
+        c['subject'] = 'Hicks Canyon Jog-A-Thon: Account Link Request'
         c['domain'] = Site.objects.get_current().domain
         _send_email_teamplate('account-link', c)
         messages.success(request, 'Your Request has been sent')
@@ -516,10 +516,10 @@ def contact(request):
             message = form.cleaned_data['message']
             sender  = form.cleaned_data['sender']
             cc_myself  = form.cleaned_data['cc_myself']
-            recipients = [settings.PICASA_STORAGE_OPTIONS['email']]
+            recipients = [settings.EMAIL_HOST_USER]
             if cc_myself:
                 recipients.append(sender)
-            mail.send_mail(subject, message, sender, recipients)
+            mail.send_mail(subject, "%s\n\nSender: %s" % (message, sender), sender, recipients)
             messages.success(request, 'Successfully Sent')
     else:
         form = ContactForm()
@@ -532,8 +532,15 @@ def results(request, type=None):
             page_title='Results',
             parent=getParent(request),
             type=type or 'all',
+            id=request.GET.get('id') or 0,
     ))
     if 'admin' in request.path:
+        if request.GET.get('id'):
+            teacher = Teacher.objects.filter(id=request.GET.get('id')).get()
+            donators, sponsors = teacher.get_donations_list()
+            c['teacher'] = teacher
+            c['donators'] = donators
+            c['sponsors'] = sponsors
         return render_to_response('admin/results.html', c, context_instance=RequestContext(request))
     else:
         return render_to_response('results.html', c, context_instance=RequestContext(request))
@@ -543,6 +550,7 @@ def reporting(request, type=None):
             page_title='Reporting',
             parent=getParent(request),
             type=type,
+            id=request.GET.get('id') or 0,
     ))
     return render_to_response('admin/chart.html', c, context_instance=RequestContext(request))
 
@@ -582,7 +590,7 @@ def add(request, type=None):
                 c['child_identifier'] = child.identifier
                 c['donate_url'] = child.donate_url()
                 c['manage_url'] = child.manage_url()
-                c['subject'] = 'Husky Hustle: Student Registration'
+                c['subject'] = 'Hicks Canyon Jog-A-Thon: Student Registration'
                 c['domain'] = Site.objects.get_current().domain
                 _send_email_teamplate('register-child', c)
                 messages.success(request, 'Student Added Successfully')
@@ -625,7 +633,7 @@ def link(request, parent_id=None):
         c['full_name'] = linked.full_name()
         c['email_address'] = linked.email_address
         c['linked_full_name'] = parent.full_name()
-        c['subject'] = 'Husky Hustle: Account Link Accepted'
+        c['subject'] = 'Hicks Canyon Jog-A-Thon: Account Link Accepted'
         _send_email_teamplate('account-link-accepted', c)
         messages.success(request, 'Successfully Linked Account')
     except Exception, e:
@@ -701,7 +709,7 @@ def delete(request, type=None):
 def emails(request):
     parent = getParent(request)
     c = Context(dict(
-            subject='Husky Hustle: Help Support %s' % request.POST.get('child_first_name'),
+            subject='Hicks Canyon Jog-A-Thon: Help Support %s' % request.POST.get('child_first_name'),
             body=request.POST.get('custom_message'),
             reply_to=parent.email_address,
     ))
@@ -722,7 +730,7 @@ def emails(request):
 def reminders(request):
     parent = getParent(request)
     c = Context(dict(
-            subject='Husky Hustle: Payment Reminder',
+            subject='Hicks Canyon Jog-A-Thon: Payment Reminder',
             domain=Site.objects.get_current().domain,
             reply_to=parent.email_address,
     ))
@@ -746,7 +754,7 @@ def reminders(request):
 def thanks(request):
     parent = getParent(request)
     c = Context(dict(
-            subject='Husky Hustle: Thank You',
+            subject='Hicks Canyon Jog-A-Thon: Thank You',
             domain=Site.objects.get_current().domain,
             reply_to=parent.email_address,
     ))
@@ -780,7 +788,7 @@ def disconnect(request, parent_id=None, social=None):
 @csrf_exempt
 def paid(request, donation_id=None):
     c = Context(dict(
-        subject='Husky Hustle: Payment Received',
+        subject='Hicks Canyon Jog-A-Thon: Payment Received',
         email_address=settings.EMAIL_HOST_USER,
     ))
     result = None
@@ -810,7 +818,7 @@ def paid(request, donation_id=None):
         c['code'] = result
         c['name'] = 'Sponsor Name'
         c['amount'] = '0.00'
-        c['subject'] = 'Husky Hustle: Payment Failed'
+        c['subject'] = 'Hicks Canyon Jog-A-Thon: Payment Failed'
         _send_email_teamplate('paid', c)
     else:
         for id in donation_id.split(','):
@@ -913,14 +921,14 @@ def reports(request, type=None):
                 json['values'][index-1]['values'].append(float(result.donated or 0))
                 json['values'][index-1]['labels'].append('<span id="%d">%s (%s)</span>'%(result.id, result.full_name(), result.child))
     elif type == 'most-donations-by-day':
-        total = Donation.objects.all().aggregate(donated=Sum('donated'))
+        total = Donation.objects.aggregate(donated=Sum('donated'))
         json['values'].append({'label': 'To Date', 'values': [float(total['donated'] or 0)], 'labels': ['Total To Date']})
         now = date.datetime.now(pytz.utc)
         for index in range(1, 11):
             end = date.datetime(now.year, now.month, now.day, 23, 59, 59, 0, pytz.utc) - date.timedelta(index-1)
             start = date.datetime(now.year, now.month, now.day, 23, 59, 59, 0, pytz.utc) - date.timedelta(index)
             json['values'].append({'label': end.strftime('%m/%d/%Y'), 'values': [], 'labels': []})
-            results = Donation.objects.filter(date_added__range=(start, end)).all().aggregate(donated=Sum('donated'))
+            results = Donation.objects.filter(date_added__range=(start, end)).aggregate(donated=Sum('donated'))
             json['values'][index]['values'].append(float(results['donated'] or 0))
             json['values'][index]['labels'].append(start.strftime('%m/%d/%Y'))
     elif type == 'most-laps-by-child':
@@ -937,9 +945,56 @@ def reports(request, type=None):
             for child in children:
                 json['values'][index]['values'].append(float(child.collected or 0))
                 json['values'][index]['labels'].append(child.full_name())
+    elif type == 'donations-by-teacher':
+        id = int(request.GET.get('id') or 0)
+        if id == 0:
+            teachers = Teacher.objects.exclude(list_type=2).all()
+            for index, teacher in enumerate(teachers):
+                donation = teacher.get_donations()
+                if donation:
+                    json['values'].append({'label': teacher.id, 'values': [donation], 'labels': [teacher.full_name()]})
+        else:
+            teacher = Teacher.objects.filter(id=id).get()
+            children = Children.objects.filter(teacher=teacher).all()
+            json['values'].append({'label': 'Donations', 'values': [], 'labels': []})
+            for child in children:
+                donation = child.total_sum()
+                if donation['total_sum']:
+                    json['values'][0]['values'].append(float(donation['total_sum'] or 0))
+                    json['values'][0]['labels'].append(child.full_name())
+            donations = Donation.objects.filter(first_name__contains=teacher.last_name)
+            json['values'].append({'label': 'Sponsors', 'values': [], 'labels': []})
+            totals = { }
+            for index, donation in enumerate(donations):
+                full_name = donation.child.full_name()
+                if totals.has_key(full_name):
+                    totals[full_name] += donation.donated or 0
+                else:
+                    totals[full_name] = donation.donated or 0
+            for child, total in totals.iteritems():
+                json['values'][1]['values'].append(float(total or 0))
+                json['values'][1]['labels'].append(child)
     return HttpResponse(simplejson.dumps(json), mimetype='application/json')
 
-@login_required(login_url='/admin/')
+def send_teacher_reports(request):
+    c = Context(dict(
+        subject='Hicks Canyon Jog-A-Thon: Donations',
+    ))
+    teachers = Teacher.objects.exclude(list_type=2).all()
+    data = []
+    for teacher in teachers:
+        donations = teacher.get_donations()
+        c['donations'] = donations
+        c['reports_url'] = teacher.reports_url()
+        c['teacher_name'] = teacher.full_name()
+        c['email_address'] = settings.EMAIL_HOST_USER
+        c['reply_to'] = settings.EMAIL_HOST_USER
+#        c['email_address'] = teacher.email_address
+        data.append(_send_email_teamplate('reports-teacher', c, 1))
+        break
+    _send_mass_mail(data)
+    return HttpResponse(simplejson.dumps({'result': 'OK', 'status': 200}), mimetype='application/json')
+
 def calculate_totals(request, type=None, id=None):
     if type == 'donation':
         Donation().calculate_totals(id)
