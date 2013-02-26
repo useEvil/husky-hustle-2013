@@ -208,6 +208,36 @@ class Teacher(models.Model):
             self.save()
         return self.shorten
 
+    def get_donations(self):
+        total1 = Donation.objects.filter(child__teacher=self).aggregate(donated=Sum('donated'))
+        total2 = Donation.objects.filter(first_name__contains=self.last_name).aggregate(donated=Sum('donated'))
+        return float(total1['donated'] or 0) + float(total2['donated'] or 0)
+
+    def get_donations_list(self):
+        donators = []
+        sponsors = []
+        children = Children.objects.filter(teacher=self).all()
+        for child in children:
+            donation = child.total_sum()
+            if donation['total_sum']:
+                donators.append({'name': child.full_name(), 'total': float(donation['total_sum'] or 0)})
+        donations = Donation.objects.filter(first_name__contains=self.last_name)
+        totals = { }
+        for index, donation in enumerate(donations):
+            full_name = donation.child.full_name()
+            if totals.has_key(full_name):
+                totals[full_name] += donation.donated or 0
+            else:
+                totals[full_name] = donation.donated or 0
+        for child, total in totals.iteritems():
+            sponsors.append({'name': child, 'total': float(total or 0)})
+        return donators, sponsors
+
+    def reports_url(self):
+        site = Site.objects.get_current()
+        reports_url = 'http://%s/admin/results/donations-by-teacher?id=%s' % (site.domain, self.id)
+        return reports_url
+
 
 class Children(models.Model):
 
@@ -300,6 +330,9 @@ class Children(models.Model):
 
     def has_parents(self):
         return ParentChildren.objects.filter(children=self).all()
+
+    def total_sum(self):
+        return Donation.objects.filter(child=self).aggregate(total_sum=Sum('donated'))
 
     def total_due(self):
         total_due = 0

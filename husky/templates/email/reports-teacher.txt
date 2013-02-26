@@ -1,0 +1,15 @@
+{% autoescape off %}
+Dear {{ teacher_name }},
+
+Your total donations as of today:  ${{ donations }}
+
+You can view a list of your donations at:
+
+{{ reports_url }}
+
+----------------------------
+The Husky Hustle Team
+
+http://www.huskyhustle.com
+husky@huskyhustle.com
+{% endautoescape %}

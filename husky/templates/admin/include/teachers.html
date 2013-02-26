@@ -1,0 +1,44 @@
+{% load humanize %}
+<style>
+	.search-results, .child-list {
+		border-collapse: collapse;
+		text-align: left;
+	}
+	.search-results tr:nth-child(even) {
+		background-color: #eee;
+	}
+	.search-results td, th {
+		width: 175px;
+		padding: 3px 3px 3px 10px;
+	}
+</style>
+<div id="content-main">
+	Donations:
+	<div>
+		<table class="search-results" border="2">
+			<tr>
+				<th width="350">Student</th><th width="350" align="right">Total</th>
+			</tr>
+			{% for donator in donators %}
+			<tr>
+				<td>{{ donator.name }}</td>
+				<td align="right">${{ donator.total|floatformat:2|intcomma }}</td>
+			</tr>
+			{% endfor %}
+		</table>
+	</div>
+	Sponsors:
+	<div>
+		<table class="search-results" border="2">
+			<tr>
+				<th width="350">Student</th><th width="350" align="right">Total</th>
+			</tr>
+			{% for sponsor in sponsors %}
+			<tr>
+				<td>{{ sponsor.name }}</td>
+				<td align="right">${{ sponsor.total|floatformat:2|intcomma }}</td>
+			</tr>
+			{% endfor %}
+		</table>
+	</div>
+</div>

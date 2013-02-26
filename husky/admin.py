@@ -110,7 +110,7 @@ class TeacherInline(admin.StackedInline):
 
 class TeacherAdmin(admin.ModelAdmin):
     fields = ['grade', 'list_type', 'title', 'first_name', 'last_name', 'room_number', 'email_address', 'phone_number', 'website']
-    list_display = ['grade', 'list_type', 'title', 'last_name', 'room_number', 'email_address', 'phone_number']
+    list_display = ['grade', 'list_type', 'title', 'last_name', 'room_number', 'email_address', 'phone_number', 'get_donations']
     list_editable = ['list_type', 'last_name', 'room_number', 'phone_number']
 
 class GradeAdmin(admin.ModelAdmin):
