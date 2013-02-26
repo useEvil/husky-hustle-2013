@@ -1,7 +1,8 @@
 {% autoescape off %}
 Dear {{ parent_full_name }},
-
-{{ full_name }} has just made a Pledge to sponsor {{ child_full_name }}.
+{% if teacher_donation %}
+{{ child_full_name }} has just made a Pledge to sponsor {{ teacher_name }}.{% else %}
+{{ full_name }} has just made a Pledge to sponsor {{ child_full_name }}.{% endif %}
 {% if is_per_lap %}
 They chose to donate ${{ amount }} for each lap.
 {% else %}
