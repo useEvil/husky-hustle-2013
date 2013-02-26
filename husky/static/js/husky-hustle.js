@@ -666,6 +666,19 @@ function initBarChart(json){
 			onShow: function(tip, elem, label) {
 				tip.innerHTML = "<b>" + elem.name + "</b>: " + elem.value;
 			}
+		},
+		Events: {
+			enable: true,
+			onClick: function(node, eventInfo, e) {
+				url = '/admin/results/donations-by-teacher?id=' + node.label;
+				if ( ! node.label ) {
+				} else if (window.location.href.match('donations-by-teacher\\?id=0') && node.label) {
+					window.parent.location = url;
+				} else if (window.location.href.match('donations-by-teacher\\?id=\\d+')) {
+					window.parent.location = '/admin/results/donations-by-teacher';
+//					window.parent.history.back();
+				}
+			}
 		}
 	});
 	barChart.loadJSON(json);
