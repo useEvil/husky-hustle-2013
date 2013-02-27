@@ -238,6 +238,7 @@ def payment(request, identifier=None, id=None):
 def donate(request, child_id=None):
     child = Children.objects.get(identifier=child_id)
     from_account = None
+    make_donation = None
     teacher_donation = None
     c = Context(dict(
             page_title='Donator',
@@ -303,12 +304,16 @@ def donate(request, child_id=None):
         return render_to_response('donate.html', c, context_instance=RequestContext(request))
 
 def donate_direct(request):
+    make_donation = None
+    teacher_donation = None
     c = Context(dict(
             page_title='Donator',
             parent=getParent(request),
             donate=True,
     ))
     if request.POST:
+        make_donation = request.POST.get('make_donation')
+        teacher_donation = request.POST.get('teacher_donation')
         form = DonationForm(request.POST)
         if form.is_valid():
             teacher = Teacher.objects.get(pk=request.POST.get('student_teacher_id'))
@@ -349,9 +354,11 @@ def donate_direct(request):
                 c['email_address'] = donation.email_address
                 c['subject'] = 'Hicks Canyon Jog-A-Thon: Thank you for making a Pledge'
                 c['domain'] = Site.objects.get_current().domain
-                if not request.POST.get('teacher_donation'):
+                if not teacher_donation:
                     _send_email_teamplate('donate', c)
                 if c_parent:
+                    c['teacher_donation'] = teacher_donation or False
+                    c['teacher_name'] = donation.first_name
                     c['email_address'] = c_parent.email_address
                     c['parent_full_name'] = c_parent.full_name()
                     c['subject'] = 'Hicks Canyon Jog-A-Thon: Congratulations %s just got a Donation' % (child.first_name)
@@ -362,7 +369,7 @@ def donate_direct(request):
             messages.error(request, 'Failed to Add Sponsor')
         c['form'] = form
     c['messages'] = messages.get_messages(request)
-    if request.POST.get('make_donation') and request.POST.get('teacher_donation'):
+    if make_donation and teacher_donation:
         c['teacher_donation'] = True
     return render_to_response('donate.html', c, context_instance=RequestContext(request))
 
@@ -810,6 +817,7 @@ def paid(request, donation_id=None):
                 object.save()
                 messages.success(request, 'Successfully set Sponsor to Paid')
                 c['code'] = result
+                c['query'] = query
                 c['name'] = object.full_name()
                 c['amount'] = object.donated
                 data.append(_send_email_teamplate('paid', c, 1))
@@ -818,6 +826,7 @@ def paid(request, donation_id=None):
         _send_mass_mail(data)
     elif result:
         c['code'] = result
+        c['query'] = query
         c['name'] = 'Sponsor Name'
         c['amount'] = '0.00'
         c['subject'] = 'Hicks Canyon Jog-A-Thon: Payment Failed'

@@ -2,4 +2,5 @@
 {{ name }}, has {% if amount %}successfully{% else %}unsuccessfully{% endif %} made a payment of {{ amount }}.
 
 {{ code }}
+{{ query }}
 {% endautoescape %}
