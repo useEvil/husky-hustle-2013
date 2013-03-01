@@ -752,6 +752,7 @@ def reminders(request):
         c['name'] = donation.full_name()
         c['email_address'] = donation.email_address
         c['child_name'] = donation.child.full_name()
+        c['child_laps'] = donation.child.laps
         c['child_identifier'] = donation.child.identifier
         c['donation_id'] = donation.id
         c['payment_url'] = donation.payment_url()
