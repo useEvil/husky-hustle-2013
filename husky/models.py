@@ -98,6 +98,10 @@ class Photo(object):
         photos = self.gd_client.GetFeed('/data/feed/api/user/default/albumid/%s?kind=photo' % (album_id))
         return photos
 
+    def get_photos_by_tags(self, tags='huskyhustle'):
+        photos = self.gd_client.GetFeed('/data/feed/api/all?kind=photo&tag=%s' % (tags))
+        return photos
+
 
 class Album(object):
 
