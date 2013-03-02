@@ -54,13 +54,6 @@ class MostDonationsListFilter(SimpleListFilter):
         if self.value() == 'direct':
             return queryset.filter(child__parents=None).all()
 
-class ChildrenAdmin(admin.ModelAdmin):
-    fields = ['first_name', 'last_name', 'teacher', 'identifier', 'laps', 'date_added']
-    list_display = ['first_name', 'last_name', 'teacher', 'identifier', 'laps', 'total_due', 'total_got']
-    search_fields = ['teacher__last_name', 'first_name', 'last_name', 'parents__first_name', 'parents__last_name']
-    list_editable = ['laps']
-    list_filter = [MostLapsListFilter]
-
 class ChildrenInline(admin.StackedInline):
     model = Parent.children.through
     extra = 2
@@ -69,6 +62,14 @@ class ParentInline(admin.StackedInline):
     model = Parent
     can_delete = False
     verbose_name_plural = 'parents'
+
+class ChildrenAdmin(admin.ModelAdmin):
+    fields = ['first_name', 'last_name', 'teacher', 'identifier', 'laps', 'date_added']
+    list_display = ['first_name', 'last_name', 'teacher', 'identifier', 'laps', 'total_due', 'total_got']
+    search_fields = ['teacher__last_name', 'first_name', 'last_name', 'parents__first_name', 'parents__last_name']
+    list_editable = ['laps']
+    list_filter = [MostLapsListFilter]
+    inlines = [ChildrenInline]
 
 class ParentAdmin(admin.ModelAdmin):
     fields = ['first_name', 'last_name', 'email_address', 'phone_number', 'activation_key', 'default', 'guardian', 'date_added']
