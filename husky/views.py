@@ -960,6 +960,9 @@ def reports(request, type=None):
     elif type == 'donations-by-teacher':
         id = int(request.GET.get('id') or 0)
         if id == 0:
+            donation = Donation.objects.filter(first_name__contains='Agopian').aggregate(donated=Sum('donated'))
+            if donation:
+                json['values'].append({'label': 0, 'values': [donation['donated']], 'labels': ['Mrs. Agopian']})
             teachers = Teacher.objects.exclude(list_type=2).all()
             for index, teacher in enumerate(teachers):
                 donation = teacher.get_donations()
@@ -991,13 +994,14 @@ def reports(request, type=None):
 def send_teacher_reports(request):
     c = Context(dict(
         subject='Hicks Canyon Jog-A-Thon: Sponsor List',
+        reply_to=settings.EMAIL_HOST_USER,
     ))
+    ## check donations for each Teacher ##
     teachers = Teacher.objects.exclude(list_type=2).all()
     data = []
     for teacher in teachers:
         sponsors  = []
         donations = teacher.get_donations()
-        c['reply_to'] = settings.EMAIL_HOST_USER
         c['teacher_name'] = teacher.full_name()
         c['email_address'] = settings.DEBUG and settings.EMAIL_HOST_USER or teacher.email_address
         donations = Donation.objects.filter(first_name__contains=teacher.last_name)
@@ -1008,6 +1012,18 @@ def send_teacher_reports(request):
         if len(sponsors) > 0:
             c['sponsors'] = sponsors
             data.append(_send_email_teamplate('reports-teacher', c, 1))
+    ## check donations for Mrs. Agopian ##
+    donations = Donation.objects.filter(first_name__contains='Agopian')
+    sponsors  = []
+    for donation in donations:
+        full_name = donation.child.full_name()
+        if full_name not in sponsors:
+            sponsors.append(full_name)
+    if len(sponsors) > 0:
+        c['sponsors'] = sponsors
+        c['teacher_name'] = 'Mrs. Agopian'
+        c['email_address'] = settings.DEBUG and settings.EMAIL_HOST_USER or 'cagopian@tustin.k12.ca.us'
+        data.append(_send_email_teamplate('reports-teacher', c, 1))
     _send_mass_mail(data)
     return HttpResponse(simplejson.dumps({'result': 'OK', 'status': 200}), mimetype='application/json')
 
@@ -1049,7 +1065,7 @@ def _formatData(data, total):
         else:
             row['cell'].append(donation.per_lap and 'yes' or 'no')
         row['cell'].append(donation.date_added.strftime('%m/%d/%Y'))
-        row['cell'].append(donation.paid and '<span class="success">Paid</span>' or '<input type="checkbox" value="paid" name="paid" id="paid-%s" class="set-paid" title="If your Sponsor has paid you, you can makr their Donation as Paid." />' % donation.id)
+        row['cell'].append(donation.paid and '<span class="success">Paid</span>' or '<input type="checkbox" value="paid" name="paid" id="paid-%s" class="set-paid" title="If your Sponsor has paid you, you can mark their Donation as Paid." />' % donation.id)
         row['cell'].append('<input type="checkbox" value="%s" name="reminder" id="reminder-%s" class="set-reminder" />' % (donation.id, donation.id))
         result['rows'].append(row)
         count += 1
