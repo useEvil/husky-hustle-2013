@@ -928,7 +928,7 @@ def reports(request, type=None):
             end = date.datetime(now.year, now.month, now.day, 23, 59, 59, 0, pytz.utc) - date.timedelta(index-1)
             start = date.datetime(now.year, now.month, now.day, 23, 59, 59, 0, pytz.utc) - date.timedelta(index)
             json['values'].append({'label': end.strftime('%m/%d/%Y'), 'values': [], 'labels': []})
-            results = Donation.objects.filter(date_added__range=(start, end)).exclude(last_name='teacher').order_by('donated')
+            results = Donation.objects.filter(date_added__range=(start, end)).exclude(last_name='teacher').order_by('-donated')
             for result in results:
                 json['values'][index-1]['values'].append(float(result.donated or 0))
                 json['values'][index-1]['labels'].append('<span id="%d">%s (%s)</span>'%(result.id, result.full_name(), result.child))
@@ -946,14 +946,14 @@ def reports(request, type=None):
     elif type == 'most-laps-by-child':
         for index, grade in enumerate(grades):
             json['values'].append({'label': grade.title, 'values': [], 'labels': []})
-            children = Children.objects.filter(teacher__grade=grade).annotate(max_laps=Max('laps')).order_by('laps')[:20]
+            children = Children.objects.filter(teacher__grade=grade).annotate(max_laps=Max('laps')).order_by('-laps')[:20]
             for child in children:
                 json['values'][index]['values'].append(child.max_laps or 0)
                 json['values'][index]['labels'].append(child.full_name())
     elif type == 'most-donations-by-child':
         for index, grade in enumerate(grades):
             json['values'].append({'label': grade.title, 'values': [], 'labels': []})
-            children = Children.objects.filter(teacher__grade=grade).annotate(max_funds=Max('collected')).order_by('collected')[:20]
+            children = Children.objects.filter(teacher__grade=grade).annotate(max_funds=Max('collected')).order_by('-collected')[:20]
             for child in children:
                 json['values'][index]['values'].append(float(child.collected or 0))
                 json['values'][index]['labels'].append(child.full_name())
