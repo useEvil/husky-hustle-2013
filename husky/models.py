@@ -254,7 +254,10 @@ class Children(models.Model):
     teacher = models.ForeignKey(Teacher, related_name='students')
 
     def __unicode__(self):
-        return self.full_name()
+        return self.list_name()
+
+    def list_name(self):
+        return '%s, %s' % (self.last_name, self.first_name)
 
     def full_name(self):
         return '%s %s' % (self.first_name, self.last_name)
