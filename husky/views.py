@@ -30,7 +30,7 @@ from socialregistration.contrib.facebook.models import FacebookProfile
 from socialregistration.contrib.twitter.models import TwitterProfile
 
 from husky.models import Parent, Children, ParentChildren, Donation, Teacher, Grade, Album, Photo, Content, Blog, Message, Link, Calendar
-from husky.models import ContactForm, ParentRegistrationForm, ChildrenRegistrationForm, DonationForm
+from husky.models import ContactForm, ParentForm, ParentRegistrationForm, ChildrenRegistrationForm, DonationForm
 from husky.helpers import *
 
 # Create your views here.
@@ -666,6 +666,20 @@ def edit(request, type=None):
                     messages.success(request, 'Successfully Updated Student')
                 except Exception, e:
                     messages.error(request, 'Failed to Update Student: %s' % str(e))
+        elif type == 'parent':
+            form = ParentForm(request.POST)
+            if form.is_valid():
+                try:
+                    parent = getParent(request)
+                    parent.first_name = request.POST.get('first_name') or parent.first_name
+                    parent.last_name = request.POST.get('last_name') or parent.last_name
+                    parent.email_address = request.POST.get('email_address') or parent.email_address
+                    parent.phone_number = request.POST.get('phone_number') or parent.phone_number
+                    parent.guardian = request.POST.get('guardian') or parent.guardian
+                    parent.save()
+                    messages.success(request, 'Successfully Updated Profile')
+                except Exception, e:
+                    messages.error(request, 'Failed to Update Profile: %s' % str(e))
         elif type == 'profile':
             form = ParentRegistrationForm(request.POST)
             if form.is_valid():
@@ -962,7 +976,7 @@ def reports(request, type=None):
         if id == 0:
             donation = Donation.objects.filter(first_name__contains='Agopian').aggregate(donated=Sum('donated'))
             if donation:
-                json['values'].append({'label': 0, 'values': [donation['donated']], 'labels': ['Mrs. Agopian']})
+                json['values'].append({'label': 0, 'values': [float(donation['donated'] or 0)], 'labels': ['Mrs. Agopian']})
             teachers = Teacher.objects.exclude(list_type=2).all()
             for index, teacher in enumerate(teachers):
                 donation = teacher.get_donations()

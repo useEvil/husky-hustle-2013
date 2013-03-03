@@ -678,6 +678,13 @@ class ChildrenRegistrationForm(forms.Form):
     teacher = forms.CharField(max_length=100)
 
 
+class ParentForm(forms.Form):
+
+    first_name = forms.CharField(max_length=50)
+    last_name = forms.CharField(max_length=50)
+    email_address = forms.EmailField(max_length=100)
+
+
 class ParentRegistrationForm(RegistrationForm):
 
     first_name = forms.CharField(max_length=50)

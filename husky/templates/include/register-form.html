@@ -1,5 +1,5 @@
 {% if edit %}
-<form action="/edit/profile" method="post" id="profile_{{ parent.id }}" class="form-edit hidden">
+<form action="/edit/{% if as_parent %}parent{% else %}profile{% endif %}" method="post" id="{% if as_parent %}parent{% else %}profile{% endif %}_{{ parent.id }}" class="form-edit hidden">
 	{% csrf_token %}
 	<input type="hidden" value="{{ parent.id }}" name="id" />
 	<ol>
@@ -16,7 +16,7 @@
 		</li>
 		<li>&nbsp;</li>
 		<li>
-			<input type="button" style="width: 8em;" class="control input submit_edit" id="submit_profile_{{ parent.id }}" value=" Update Profile " />
+			<input type="button" style="width: 8em;" class="control input submit_edit" id="submit_{% if as_parent %}parent{% else %}profile{% endif %}_{{ parent.id }}" value=" Update Profile " />
 		</li>
 	</ol>
 </form>
