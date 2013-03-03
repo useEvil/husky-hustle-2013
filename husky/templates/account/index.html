@@ -36,7 +36,7 @@
 						<h3>Profile</h3>
 						<div class="box left-col1-3">
 							<ul class="list">
-								<li>{{ parent.first_name }} {{ parent.last_name }} ({% if parent.guardian == 1 %}Mother{% elif parent.guardian == 2 %}Father{% else %}Guardian{% endif %})&nbsp;<img src="/static/images/edit.png" class="show-edit" id="edit_profile_{{ parent.id }}" /></li>
+								<li>{{ parent.first_name }} {{ parent.last_name }} ({% if parent.guardian == 1 %}Mother{% elif parent.guardian == 2 %}Father{% else %}Guardian{% endif %})&nbsp;<img src="/static/images/edit.png" class="show-edit" id="edit_parent_{{ parent.id }}" /></li>
 								<li>{{ parent.email_address }}</li>
 								<li>{{ parent.phone_number }}</li>
 								<li>{{ user_id }}</li>
@@ -131,7 +131,7 @@
 		</div>
 		<div id="overlay-box-edit" class="overlay-box" title="Edit" style="z-index: 1010;">
 			<div class="overlay-content">
-				{% include "include/register-form.html" with edit=1 %}
+				{% include "include/register-form.html" with edit=1 as_parent=1 %}
 				{% include "include/child-form.html" with edit=1 %}
 			</div>
 		</div>
