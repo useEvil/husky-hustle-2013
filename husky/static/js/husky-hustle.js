@@ -567,7 +567,10 @@ function makePayment(event) {
 			if ($(this).attr('checked') === 'checked') {
 				id   = this.id.replace( 'reminder-', '' );
 				text = $('#row'+id+' span[abbr="total"]').text();
-				if ( $('#row'+id+' .success').text() ==='Paid' ) paid += 1;
+				if ( $('#row'+id+' .success').text() ==='Paid' ) {
+					$(this).attr('checked', false);
+					paid += 1;
+				}
 				payments += parseFloat(text);
 				ids.push(id);
 			}

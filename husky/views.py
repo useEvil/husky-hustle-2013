@@ -113,14 +113,18 @@ def account(request, identifier=None):
             my_google=parent.google(),
             teachers=Teacher().get_list(),
             facebook_api=settings.FACEBOOK_APP_ID,
+            identifier=identifier,
     ))
     if identifier:
+        c['teachers_donate'] = Teacher().get_donate_list()
+        if identifier == 'all':
+            c['page_title'] = 'All'
+            return render_to_response('account/donations.html', c, context_instance=RequestContext(request))
         try:
             child = Children.objects.get(identifier=identifier)
             c['child'] = child
             c['messages'] = messages.get_messages(request)
             c['page_title'] = '%s' % (child)
-            c['teachers_donate'] = Teacher().get_donate_list()
             return render_to_response('account/donations.html', c, context_instance=RequestContext(request))
         except:
             messages.error(request, 'Could not find Student for identity: %s' % identifier)
@@ -909,9 +913,16 @@ def json(request, child_id=None):
     field      = request.GET.get('qtype')  or None
     sortname   = request.GET.get('sortname')  or 'id'
     sortorder  = request.GET.get('sortorder') or 'asc'
-    donations  = Donation().get_donations(child_id, limit, offset, query, field, sortname, sortorder)
-    total      = Donation().get_donations_total(child_id, query, field)
-    data       = _formatData(donations, total)
+    children   = []
+    if child_id == 'all':
+        parent = getParent(request)
+        for child in parent.children.all():
+            children.append(child.identifier)
+    else:
+        children = [child_id]
+    donations = Donation().get_donations(children, limit, offset, query, field, sortname, sortorder)
+    total     = Donation().get_donations_total(children, query, field)
+    data = _formatData(donations, total)
     return HttpResponse(simplejson.dumps(data), mimetype='application/json')
 
 def reports(request, type=None):
@@ -1055,6 +1066,7 @@ def calculate_totals(request, type=None, id=None):
 def _formatData(data, total):
     if not data and not total: return
     result = { }
+    funds = 0
     count  = 1
     result['rows']  = [ ]
     result['total'] = total
@@ -1083,6 +1095,8 @@ def _formatData(data, total):
         row['cell'].append('<input type="checkbox" value="%s" name="reminder" id="reminder-%s" class="set-reminder" />' % (donation.id, donation.id))
         result['rows'].append(row)
         count += 1
+        funds += donation.total()
+    result['rows'].append({'id': None, 'cell': [ 'Total', None, None, None, None, None, None, "%01.2f" % (funds), None, None, None, None ]})
     return result
 
 def _send_email_teamplate(template, data, mass=None):
