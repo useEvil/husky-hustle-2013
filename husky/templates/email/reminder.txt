@@ -4,11 +4,10 @@ Dear {{ name }},
 {{ custom_message }}
 
 You are getting this email because you have sponsored {{ child_name }} for the Hicks Canyon 
-Husky Hustle.  {{ child_name }} ran an amazing {{ child_laps }} laps.
+Husky Hustle.  {% if child_laps %}{{ child_name }} ran an amazing {{ child_laps }} laps.{% endif %}
 
-The Jog-A-Thon has concluded and it is now time to pay the donation you pledged.  Please refer 
-to the link below to make your payment.  Your contribution ensures that the students at Hicks 
-Canyon will continue to receive the best education and tools our schools can provide.
+Please refer to the link below to make your payment.  Your contribution ensures that the students 
+at Hicks Canyon will continue to receive the best education and tools our schools can provide.
 
 {{ payment_url }}
 
