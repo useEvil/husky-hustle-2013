@@ -22,14 +22,14 @@
 					{% endif %}
 					<div class="box">
 						<h3><a href="/accounts/profile/">Profile</a> &gt; Donation List</h3>
+						{% if child %}
 						<span>{{ child }}:  In room {{ child.teacher.room_number }} with {{ child.teacher.full_name }}{% if child.laps %} ran {{ child.laps }} laps.{% endif %}</span>
+						{% endif %}
 					</div>
 				</div>
 			</div>
-			{% if child %}
 			<br class="clearfix" />
 			<table id="donations" style="display: none;"></table>
-			{% endif %}
 			<div id="page-bottom">
 				{% include "include/page-bottom.html" %}
 			</div>
@@ -85,6 +85,7 @@
 				</form>
 			</div>
 		</div>
+	{% if child %}
 		<div id="overlay-box-edit" class="overlay-box" title="Edit Sponsor" style="z-index: 1010;">
 			<div class="overlay-content">
 				{% include "include/donation-form.html" with edit=1 %}
@@ -100,11 +101,11 @@
 				{% include "include/donation-form-teachers.html" with make_donation=1 from_account=1 %}
 			</div>
 		</div>
+	{% endif %}
 		<form id="delete_form" action="/delete/sponsor">
 			{% csrf_token %}
 		</form>
 	</body>
-	{% if child %}
 	<script type="text/javascript" src="/static/js/jquery-1.8.2.js"></script>
 	<script type="text/javascript" src="/static/js/jquery-ui-1.9.0.custom.min.js"></script>
 	<script type="text/javascript" src="/static/js/jquery.cookie.js"></script>
@@ -116,7 +117,7 @@
 				if ($('a.closeEl')) $('a.closeEl').bind('click', toggleContent);
 				var timecolwidth = 110;
 				var releaseGridDonations = $("#donations").flexigrid({
-					url: "/JSON/{{ child.identifier }}?limit=30",
+					url: "/JSON/{{ identifier }}?limit=30",
 					method: 'GET',
 					dataType: 'json',
 					colModel: [
@@ -143,14 +144,18 @@
 					buttons: [
 						{name: 'Reload', bclass: 'reset', onpress: reloadPage},
 						{separator: true},
+						{% if child %}
 						{name: 'Add Sponsor', bclass: 'add', onpress: showFormDonate},
 						{separator: true},
 						{name: 'Teacher Donation', bclass: 'add', onpress: showFormTeacher},
 						{separator: true},
+						{% endif %}
 						{name: 'Delete', bclass: 'delete', onpress: deleteSponsors},
 						{separator: true},
+						{% if child %}
 						{name: 'Print', bclass: 'print', onpress: function() { window.open('/donation_sheet/{{ child.identifier }}', '_print') }},
 						{separator: true},
+						{% endif %}
 						{name: 'Send Thank You', bclass: 'reminder', onpress: sendThanks},
 						{separator: true},
 						{name: 'Send Reminders', bclass: 'reminder', onpress: sendReminders},
@@ -184,5 +189,4 @@
 			}, 50);
 		});
 	</script>
-	{% endif %}
 </html>

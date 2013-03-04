@@ -377,7 +377,7 @@ class Children(models.Model):
             total = 0
             result = Children.objects.get(pk=id)
             for sponsor in result.sponsors.all():
-                total += sponsor.donated
+                total += sponsor.donated or 0
             self.collected = total
             self.save()
         else:
@@ -385,7 +385,7 @@ class Children(models.Model):
             for result in results:
                 total = 0
                 for sponsor in result.sponsors.all():
-                    total += sponsor.donated
+                    total += sponsor.donated or 0
                 result.collected = total
                 result.save()
 
@@ -542,7 +542,7 @@ class Donation(models.Model):
         except:
             return BASE_ARROW_HEIGHT
 
-    def get_donations(self, child_id, limit=30, offset=0, query=None, field='id', sortname='id', sortorder='asc'):
+    def get_donations(self, children, limit=30, offset=0, query=None, field='id', sortname='id', sortorder='asc'):
         results = []
         try:
             limited = int(limit) + int(offset)
@@ -550,36 +550,36 @@ class Donation(models.Model):
                 sortname = '-%s'%sortname
             if query:
                 if field == 'last_name':
-                    results = Donation.objects.filter(child__identifier=child_id, last_name__contains=query).order_by(sortname)[offset:limited]
+                    results = Donation.objects.filter(child__identifier__in=children, last_name__contains=query).order_by(sortname)[offset:limited]
                 elif field == 'first_name':
-                    results = Donation.objects.filter(child__identifier=child_id, first_name__contains=query).order_by(sortname)[offset:limited]
+                    results = Donation.objects.filter(child__identifier__in=children, first_name__contains=query).order_by(sortname)[offset:limited]
                 elif field == 'email_address':
-                    results = Donation.objects.filter(child__identifier=child_id, email_address__contains=query).order_by(sortname)[offset:limited]
+                    results = Donation.objects.filter(child__identifier__in=children, email_address__contains=query).order_by(sortname)[offset:limited]
                 elif field == 'phone_number':
-                    results = Donation.objects.filter(child__identifier=child_id, phone_number__contains=query).order_by(sortname)[offset:limited]
+                    results = Donation.objects.filter(child__identifier__in=children, phone_number__contains=query).order_by(sortname)[offset:limited]
                 else:
-                    results = Donation.objects.filter(child__identifier=child_id, id=query).order_by(sortname)[offset:limited]
+                    results = Donation.objects.filter(child__identifier__in=children, id=query).order_by(sortname)[offset:limited]
             else:
-                results = Donation.objects.filter(child__identifier=child_id).order_by(sortname)[offset:limited]
+                results = Donation.objects.filter(child__identifier__in=children).order_by(sortname)[offset:limited]
         except Exception, e:
             pass
         return results
 
-    def get_donations_total(self, child_id, query=None, field='id'):
+    def get_donations_total(self, children, query=None, field='id'):
         try:
             if query:
                 if field == 'last_name':
-                    return Donation.objects.filter(child__identifier=child_id, last_name__contains=query).count()
+                    return Donation.objects.filter(child__identifier__in=children, last_name__contains=query).count()
                 elif field == 'first_name':
-                    return Donation.objects.filter(child__identifier=child_id, first_name__contains=query).count()
+                    return Donation.objects.filter(child__identifier__in=children, first_name__contains=query).count()
                 elif field == 'email_address':
-                    return Donation.objects.filter(child__identifier=child_id, email_address__contains=query).count()
+                    return Donation.objects.filter(child__identifier__in=children, email_address__contains=query).count()
                 elif field == 'phone_number':
-                    return Donation.objects.filter(child__identifier=child_id, phone_number__contains=query).count()
+                    return Donation.objects.filter(child__identifier__in=children, phone_number__contains=query).count()
                 else:
-                    return Donation.objects.filter(child__identifier=child_id, id=query).count()
+                    return Donation.objects.filter(child__identifier__in=children, id=query).count()
             else:
-                return Donation.objects.filter(child__identifier=child_id).count()
+                return Donation.objects.filter(child__identifier__in=children).count()
         except:
             return 0
 
