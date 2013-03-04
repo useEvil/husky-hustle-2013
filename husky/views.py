@@ -1077,12 +1077,14 @@ def _formatData(data, total):
             row['cell'].append('<span class="hidden">%s</span>' % donation.last_name)
             row['cell'].append('<span class="hidden">%s</span>' % donation.email_address)
             row['cell'].append('<span class="hidden">%s</span>' % donation.phone_number)
+            row['cell'].append(donation.date_added.strftime('%m/%d/%Y'))
             row['cell'].append('<span class="hidden">0</span>')
         else:
             row['cell'].append(donation.paid and donation.first_name or '<a href="#" class="show-edit" id="edit_sponsor_%s">%s</a>' % (donation.id, donation.first_name))
             row['cell'].append(donation.last_name)
             row['cell'].append(donation.email_address)
             row['cell'].append(donation.phone_number)
+            row['cell'].append(donation.date_added.strftime('%m/%d/%Y'))
             row['cell'].append(donation.child.laps or 0)
         row['cell'].append("%01.2f" % (donation.donation or 0))
         row['cell'].append('<span abbr="total">%01.2f</span>' % (donation.total()))
@@ -1090,7 +1092,6 @@ def _formatData(data, total):
             row['cell'].append('<span class="hidden">no</span>')
         else:
             row['cell'].append(donation.per_lap and 'yes' or 'no')
-        row['cell'].append(donation.date_added.strftime('%m/%d/%Y'))
         row['cell'].append(donation.paid and '<span class="success">Paid</span>' or '<input type="checkbox" value="paid" name="paid" id="paid-%s" class="set-paid" title="If your Sponsor has paid you, you can mark their Donation as Paid." />' % donation.id)
         row['cell'].append('<input type="checkbox" value="%s" name="reminder" id="reminder-%s" class="set-reminder" />' % (donation.id, donation.id))
         result['rows'].append(row)

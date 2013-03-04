@@ -580,7 +580,8 @@ function makePayment(event) {
 		alert('You have selected one or more donations that have already been Paid.');
 	} else if (payments) {
 		if (confirm('You are about to make a payment for: $' + payments) === true) {
-			window.location.href = '/payment/brooke-nguyen-408/' + ids.join(',') + '?amount=' + payments;
+			var url = window.location.href.replace( 'account', 'payment' );
+			window.location.href = url + '/' + ids.join(',') + '?amount=' + payments;
 		}
 	} else {
 		alert('You must select sponsors to make payments for.');
