@@ -1,0 +1,39 @@
+{% load humanize %}
+<style>
+	.search-results, .child-list {
+		border-collapse: collapse;
+		text-align: left;
+	}
+	.search-results tr:nth-child(even) {
+		background-color: #eee;
+	}
+	.search-results td, th {
+		width: 175px;
+		padding: 3px 3px 3px 10px;
+	}
+</style>
+<div id="content-main">
+	Donations:
+	<div>
+		<table class="search-results" border="2">
+			<tr>
+				<th width="350">Date</th>
+				<th width="350" align="right">Name</th>
+				<th width="350" align="right">Status</th>
+				<th width="350" align="right">Amount</th>
+				<th width="350" align="right">Donation</th>
+				<th width="350" align="right">Paid</th>
+			</tr>
+			{% for result in results %}
+			<tr>
+				<td>{{ result.date }}</td>
+				<td>{{ result.name }}</td>
+				<td>{{ result.status }}</td>
+				<td align="right">${{ result.gross|floatformat:2|intcomma }}</td>
+				<td align="right">${{ result.donation|floatformat:2|intcomma }}</td>
+				<td>{{ result.paid }}</td>
+			</tr>
+			{% endfor %}
+		</table>
+	</div>
+</div>

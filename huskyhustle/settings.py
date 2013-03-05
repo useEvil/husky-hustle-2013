@@ -149,6 +149,7 @@ PAYPAL_PUBLIC_KEY = 'certs/public_key.pem'
 PAYPAL_IPN_URL = 'https://www.sandbox.paypal.com/cgi-bin/webscr'
 PAYPAL_CERT_ID = base64.b64decode('')
 PAYPAL_BUS_ID = base64.b64decode('')
+PAYPAL_CSV_REPORT = 'data/paypal-report.csv'
 
 PICASA_STORAGE_OPTIONS = {
     'email': 'you@example.com',
