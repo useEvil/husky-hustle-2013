@@ -1,3 +1,6 @@
+import os
+import csv
+import pytz
 import math
 import base64
 import urllib
@@ -9,7 +12,7 @@ import gdata.photos.service as gdata
 import gdata.calendar.client as cdata
 
 from django.db import models
-from django.db.models import Sum
+from django.db.models import Count, Sum, Avg, Max
 from django.db.models.signals import post_save
 from django.conf import settings
 from django.core.exceptions import ObjectDoesNotExist, MultipleObjectsReturned
@@ -594,6 +597,135 @@ class Donation(models.Model):
             return Donation.objects.filter(child__parent=parent_id, paid=False).count()
         except Exception, e:
             return 0
+
+    def reports_most_laps(self):
+        json = {'label': [], 'values': []}
+        grades = Grade.objects.all()
+        for index, grade in enumerate(grades):
+            json['values'].append({'label': grade.title, 'values': [], 'labels': []})
+            teachers = Teacher.objects.filter(grade=grade).exclude(list_type=2).all()
+            for teacher in teachers:
+                num_laps = Children.objects.filter(teacher=teacher).aggregate(num_laps=Sum('laps'))
+                json['values'][index]['values'].append(num_laps['num_laps'] or 0)
+                json['values'][index]['labels'].append(teacher.full_name())
+        return json
+
+    def reports_most_laps_by_child(self):
+        json = {'label': [], 'values': []}
+        grades = Grade.objects.all()
+        for index, grade in enumerate(grades):
+            json['values'].append({'label': grade.title, 'values': [], 'labels': []})
+            children = Children.objects.filter(teacher__grade=grade).annotate(max_laps=Max('laps')).order_by('-laps')[:20]
+            for child in children:
+                json['values'][index]['values'].append(child.max_laps or 0)
+                json['values'][index]['labels'].append(child.full_name())
+        return json
+
+    def reports_most_donations(self):
+        json = {'label': [], 'values': []}
+        grades = Grade.objects.all()
+        for index, grade in enumerate(grades):
+            json['values'].append({'label': grade.title, 'values': [], 'labels': []})
+            teachers = Teacher.objects.filter(grade=grade).exclude(list_type=2).all()
+            for teacher in teachers:
+                children = Children.objects.filter(teacher=teacher).all()
+                total = 0
+                for child in children:
+                    total += child.collected or 0
+                json['values'][index]['values'].append(float(total))
+                json['values'][index]['labels'].append(teacher.full_name())
+        return json
+
+    def reports_most_donations_by_day_by_sponsor(self):
+        json = {'label': [], 'values': []}
+        now = date.datetime.now(pytz.utc)
+        for index in range(1, 11):
+            end = date.datetime(now.year, now.month, now.day, 23, 59, 59, 0, pytz.utc) - date.timedelta(index-1)
+            start = date.datetime(now.year, now.month, now.day, 23, 59, 59, 0, pytz.utc) - date.timedelta(index)
+            json['values'].append({'label': end.strftime('%m/%d/%Y'), 'values': [], 'labels': []})
+            results = Donation.objects.filter(date_added__range=(start, end)).exclude(last_name='teacher').order_by('-donated')
+            for result in results:
+                json['values'][index-1]['values'].append(float(result.donated or 0))
+                json['values'][index-1]['labels'].append('<span id="%d">%s (%s)</span>'%(result.id, result.full_name(), result.child))
+        return json
+
+    def reports_most_donations_by_day(self):
+        json = {'label': [], 'values': []}
+        total = Donation.objects.aggregate(donated=Sum('donated'))
+        json['values'].append({'label': 'To Date', 'values': [float(total['donated'] or 0)], 'labels': ['Total To Date']})
+        now = date.datetime.now(pytz.utc)
+        for index in range(1, 11):
+            end = date.datetime(now.year, now.month, now.day, 23, 59, 59, 0, pytz.utc) - date.timedelta(index-1)
+            start = date.datetime(now.year, now.month, now.day, 23, 59, 59, 0, pytz.utc) - date.timedelta(index)
+            json['values'].append({'label': end.strftime('%m/%d/%Y'), 'values': [], 'labels': []})
+            results = Donation.objects.filter(date_added__range=(start, end)).aggregate(donated=Sum('donated'))
+            json['values'][index]['values'].append(float(results['donated'] or 0))
+            json['values'][index]['labels'].append(start.strftime('%m/%d/%Y'))
+        return json
+
+    def reports_most_donations_by_child(self):
+        json = {'label': [], 'values': []}
+        grades = Grade.objects.all()
+        for index, grade in enumerate(grades):
+            json['values'].append({'label': grade.title, 'values': [], 'labels': []})
+            children = Children.objects.filter(teacher__grade=grade).annotate(max_funds=Max('collected')).order_by('-collected')[:20]
+            for child in children:
+                json['values'][index]['values'].append(float(child.collected or 0))
+                json['values'][index]['labels'].append(child.full_name())
+        return json
+
+    def reports_donations_by_teacher(self, id=0):
+        json = {'label': [], 'values': []}
+        if id == 0:
+            donation = Donation.objects.filter(first_name__contains='Agopian').aggregate(donated=Sum('donated'))
+            if donation:
+                json['values'].append({'label': 0, 'values': [float(donation['donated'] or 0)], 'labels': ['Mrs. Agopian']})
+            teachers = Teacher.objects.exclude(list_type=2).all()
+            for index, teacher in enumerate(teachers):
+                donation = teacher.get_donations()
+                if donation:
+                    json['values'].append({'label': teacher.id, 'values': [donation], 'labels': [teacher.full_name()]})
+        else:
+            teacher = Teacher.objects.filter(id=id).get()
+            children = Children.objects.filter(teacher=teacher).all()
+            json['values'].append({'label': 'Donations', 'values': [], 'labels': []})
+            for child in children:
+                donation = child.total_sum()
+                if donation['total_sum']:
+                    json['values'][0]['values'].append(float(donation['total_sum'] or 0))
+                    json['values'][0]['labels'].append(child.full_name())
+            donations = Donation.objects.filter(first_name__contains=teacher.last_name).order_by('-donated')
+            json['values'].append({'label': 'Sponsors', 'values': [], 'labels': []})
+            totals = { }
+            for index, donation in enumerate(donations):
+                full_name = donation.child.full_name()
+                if totals.has_key(full_name):
+                    totals[full_name] += donation.donated or 0
+                else:
+                    totals[full_name] = donation.donated or 0
+            for child, total in totals.iteritems():
+                json['values'][1]['values'].append(float(total or 0))
+                json['values'][1]['labels'].append(child)
+        return json
+
+    def verify_paypal_donations(self):
+        data = []
+        cwd = os.path.dirname(os.path.realpath(__file__))
+        PAYPAL_CSV_REPORT = os.path.join(cwd, settings.PAYPAL_CSV_REPORT)
+        with open(PAYPAL_CSV_REPORT, 'rb') as csv_file:
+            csv_reader = csv.reader(csv_file, delimiter=',', quotechar='\\')
+            fields = []
+            for index, row in enumerate(csv_reader):
+                if index == 0:
+                    for r in row: fields.append(r.strip())
+                    continue
+                row = dict(zip(fields, row))
+                ids = row['Item ID'].split('-')[-1]
+                amount = 0
+                for id in ids.split(','):
+                    donation = Donation.objects.filter(id=id).get()
+                    data.append({'date': row['Date'], 'name': row['Name'], 'status': row['Status'], 'gross': row['Gross'], 'donation': donation.donation, 'paid': donation.paid and 'Yes' or 'No'})
+        return data
 
     def calculate_totals(self, id=None):
         if id:

@@ -50,5 +50,10 @@
 	<iframe src="/admin/reporting/donations-by-teacher?id={{ id }}" height="600" width="900"></iframe>
 	{% if teacher %}{% include "admin/include/teachers.html" %}{% endif %}
 	{% endif %}
+
+	{% if type == 'verify-paypal-donations' %}
+	<span class="bold">PayPal Verification:</span>
+	{% include "admin/include/paypal.html" %}
+	{% endif %}
 </div>
 {% endblock %} 
