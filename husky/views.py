@@ -960,10 +960,9 @@ def send_teacher_reports(request):
     data = []
     for teacher in teachers:
         sponsors  = []
-        donations = teacher.get_donations()
         c['teacher_name'] = teacher.full_name()
         c['email_address'] = settings.DEBUG and settings.EMAIL_HOST_USER or teacher.email_address
-        donations = Donation.objects.filter(first_name__contains=teacher.last_name)
+        donations = Donation.objects.filter(first_name__contains=teacher.last_name).order_by('child__last_name', 'child__first_name')
         for donation in donations:
             full_name = donation.child.full_name()
             if full_name not in sponsors:
@@ -972,7 +971,7 @@ def send_teacher_reports(request):
             c['sponsors'] = sponsors
             data.append(_send_email_teamplate('reports-teacher', c, 1))
     ## check donations for Mrs. Agopian ##
-    donations = Donation.objects.filter(first_name__contains='Agopian')
+    donations = Donation.objects.filter(first_name__contains='Agopian').order_by('child__last_name', 'child__first_name')
     sponsors  = []
     for donation in donations:
         full_name = donation.child.full_name()
