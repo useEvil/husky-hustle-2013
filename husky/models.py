@@ -713,7 +713,7 @@ class Donation(models.Model):
         cwd = os.path.dirname(os.path.realpath(__file__))
         PAYPAL_CSV_REPORT = os.path.join(cwd, settings.PAYPAL_CSV_REPORT)
         with open(PAYPAL_CSV_REPORT, 'rb') as csv_file:
-            csv_reader = csv.reader(csv_file, delimiter=',', quotechar='\\')
+            csv_reader = csv.reader(csv_file, delimiter=',')
             fields = []
             for index, row in enumerate(csv_reader):
                 if index == 0:
@@ -721,10 +721,10 @@ class Donation(models.Model):
                     continue
                 row = dict(zip(fields, row))
                 ids = row['Item ID'].split('-')[-1]
-                amount = 0
-                for id in ids.split(','):
-                    donation = Donation.objects.filter(id=id).get()
-                    data.append({'date': row['Date'], 'name': row['Name'], 'status': row['Status'], 'gross': row['Gross'], 'donation': donation.donation, 'paid': donation.paid and 'Yes' or 'No'})
+                if regexp.match('[0-9.,]+', ids):
+                    for id in ids.split(','):
+                        donation = Donation.objects.filter(id=id).get()
+                        data.append({'date': row['Date'], 'name': row['Name'], 'status': row['Status'], 'gross': row['Gross'], 'donation': donation.donation or 0, 'paid': donation.paid and 'Yes' or 'No'})
         return data
 
     def calculate_totals(self, id=None):
