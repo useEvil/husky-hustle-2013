@@ -320,13 +320,15 @@ def donate_direct(request):
         form = DonationForm(request.POST)
         if form.is_valid():
             teacher = Teacher.objects.get(pk=request.POST.get('student_teacher_id'))
-            identifier = '%s-%s-%s'%(replace_space(request.POST.get('student_first_name')), replace_space(request.POST.get('student_last_name')), teacher.room_number)
+            first_name = request.POST.get('student_first_name').strip()
+            last_name  = request.POST.get('student_last_name').strip()
+            identifier = '%s-%s-%s'%(_replace_space(first_name), _replace_space(last_name), teacher.room_number)
             try:
                 child = Children.objects.get(identifier=identifier)
             except Exception, e:
                 child = Children(
-                    first_name=request.POST.get('student_first_name'),
-                    last_name=request.POST.get('student_last_name'),
+                    first_name=first_name,
+                    last_name=last_name,
                     date_added=date.datetime.now(pytz.utc),
                     identifier=identifier,
                     teacher=teacher,
@@ -586,10 +588,12 @@ def add(request, type=None):
         if form.is_valid():
             try:
                 teacher = Teacher.objects.get(pk=request.POST.get('teacher'))
+                first_name = request.POST.get('first_name').strip()
+                last_name  = request.POST.get('first_name').strip()
                 child = Children(
-                    first_name=request.POST.get('first_name'),
-                    last_name=request.POST.get('last_name'),
-                    identifier='%s-%s-%s'%(replace_space(request.POST.get('first_name')), replace_space(request.POST.get('last_name')), teacher.room_number),
+                    first_name=first_name,
+                    last_name=last_name,
+                    identifier='%s-%s-%s'%(_replace_space(first_name), _replace_space(last_name), teacher.room_number),
                     date_added=date.datetime.now(pytz.utc),
                     teacher=teacher,
                 )
@@ -664,10 +668,10 @@ def edit(request, type=None):
                 try:
                     teacher = Teacher.objects.get(pk=request.POST.get('teacher'))
                     child = Children.objects.get(pk=request.POST.get('id'))
-                    child.first_name = request.POST.get('first_name')
-                    child.last_name = request.POST.get('last_name')
+                    child.first_name = request.POST.get('first_name').strip()
+                    child.last_name = request.POST.get('last_name').strip()
                     child.teacher = teacher
-                    child.identifier = '%s-%s-%s'%(replace_space(request.POST.get('first_name')), replace_space(request.POST.get('last_name')), teacher.room_number)
+                    child.identifier = '%s-%s-%s'%(_replace_space(child.first_name), _replace_space(child.last_name), teacher.room_number)
                     child.save()
                     messages.success(request, 'Successfully Updated Student')
                 except Exception, e:
@@ -1045,7 +1049,7 @@ def _send_mass_mail(messages):
     connection = mail.get_connection()
     connection.send_messages(messages)
 
-def replace_space(string):
+def _replace_space(string):
      # Replace all runs of whitespace with a single dash
      string = regexp.sub(r"\s+", '-', string.lower())
 
