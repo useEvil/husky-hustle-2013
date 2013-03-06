@@ -1,0 +1,14 @@
+{% autoescape off %}
+Here is a list of Unpaid Donations,
+
+{% for key, value in sponsors.iteritems %}{{ key }}
+{% for val in value %}{{ val.full_name }}	{{ val.donation }}
+{% endfor %}
+{% endfor %}
+
+----------------------------
+The Husky Hustle Team
+
+http://www.huskyhustle.com
+husky@huskyhustle.com
+{% endautoescape %}
