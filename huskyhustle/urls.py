@@ -76,6 +76,7 @@ urlpatterns = patterns('',
     url(r'^admin/results/(?P<type>[\w-]*)$', 'husky.views.results', name='results'),
     url(r'^admin/(?P<type>[\w]+)/calculate_totals/*(?P<id>[\d]*)$', 'husky.views.calculate_totals', name='calculate_totals'),
     url(r'^admin/send_teacher_reports$', 'husky.views.send_teacher_reports', name='send_teacher_reports'),
+    url(r'^admin/send_unpaid_reports$', 'husky.views.send_unpaid_reports', name='send_unpaid_reports'),
 
     # admin
     url(r'^admin/doc/', include('django.contrib.admindocs.urls')),

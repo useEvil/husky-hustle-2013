@@ -985,6 +985,27 @@ def send_teacher_reports(request):
     _send_mass_mail(data)
     return HttpResponse(simplejson.dumps({'result': 'OK', 'status': 200}), mimetype='application/json')
 
+def send_unpaid_reports(request):
+    c = Context(dict(
+        subject='Hicks Canyon Jog-A-Thon: Unpaid Report',
+        reply_to=settings.EMAIL_HOST_USER,
+        email_address=settings.EMAIL_HOST_USER,
+    ))
+    ## check donations for each Teacher ##
+    donations = Donation.objects.exclude(paid=1).order_by('child__last_name', 'child__first_name')
+    data = []
+    sponsors  = {}
+    for donation in donations:
+        full_name = donation.child.full_name()
+        if not sponsors.has_key(full_name):
+            sponsors[full_name] = []
+        sponsors[full_name].append(donation)
+    if len(sponsors) > 0:
+        c['sponsors'] = sponsors
+        data.append(_send_email_teamplate('reports-unpaid', c, 1))
+    _send_mass_mail(data)
+    return HttpResponse(simplejson.dumps({'result': 'OK', 'status': 200}), mimetype='application/json')
+
 def calculate_totals(request, type=None, id=None):
     if type == 'donation':
         Donation().calculate_totals(id)
