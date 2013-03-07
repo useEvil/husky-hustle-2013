@@ -725,6 +725,8 @@ class Donation(models.Model):
                     for id in ids.split(','):
                         donation = Donation.objects.filter(id=id).get()
                         data.append({'date': row['Date'], 'parent': donation.child.parent, 'child': donation.child, 'name': row['Name'], 'status': row['Status'], 'gross': row['Gross'], 'donation': donation.donation or 0, 'paid': donation.paid and 'Yes' or 'No'})
+                else:
+                    data.append({'date': row['Date'], 'parent': 'N/A', 'child': 'N/A', 'name': row['Name'], 'status': row['Status'], 'gross': row['Gross'], 'donation': 'N/A', 'paid': 'N/A'})
         return data
 
     def calculate_totals(self, id=None):
