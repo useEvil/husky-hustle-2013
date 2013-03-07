@@ -708,8 +708,16 @@ class Donation(models.Model):
                 json['values'][1]['labels'].append(child)
         return json
 
+    def reports_unpaid_donations(self):
+        data = []
+        donations = Donation.objects.exclude(paid=1).order_by('child__last_name', 'child__first_name')
+        for index, donation in enumerate(donations):
+            data.append({'id': index+1, 'date': donation.date_added, 'parent': donation.child.parent, 'child': donation.child, 'name': donation.full_name(), 'donation': donation.donation or 0, 'paid': donation.paid and 'Yes' or 'No'})
+        return data
+
     def verify_paypal_donations(self):
         data = []
+        count = 0
         cwd = os.path.dirname(os.path.realpath(__file__))
         PAYPAL_CSV_REPORT = os.path.join(cwd, settings.PAYPAL_CSV_REPORT)
         with open(PAYPAL_CSV_REPORT, 'rb') as csv_file:
@@ -723,10 +731,13 @@ class Donation(models.Model):
                 ids = row['Item ID'].split('-')[-1]
                 if regexp.match('[0-9.,]+', ids):
                     for id in ids.split(','):
+                        count += 1
                         donation = Donation.objects.filter(id=id).get()
-                        data.append({'date': row['Date'], 'parent': donation.child.parent, 'child': donation.child, 'name': row['Name'], 'status': row['Status'], 'gross': row['Gross'], 'donation': donation.donation or 0, 'paid': donation.paid and 'Yes' or 'No'})
+                        data.append({'id': count, 'date': row['Date'], 'parent': donation.child.parent, 'child': donation.child, 'name': row['Name'], 'emnail': row['From Email Address'], 'status': row['Status'], 'gross': row['Gross'], 'donation': donation.donation or 0, 'paid': donation.paid and 'Yes' or 'No'})
                 else:
-                    data.append({'date': row['Date'], 'parent': 'N/A', 'child': 'N/A', 'name': row['Name'], 'status': row['Status'], 'gross': row['Gross'], 'donation': 'N/A', 'paid': 'N/A'})
+                    if row['Name'] != 'Bank Account':
+                        count += 1
+                        data.append({'id': count, 'date': row['Date'], 'parent': 'N/A', 'child': 'N/A', 'name': row['Name'], 'emnail': row['From Email Address'], 'status': row['Status'], 'gross': row['Gross'], 'donation': 'N/A', 'paid': 'N/A'})
         return data
 
     def calculate_totals(self, id=None):

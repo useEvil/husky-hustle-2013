@@ -17,12 +17,10 @@
 		<table class="search-results" border="2">
 			<tr>
 				<th width="10">#</th>
-				<th width="350">Date</th>
+				<th width="350" nowrap="nowrap">Date</th>
 				<th width="350" align="left" nowrap="nowrap">Name</th>
 				<th width="350" align="left" nowrap="nowrap">Parent</th>
 				<th width="350" align="left" nowrap="nowrap">Child</th>
-				<th width="350" align="left">Status</th>
-				<th width="350" align="right">Amount</th>
 				<th width="350" align="right">Donation</th>
 				<th width="350" align="center">Paid</th>
 			</tr>
@@ -30,11 +28,9 @@
 			<tr>
 				<td>{{ result.id }}</td>
 				<td>{{ result.date }}</td>
-				<td>{{ result.name }}{% if result.email %} ({{ result.email }}){% endif %}</td>
+				<td>{{ result.name }}</td>
 				<td>{{ result.parent }}</td>
 				<td>{{ result.child }}</td>
-				<td>{{ result.status }}</td>
-				<td align="right">${{ result.gross|floatformat:2|intcomma }}</td>
 				<td align="right">${{ result.donation|floatformat:2|intcomma }}</td>
 				<td>{{ result.paid }}</td>
 			</tr>
