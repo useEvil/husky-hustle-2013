@@ -28,15 +28,15 @@
 			</tr>
 			{% for result in results %}
 			<tr>
-				<td>{{ result.id }}</td>
+				<td>{{ result.id|safe }}</td>
 				<td>{{ result.date }}</td>
-				<td>{{ result.name }}{% if result.email %} ({{ result.email }}){% endif %}</td>
-				<td>{{ result.parent }}</td>
-				<td>{{ result.child }}</td>
-				<td>{{ result.status }}</td>
+				<td>{{ result.name|safe }}{% if result.email %} ({{ result.email }}){% endif %}</td>
+				<td>{{ result.parent|safe }}</td>
+				<td>{{ result.child|safe }}</td>
+				<td>{{ result.status|safe }}</td>
 				<td align="right">${{ result.gross|floatformat:2|intcomma }}</td>
 				<td align="right">${{ result.donation|floatformat:2|intcomma }}</td>
-				<td>{{ result.paid }}</td>
+				<td>{{ result.paid|safe }}</td>
 			</tr>
 			{% endfor %}
 		</table>

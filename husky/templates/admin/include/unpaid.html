@@ -22,6 +22,8 @@
 				<th width="350" align="left" nowrap="nowrap">Parent</th>
 				<th width="350" align="left" nowrap="nowrap">Child</th>
 				<th width="350" align="right">Donation</th>
+				<th width="350" align="center">Type</th>
+				<th width="350" align="right">Total</th>
 				<th width="350" align="center">Paid</th>
 			</tr>
 			{% for result in results %}
@@ -32,6 +34,8 @@
 				<td>{{ result.parent }}</td>
 				<td>{{ result.child }}</td>
 				<td align="right">${{ result.donation|floatformat:2|intcomma }}</td>
+				<td>{{ result.type }}</td>
+				<td align="right">${{ result.total|floatformat:2|intcomma }}</td>
 				<td>{{ result.paid }}</td>
 			</tr>
 			{% endfor %}
