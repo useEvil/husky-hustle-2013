@@ -55,5 +55,10 @@
 	<span class="bold">PayPal Verification:</span>
 	{% include "admin/include/paypal.html" %}
 	{% endif %}
+
+	{% if type == 'show-unpaid-donations' %}
+	<span class="bold">Unpaid Donations:</span>
+	{% include "admin/include/unpaid.html" %}
+	{% endif %}
 </div>
 {% endblock %} 

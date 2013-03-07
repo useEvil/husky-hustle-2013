@@ -558,6 +558,9 @@ def results(request, type=None):
         if 'verify-paypal-donations' in request.path:
             results = Donation().verify_paypal_donations()
             c['results'] = results
+        if 'show-unpaid-donations' in request.path:
+            results = Donation().reports_unpaid_donations()
+            c['results'] = results
         return render_to_response('admin/results.html', c, context_instance=RequestContext(request))
     else:
         return render_to_response('results.html', c, context_instance=RequestContext(request))
@@ -991,7 +994,6 @@ def send_unpaid_reports(request):
         reply_to=settings.EMAIL_HOST_USER,
         email_address=settings.EMAIL_HOST_USER,
     ))
-    ## check donations for each Teacher ##
     donations = Donation.objects.exclude(paid=1).order_by('child__last_name', 'child__first_name')
     data = []
     sponsors  = {}
