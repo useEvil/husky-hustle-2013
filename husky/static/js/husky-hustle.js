@@ -676,6 +676,9 @@ function initBarChart(json){
 			onClick: function(node, eventInfo, e) {
 				url = '/admin/results/donations-by-teacher?id=' + node.label;
 				if ( ! node.label ) {
+				} else if (window.location.href.match('most-donations-by-child\\?id=0') && node.label) {
+					url = '/admin/results/most-donations-by-child?id=' + node.label;
+					window.parent.location = url;
 				} else if (window.location.href.match('donations-by-teacher\\?id=0') && node.label) {
 					window.parent.location = url;
 				} else if (window.location.href.match('donations-by-teacher\\?id=\\d+')) {
