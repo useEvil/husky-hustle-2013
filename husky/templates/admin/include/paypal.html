@@ -21,6 +21,7 @@
 				<th width="350" align="left" nowrap="nowrap">Name</th>
 				<th width="350" align="left" nowrap="nowrap">Parent</th>
 				<th width="350" align="left" nowrap="nowrap">Child</th>
+				<th width="350" align="left" nowrap="nowrap">Teacher</th>
 				<th width="350" align="left">Item ID</th>
 				<th width="350" align="right">Amount</th>
 				<th width="350" align="right">Donation</th>
@@ -33,6 +34,7 @@
 				<td>{{ result.name|safe }}{% if result.email %} ({{ result.email }}){% endif %}</td>
 				<td>{{ result.parent|safe }}</td>
 				<td>{{ result.child|safe }}</td>
+				<td>{{ result.teacher|safe }}</td>
 				<td>{{ result.item|safe }}</td>
 				<td align="right">${{ result.gross|floatformat:2|intcomma }}</td>
 				<td align="right">${{ result.donation|floatformat:2|intcomma }}</td>

@@ -743,23 +743,19 @@ class Donation(models.Model):
                         try:
                             donation = Donation.objects.filter(id=id).get()
                             total_donated += donation.donation or 0
-                            data.append({'id': count, 'date': row['Date'], 'parent': donation.child.parent, 'child': donation.child, 'name': row['Name'], 'emnail': row['From Email Address'], 'item': row['Item ID'], 'gross': row['Gross'], 'donation': donation.donation or 0, 'paid': donation.paid and 'Yes' or 'No'})
+                            data.append({'id': count, 'date': row['Date'], 'parent': donation.child.parent, 'child': donation.child, 'teacher': donation.child.teacher, 'name': row['Name'], 'emnail': row['From Email Address'], 'item': row['Item ID'], 'gross': row['Gross'], 'donation': donation.donation or 0, 'paid': donation.paid and 'Yes' or 'No'})
                         except:
-                            data.append({'id': count, 'date': row['Date'], 'parent': 'N/A', 'child': 'N/A', 'name': row['Name'], 'emnail': row['From Email Address'], 'item': row['Item ID'], 'gross': row['Gross'], 'donation': 'N/A', 'paid': 'N/A'})
+                            data.append({'id': count, 'date': row['Date'], 'parent': 'N/A', 'child': 'N/A', 'teacher': 'N/A', 'name': row['Name'], 'emnail': row['From Email Address'], 'item': row['Item ID'], 'gross': row['Gross'], 'donation': 'N/A', 'paid': 'N/A'})
                 else:
-                    if row['Name'] != 'Bank Account':
-                        count += 1
-                        total_paid += float(row['Gross'])
-                        data.append({'id': count, 'date': row['Date'], 'parent': 'N/A', 'child': 'N/A', 'name': row['Name'], 'emnail': row['From Email Address'], 'item': row['Item ID'], 'gross': row['Gross'], 'donation': 'N/A', 'paid': 'N/A'})
-                    else:
-                        try:
-                            names = row['Name'].split()
-                            donation = Donation.objects.filter(first_name=names[0], last_name=names[1]).get()
-                            total_donated += donation.donation or 0
-                            data.append({'id': count, 'date': row['Date'], 'parent': donation.child.parent, 'child': donation.child, 'name': row['Name'], 'emnail': row['From Email Address'], 'item': row['Item ID'], 'gross': row['Gross'], 'donation': donation.donation or 0, 'paid': donation.paid and 'Yes' or 'No'})
-                        except:
-                            data.append({'id': count, 'date': row['Date'], 'parent': 'N/A', 'child': 'N/A', 'name': row['Name'], 'emnail': row['From Email Address'], 'item': row['Item ID'], 'gross': row['Gross'], 'donation': 'N/A', 'paid': 'N/A'})
-        data.append({'id': '&nbsp;', 'date': 'Total', 'parent': '&nbsp;', 'child': '&nbsp;', 'name': '&nbsp;', 'emnail': '&nbsp;', 'item': '&nbsp;', 'gross': total_paid, 'donation': total_donated, 'paid': '&nbsp;'})
+                    count += 1
+                    try:
+                        names = row['Name'].split()
+                        donation = Donation.objects.filter(first_name=names[0], last_name=names[1]).get()
+                        total_donated += donation.donation or 0
+                        data.append({'id': count, 'date': row['Date'], 'parent': donation.child.parent, 'child': donation.child, 'teacher': donation.child.teacher, 'name': row['Name'], 'emnail': row['From Email Address'], 'item': row['Item ID'], 'gross': row['Gross'], 'donation': donation.donation or 0, 'paid': donation.paid and 'Yes' or 'No'})
+                    except:
+                        data.append({'id': count, 'date': row['Date'], 'parent': 'N/A', 'child': 'N/A', 'teacher': 'N/A', 'name': row['Name'], 'emnail': row['From Email Address'], 'item': row['Item ID'], 'gross': row['Gross'], 'donation': 'N/A', 'paid': 'N/A'})
+        data.append({'id': '&nbsp;', 'date': 'Total', 'parent': '&nbsp;', 'child': '&nbsp;', 'teacher': '&nbsp;', 'name': '&nbsp;', 'emnail': '&nbsp;', 'item': '&nbsp;', 'gross': total_paid, 'donation': total_donated, 'paid': '&nbsp;'})
         return data
 
     def calculate_totals(self, id=None):
