@@ -56,7 +56,7 @@ class MostDonationsListFilter(SimpleListFilter):
 
 class ChildrenInline(admin.StackedInline):
     model = Parent.children.through
-    extra = 2
+    extra = 1
 
 class ParentInline(admin.StackedInline):
     model = Parent

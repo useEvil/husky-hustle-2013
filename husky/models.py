@@ -125,7 +125,7 @@ class Content(models.Model):
 
     page = models.CharField(max_length=100)
     content = models.TextField(max_length=65000, blank=True, null=True)
-    date_added = models.DateTimeField()
+    date_added = models.DateTimeField(default=date.datetime.now())
 
 
 class Blog(models.Model):
@@ -133,7 +133,7 @@ class Blog(models.Model):
     title = models.CharField(max_length=100)
     author = models.ForeignKey(User)
     content = models.TextField(max_length=4000)
-    date_added = models.DateTimeField()
+    date_added = models.DateTimeField(default=date.datetime.now())
 
 
 class Message(models.Model):
@@ -141,7 +141,7 @@ class Message(models.Model):
     title = models.CharField(max_length=100)
     author = models.ForeignKey(User)
     content = models.TextField(max_length=4000)
-    date_added = models.DateTimeField()
+    date_added = models.DateTimeField(default=date.datetime.now())
 
 
 class Link(models.Model):
@@ -186,6 +186,8 @@ class Teacher(models.Model):
     shorten = models.CharField(max_length=255, blank=True, null=True)
     grade = models.ForeignKey(Grade, related_name='teachers')
     list_type = models.IntegerField(blank=True, null=True)
+    class Meta:
+        ordering = ['last_name', 'first_name']
 
     def __unicode__(self):
         return '%s (%s) %s' % (self.full_name(), self.room_number, self.grade)
@@ -251,10 +253,12 @@ class Children(models.Model):
     first_name = models.CharField(max_length=50)
     last_name = models.CharField(max_length=50)
     identifier = models.CharField(max_length=100, unique=True)
-    date_added = models.DateTimeField()
+    date_added = models.DateTimeField(default=date.datetime.now())
     laps = models.IntegerField(blank=True, null=True)
     collected = CurrencyField(blank=True, null=True)
     teacher = models.ForeignKey(Teacher, related_name='students')
+    class Meta:
+        ordering = ['last_name', 'first_name']
 
     def __unicode__(self):
         return self.list_name()
@@ -405,10 +409,12 @@ class Parent(models.Model):
     guardian = models.IntegerField(default=1, choices=GUARDIAN_CHOICES)
     activation_key = models.CharField(max_length=200)
     key_expires = models.DateTimeField()
-    date_added = models.DateTimeField()
+    date_added = models.DateTimeField(default=date.datetime.now())
     site = models.ForeignKey(Site)
     user = models.OneToOneField(User, unique=True)
     children = models.ManyToManyField(Children, related_name='parents', through='ParentChildren')
+    class Meta:
+        ordering = ['last_name', 'first_name']
 
     def __unicode__(self):
         return '%s (%s)' % (self.full_name(), self.email_address)
@@ -499,14 +505,16 @@ class Donation(models.Model):
 
     first_name = models.CharField(max_length=50)
     last_name = models.CharField(max_length=50)
-    email_address = models.CharField(max_length=100)
+    email_address = models.CharField(max_length=100, default='_parent_@huskyhustle.com')
     phone_number = models.CharField(max_length=25, blank=True, null=True)
     child = models.ForeignKey(Children, related_name='sponsors')
     donation = CurrencyField(blank=True, null=True)
     donated = CurrencyField(blank=True, null=True)
     per_lap = models.BooleanField()
     paid = models.BooleanField()
-    date_added = models.DateTimeField()
+    date_added = models.DateTimeField(default=date.datetime.now())
+    class Meta:
+        ordering = ['last_name', 'first_name']
 
     def __unicode__(self):
         return self.full_name()
