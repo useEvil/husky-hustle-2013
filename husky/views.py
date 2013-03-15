@@ -953,13 +953,16 @@ def reports(request, type=None):
         json = Donation().reports_donations_by_teacher(id)
     return HttpResponse(simplejson.dumps(json), mimetype='application/json')
 
-def send_teacher_reports(request):
+def send_teacher_reports(request, id=None):
     c = Context(dict(
         subject='Hicks Canyon Jog-A-Thon: Sponsor List',
         reply_to=settings.EMAIL_HOST_USER,
     ))
     ## check donations for each Teacher ##
-    teachers = Teacher.objects.exclude(list_type=2).all()
+    if id:
+        teachers = [Teacher.objects.filter(id=id).get()]
+    else:
+        teachers = Teacher.objects.exclude(list_type=2).all()
     data = []
     for teacher in teachers:
         sponsors  = []
