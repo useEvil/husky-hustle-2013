@@ -960,7 +960,8 @@ def send_teacher_reports(request, id=None):
     ))
     ## check donations for each Teacher ##
     if id:
-        teachers = [Teacher.objects.filter(id=id).get()]
+        ids = id.split(',')
+        teachers = Teacher.objects.filter(id__in=ids).all()
     else:
         teachers = Teacher.objects.exclude(list_type=2).all()
     data = []
