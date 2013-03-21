@@ -25,8 +25,13 @@
 				</tr>
 				{% for donator in donators %}
 				<tr>
+					{% if donator.total %}
 					<td>{{ donator.name }}</td>
 					<td align="right">${{ donator.total|floatformat:2|intcomma }}</td>
+					{% else %}
+					<td style="color: red;">{{ donator.name }}</td>
+					<td style="color: red;" align="right">$0.00</td>
+					{% endif %}
 				</tr>
 				{% endfor %}
 			</table>
