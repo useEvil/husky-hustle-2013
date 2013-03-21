@@ -229,11 +229,11 @@ class Teacher(models.Model):
         for child in children:
             donation = child.total_sum()
             if donation['total_sum']:
-                donators.append({'name': child.full_name(), 'total': float(donation['total_sum'] or 0)})
+                donators.append({'name': child.list_name(), 'total': float(donation['total_sum'] or 0)})
         donations = Donation.objects.filter(first_name__contains=self.last_name)
         totals = { }
         for index, donation in enumerate(donations):
-            full_name = donation.child.full_name()
+            full_name = donation.child.list_name()
             if totals.has_key(full_name):
                 totals[full_name] += donation.donated or 0
             else:

@@ -46,9 +46,9 @@
 	{% endif %}
 
 	{% if type == 'donations-by-teacher' %}
+	{% if teacher %}{% include "admin/include/teachers.html" %}{% endif %}
 	<span class="bold">Donations By Teacher:{% if teacher %}&nbsp;&nbsp;({{ teacher }}){% endif %}</span>
 	<iframe src="/admin/reporting/donations-by-teacher?id={{ id }}" height="600" width="900"></iframe>
-	{% if teacher %}{% include "admin/include/teachers.html" %}{% endif %}
 	{% endif %}
 
 	{% if type == 'verify-paypal-donations' %}

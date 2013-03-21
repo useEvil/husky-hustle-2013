@@ -1,44 +1,53 @@
 {% load humanize %}
 <style>
-	.search-results, .child-list {
-		border-collapse: collapse;
-		text-align: left;
+	@media all {
+		.page-break	{ display: none; }
 	}
-	.search-results tr:nth-child(even) {
-		background-color: #eee;
+	@media print {
+		.page-break	{ display: block; page-break-before: always; }
 	}
-	.search-results td, th {
-		width: 175px;
-		padding: 3px 3px 3px 10px;
-	}
+	.search-results, .child-list { border-collapse: collapse; text-align: left; }
+	.search-results tr:nth-child(even) { background-color: #eee; }
+	.search-results td, th { width: 175px; padding: 3px 3px 3px 10px; }
+	.box { }
+	.col1 { float: left; width: 440px; }
+	.col2 { margin: 0 0 0 465px; width: 440px; }
+	br.clearfix { clear: both; }
 </style>
+<div class="page-break"></div>
 <div id="content-main">
-	Donations:
-	<div>
-		<table class="search-results" border="2">
-			<tr>
-				<th width="350">Student</th><th width="350" align="right">Total</th>
-			</tr>
-			{% for donator in donators %}
-			<tr>
-				<td>{{ donator.name }}</td>
-				<td align="right">${{ donator.total|floatformat:2|intcomma }}</td>
-			</tr>
-			{% endfor %}
-		</table>
+	<div class="box col1">
+		Donations:
+		<div>
+			<table class="search-results" border="2">
+				<tr>
+					<th width="350">Student</th><th width="350" align="right">Total</th>
+				</tr>
+				{% for donator in donators %}
+				<tr>
+					<td>{{ donator.name }}</td>
+					<td align="right">${{ donator.total|floatformat:2|intcomma }}</td>
+				</tr>
+				{% endfor %}
+			</table>
+		</div>
 	</div>
-	Sponsors:
-	<div>
-		<table class="search-results" border="2">
-			<tr>
-				<th width="350">Student</th><th width="350" align="right">Total</th>
-			</tr>
-			{% for sponsor in sponsors %}
-			<tr>
-				<td>{{ sponsor.name }}</td>
-				<td align="right">${{ sponsor.total|floatformat:2|intcomma }}</td>
-			</tr>
-			{% endfor %}
-		</table>
+	<div class="box col2">
+		Sponsors:
+		<div>
+			<table class="search-results" border="2">
+				<tr>
+					<th width="350">Student</th><th width="350" align="right">Total</th>
+				</tr>
+				{% for sponsor in sponsors %}
+				<tr>
+					<td>{{ sponsor.name }}</td>
+					<td align="right">${{ sponsor.total|floatformat:2|intcomma }}</td>
+				</tr>
+				{% endfor %}
+			</table>
+		</div>
 	</div>
+	<br class="clearfix" />
+	<br class="clearfix" />
 </div>
