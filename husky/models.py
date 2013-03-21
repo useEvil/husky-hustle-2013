@@ -228,8 +228,7 @@ class Teacher(models.Model):
         children = Children.objects.filter(teacher=self).all()
         for child in children:
             donation = child.total_sum()
-            if donation['total_sum']:
-                donators.append({'name': child.list_name(), 'total': float(donation['total_sum'] or 0)})
+            donators.append({'name': child.list_name(), 'total': float(donation['total_sum'] or 0)})
         donations = Donation.objects.filter(first_name__contains=self.last_name)
         totals = { }
         for index, donation in enumerate(donations):
@@ -238,7 +237,7 @@ class Teacher(models.Model):
                 totals[full_name] += donation.donated or 0
             else:
                 totals[full_name] = donation.donated or 0
-        for child, total in totals.iteritems():
+        for child, total in iter(sorted(totals.iteritems())):
             sponsors.append({'name': child, 'total': float(total or 0)})
         return donators, sponsors
 
