@@ -510,7 +510,7 @@ class Donation(models.Model):
     donation = CurrencyField(blank=True, null=True)
     donated = CurrencyField(blank=True, null=True)
     per_lap = models.BooleanField()
-    paid = models.BooleanField()
+    paid = models.BooleanField(default=True)
     date_added = models.DateTimeField(default=date.datetime.now())
     class Meta:
         ordering = ['last_name', 'first_name']
