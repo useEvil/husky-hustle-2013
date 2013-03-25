@@ -20,12 +20,15 @@ class MostLapsListFilter(SimpleListFilter):
         return (
             ('laps', _('Most Laps')),
             ('by_laps', _('By Laps')),
+            ('no_laps', _('Missing Laps')),
         )
     def queryset(self, request, queryset):
         if self.value() == 'laps':
             return queryset.all().order_by('-laps')
         elif self.value() == 'by_laps':
             return queryset.filter(sponsors__per_lap=True).all()
+        elif self.value() == 'no_laps':
+            return queryset.filter(laps=0).all()
         else:
             return queryset.all()
 
@@ -48,14 +51,16 @@ class MostDonationsListFilter(SimpleListFilter):
     def queryset(self, request, queryset):
         if self.value() == 'unpaid_lap':
             return queryset.filter(paid=False, per_lap=True).all()
-        if self.value() == 'unpaid_flat':
+        elif self.value() == 'unpaid_flat':
             return queryset.filter(paid=False, per_lap=False).all()
-        if self.value() == 'perlap':
+        elif self.value() == 'perlap':
             return queryset.filter(paid=True, per_lap=True).all()
-        if self.value() == 'flat':
+        elif self.value() == 'flat':
             return queryset.filter(paid=True, per_lap=False).all()
-        if self.value() == 'direct':
+        elif self.value() == 'direct':
             return queryset.filter(child__parents=None).all()
+        else:
+            return queryset.all()
 
 class ChildrenInline(admin.StackedInline):
     model = Parent.children.through
@@ -74,6 +79,7 @@ class ChildrenAdmin(admin.ModelAdmin):
     list_filter = [MostLapsListFilter]
     inlines = [ChildrenInline]
     save_on_top = True
+    list_per_page = 25
 
 class ParentAdmin(admin.ModelAdmin):
     fields = ['first_name', 'last_name', 'email_address', 'phone_number', 'activation_key', 'default', 'guardian', 'date_added']
@@ -108,6 +114,7 @@ class DonationAdmin(admin.ModelAdmin):
     list_editable = ['per_lap', 'donation', 'paid']
     list_filter = [MostDonationsListFilter]
     save_on_top = True
+    list_per_page = 50
 
 class UserAdmin(UserAdmin):
     list_display = ['username', 'email', 'is_active', 'parent']
