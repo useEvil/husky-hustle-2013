@@ -350,7 +350,15 @@ class Children(models.Model):
     def total_for_laps(self):
         total_due = 0
         for sponsor in self.sponsors_perlap():
+            total_due += sponsor.total()
+        return total_due
+
+    def total_for_flat(self):
+        total_due = 0
+        for sponsor in self.sponsors_flat():
             total_due += sponsor.total() 
+        for sponsor in self.sponsors_teacher():
+            total_due += sponsor.total()
         return total_due
 
     def total_due(self):
@@ -360,23 +368,23 @@ class Children(models.Model):
                 total_due += sponsor.total() 
         for sponsor in self.sponsors_perlap():
             if not sponsor.paid:
-                total_due += sponsor.total() 
+                total_due += sponsor.total()
         for sponsor in self.sponsors_teacher():
             if not sponsor.paid:
-                total_due += sponsor.total() 
+                total_due += sponsor.total()
         return total_due
 
     def total_got(self):
         total_got = 0
         for sponsor in self.sponsors_flat():
             if sponsor.paid:
-                total_got += sponsor.total() 
+                total_got += sponsor.total()
         for sponsor in self.sponsors_perlap():
             if sponsor.paid:
-                total_got += sponsor.total() 
+                total_got += sponsor.total()
         for sponsor in self.sponsors_teacher():
             if sponsor.paid:
-                total_got += sponsor.total() 
+                total_got += sponsor.total()
         return total_got
 
     def grand_totals(self):

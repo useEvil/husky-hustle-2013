@@ -916,13 +916,15 @@ def reset_complete(request):
 
 @never_cache
 def json(request, child_id=None):
-    offset     = request.GET.get('offset') or 0
-    limit      = request.GET.get('limit')  or 30
+    offset     = request.GET.get('page') or 1
+    limit      = request.GET.get('rp')  or 30
     query      = request.GET.get('query')  or None
     field      = request.GET.get('qtype')  or None
     sortname   = request.GET.get('sortname')  or 'id'
     sortorder  = request.GET.get('sortorder') or 'asc'
     children   = []
+    offset     = int(offset) - 1
+    offset     = offset * int(limit)
     if child_id == 'all':
         parent = getParent(request)
         for child in parent.children.all():
