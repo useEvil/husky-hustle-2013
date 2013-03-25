@@ -66,10 +66,11 @@ class ParentInline(admin.StackedInline):
 class ChildrenAdmin(admin.ModelAdmin):
     fields = ['first_name', 'last_name', 'teacher', 'identifier', 'laps', 'date_added']
     list_display = ['first_name', 'last_name', 'teacher', 'identifier', 'laps', 'total_due', 'total_got']
-    search_fields = ['teacher__last_name', 'first_name', 'last_name', 'parents__first_name', 'parents__last_name']
+    search_fields = ['teacher__last_name', 'first_name', 'last_name', 'parents__first_name', 'parents__last_name', 'teacher__last_name']
     list_editable = ['laps']
     list_filter = [MostLapsListFilter]
     inlines = [ChildrenInline]
+    save_on_top = True
 
 class ParentAdmin(admin.ModelAdmin):
     fields = ['first_name', 'last_name', 'email_address', 'phone_number', 'activation_key', 'default', 'guardian', 'date_added']
@@ -77,6 +78,7 @@ class ParentAdmin(admin.ModelAdmin):
     list_editable = ['guardian', 'default']
     inlines = [ChildrenInline]
     search_fields = ['email_address', 'first_name', 'last_name']
+    save_on_top = True
 
 class ContentModelForm( forms.ModelForm ):
     content = forms.CharField( widget=forms.Textarea(attrs={'cols': 125, 'rows': 50}) )
@@ -102,6 +104,7 @@ class DonationAdmin(admin.ModelAdmin):
     search_fields = ['email_address', 'first_name', 'last_name', 'child__first_name', 'child__last_name', 'child__teacher__last_name']
     list_editable = ['per_lap', 'donation', 'paid']
     list_filter = [MostDonationsListFilter]
+    save_on_top = True
 
 class UserAdmin(UserAdmin):
     list_display = ['username', 'email', 'is_active', 'parent']
