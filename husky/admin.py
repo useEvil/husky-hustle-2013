@@ -19,10 +19,13 @@ class MostLapsListFilter(SimpleListFilter):
     def lookups(self, request, model_admin):
         return (
             ('laps', _('Most Laps')),
+            ('by_laps', _('By Laps')),
         )
     def queryset(self, request, queryset):
         if self.value() == 'laps':
             return queryset.all().order_by('-laps')
+        elif self.value() == 'by_laps':
+            return queryset.filter(sponsors__per_lap=True).all()
         else:
             return queryset.all()
 
