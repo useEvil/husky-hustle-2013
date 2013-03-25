@@ -347,6 +347,12 @@ class Children(models.Model):
     def total_sum(self):
         return Donation.objects.filter(child=self).aggregate(total_sum=Sum('donated'))
 
+    def total_for_laps(self):
+        total_due = 0
+        for sponsor in self.sponsors_perlap():
+            total_due += sponsor.total() 
+        return total_due
+
     def total_due(self):
         total_due = 0
         for sponsor in self.sponsors_flat():
