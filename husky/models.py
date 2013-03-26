@@ -628,7 +628,7 @@ class Donation(models.Model):
         grades = Grade.objects.all()
         for index, grade in enumerate(grades):
             json['values'].append({'label': grade.title, 'values': [], 'labels': []})
-            teachers = Teacher.objects.filter(grade=grade).exclude(list_type=2).all()
+            teachers = Teacher.objects.filter(grade=grade).exclude(list_type=3).all()
             for teacher in teachers:
                 num_laps = Children.objects.filter(teacher=teacher).aggregate(num_laps=Sum('laps'))
                 json['values'][index]['values'].append(num_laps['num_laps'] or 0)
@@ -651,7 +651,7 @@ class Donation(models.Model):
         grades = Grade.objects.all()
         for index, grade in enumerate(grades):
             json['values'].append({'label': grade.title, 'values': [], 'labels': []})
-            teachers = Teacher.objects.filter(grade=grade).exclude(list_type=2).all()
+            teachers = Teacher.objects.filter(grade=grade).exclude(list_type=3).all()
             for teacher in teachers:
                 children = Children.objects.filter(teacher=teacher).all()
                 total = 0
@@ -712,7 +712,7 @@ class Donation(models.Model):
             donation = Donation.objects.filter(first_name__contains='Agopian').aggregate(donated=Sum('donated'))
             if donation:
                 json['values'].append({'label': 0, 'values': [float(donation['donated'] or 0)], 'labels': ['Mrs. Agopian']})
-            teachers = Teacher.objects.exclude(list_type=2).all()
+            teachers = Teacher.objects.exclude(list_type=3).all()
             for index, teacher in enumerate(teachers):
                 donation = teacher.get_donations()
                 if donation:
