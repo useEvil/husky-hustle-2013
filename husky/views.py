@@ -938,18 +938,20 @@ def json(request, child_id=None):
 
 def reports(request, type=None):
     json = {}
-    if type == 'most-laps':
-        json = Donation().reports_most_laps()
-    elif type == 'most-laps-by-child':
-        json = Donation().reports_most_laps_by_child()
-    elif type == 'most-donations':
-        json = Donation().reports_most_donations()
+    if type == 'most-laps-by-grade':
+        json = Donation().reports_most_laps_by_grade()
+    elif type == 'most-laps-by-child-by-grade':
+        json = Donation().reports_most_laps_by_child_by_grade()
+    elif type == 'most-donations-by-grade':
+        json = Donation().reports_most_donations_by_grade()
+    elif type == 'most-donations-by-child':
+        json = Donation().reports_most_donations_by_child()
     elif type == 'most-donations-by-day-by-sponsor':
         json = Donation().reports_most_donations_by_day_by_sponsor()
     elif type == 'most-donations-by-day':
         json = Donation().reports_most_donations_by_day()
-    elif type == 'most-donations-by-child':
-        json = Donation().reports_most_donations_by_child()
+    elif type == 'most-donations-by-child-by-grade':
+        json = Donation().reports_most_donations_by_child_by_grade()
     elif type == 'donations-by-teacher':
         id = int(request.GET.get('id') or 0)
         json = Donation().reports_donations_by_teacher(id)
