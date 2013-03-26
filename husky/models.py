@@ -357,6 +357,10 @@ class Children(models.Model):
         total_due = 0
         for sponsor in self.sponsors_flat():
             total_due += sponsor.total() 
+        return total_due
+
+    def total_for_sponsors(self):
+        total_due = 0
         for sponsor in self.sponsors_teacher():
             total_due += sponsor.total()
         return total_due
@@ -699,7 +703,7 @@ class Donation(models.Model):
         json = {'label': [], 'values': []}
         children = Children.objects.annotate(max_funds=Max('collected')).order_by('-collected')[:20]
         for child in children:
-            json['values'].append({'label': child.id, 'values': [child.max_funds], 'labels': [child.full_name()]})
+            json['values'].append({'label': child.id, 'values': [float(child.max_funds or 0)], 'labels': [child.full_name()]})
         return json
 
     def reports_donations_by_teacher(self, id=0):
