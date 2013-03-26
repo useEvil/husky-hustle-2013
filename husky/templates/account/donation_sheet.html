@@ -6,8 +6,7 @@
 			* {margin: 0;padding: 0;}
 			a {text-decoration: underline;color: #A54545;}
 			a:hover {text-decoration: none;}
-			body {color: #3D3D3D;background: #F4F5F5;line-height: 1.8em;font-size: 8.0pt;text-shadow: -1px -1px 0px #ffffff;}
-			body,input {font-family: "Open Sans", sans-serif;}
+			body {color: #3D3D3D;background: #F4F5F5;line-height: 1.8em;font-size: 12.0pt;}
 			br.clearfix {clear: both;}
 			h1,h2,h3,h4 {text-transform: uppercase;letter-spacing: -1px;font-weight: normal;}
 			a {color: #1F1F1F;}
@@ -24,12 +23,12 @@
 			.name {width: 30%;}
 			.phone {width: 20%;}
 			.office {width: 15%;}
-			#wrapper {margin: 20px auto 0 auto;width: 980px;position: relative;}
-			#content {color: #3D3D3D;padding: 35px;width: 910px;}
-			#header {position: relative;padding: 15px;width: 910px;height: 35px;}
-			#inner {background: #fff;border-radius: 5px;box-shadow: 0px 0px 10px 0px rgba(0,0,0,0.1);border: solid 1px #D4D5D5;}
-			#page {position: relative;margin: 0 0 0 0;padding: 0;width: 980px;}
-			table.donations {width: 850px;border-color: #000;border-style: solid;}
+			#wrapper {margin: 20px;width: 1180px;position: relative;}
+			#content {color: #3D3D3D;padding: 25px;width: 1110px;}
+			#header {position: relative;padding: 15px;width: 1110px;height: 35px;}
+			#inner {width: 1015px;background: #fff;border-radius: 5px;box-shadow: 0px 0px 10px 0px rgba(0,0,0,0.1);border: solid 1px #D4D5D5;}
+			#page {position: relative;margin: 0 0 0 0;padding: 0;width: 1180px;}
+			table.donations {width: 965px;border-color: #000;border-style: solid;}
 			table.donations table {border-spacing: 0;border-collapse: collapse;}
 			.donations tr {page-break-inside: avoid;page-break-after: auto;}
 			.donations td {padding: 4px 10px 4px 10px;}
@@ -43,7 +42,7 @@
 			.foot-note {font-size: 0.55em;}
 		</style>
 	</head>
-	<body onLoad="alert('You can Print this page to fill out manually.  Or use to turn in with your Pledge Envelope');">
+	<body{% if not final %} onLoad="alert('You can Print this page to fill out manually.  Or use to turn in with your Pledge Envelope');"{% endif %}>
 		<div id="wrapper" style="width: 915px;">
 			<div id="header">
 				<div id="logo">
@@ -113,8 +112,9 @@
 								{% endfor %}
 								{% endif %}
 								<tr>
-									<td colspan="6" class="total">Total:</td>
-									<td class="amount last-cell">{{ child.total_for_flat|floatformat:2|intcomma }}</td>
+									<td colspan="5" class="total">Total:</td>
+									<td class="amount">{{ child.total_for_flat|floatformat:2|intcomma }}</td>
+									<td class="last-cell">&nbsp;</td>
 								</tr>
 							</table>
 							<br class="clearfix" />
@@ -178,8 +178,9 @@
 								{% endfor %}
 								{% endif %}
 								<tr>
-									<td colspan="6" class="total">Total:</td>
-									<td class="amount last-cell">{{ child.total_for_laps|floatformat:2|intcomma }}</td>
+									<td colspan="5" class="total">Total:</td>
+									<td class="amount">{{ child.total_for_laps|floatformat:2|intcomma }}</td>
+									<td class="last-cell">&nbsp;</td>
 								</tr>
 							</table>
 							<br class="clearfix" />
@@ -246,8 +247,9 @@
 								</tr>
 								{% endif %}
 								<tr>
-									<td colspan="6" class="total">Total:</td>
-									<td class="amount last-cell">{{ child.total_for_sponsors|floatformat:2|intcomma }}</td>
+									<td colspan="5" class="total">Total:</td>
+									<td class="amount">{{ child.total_for_sponsors|floatformat:2|intcomma }}</td>
+									<td class="last-cell">&nbsp;</td>
 								</tr>
 							</table>
 							<br class="clearfix" />

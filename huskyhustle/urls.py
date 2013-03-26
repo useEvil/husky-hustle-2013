@@ -91,7 +91,7 @@ urlpatterns = patterns('',
     url(r'^REST/parent/$', ListOrCreateModelView.as_view(resource=ParentResource)),
     url(r'^REST/parent/(?P<pk>[^/]+)/$', InstanceModelView.as_view(resource=ParentResource)),
     url(r'^REST/children/$', ListOrCreateModelView.as_view(resource=ChildrenResource)),
-    url(r'^REST/children/(?P<pk>[^/]+)/$', InstanceModelView.as_view(resource=ChildrenResource)),
+    url(r'^REST/children/(?P<identifier>[^/]+)/$', InstanceModelView.as_view(resource=ChildrenResource)),
     url(r'^REST/donation/$', ListOrCreateModelView.as_view(resource=DonationResource)),
     url(r'^REST/donation/(?P<pk>[^/]+)/$', InstanceModelView.as_view(resource=DonationResource))
 )
