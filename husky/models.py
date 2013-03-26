@@ -218,9 +218,8 @@ class Teacher(models.Model):
         return self.shorten
 
     def get_donations(self):
-        total1 = Donation.objects.filter(child__teacher=self).aggregate(donated=Sum('donated'))
-        total2 = Donation.objects.filter(first_name__contains=self.last_name).aggregate(donated=Sum('donated'))
-        return float(total1['donated'] or 0) + float(total2['donated'] or 0)
+        total = Donation.objects.filter(child__teacher=self).aggregate(donated=Sum('donated'))
+        return float(total['donated'] or 0)
 
     def get_donations_list(self):
         donators = []
