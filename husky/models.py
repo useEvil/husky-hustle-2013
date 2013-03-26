@@ -731,14 +731,12 @@ class Donation(models.Model):
 
     def reports_unpaid_donations(self):
         data = []
-        total_donation = 0
         total_donated = 0
         donations = Donation.objects.exclude(paid=1).order_by('child__last_name', 'child__first_name')
         for index, donation in enumerate(donations):
-            total_donation += donation.donation or 0
             total_donated += donation.total() or 0
             data.append({'id': index+1, 'date': donation.date_added, 'parent': donation.child.parent, 'child': donation.child, 'name': donation.full_name(), 'donation': donation.donation or 0, 'type': donation.per_lap and 'Per Lap' or 'Flat', 'total': donation.total() or 0, 'paid': donation.paid and 'Yes' or 'No'})
-        data.append({'id': '&nbsp;', 'date': 'Total', 'parent': '&nbsp;', 'child': '&nbsp;', 'name': '&nbsp;', 'donation': total_donation, 'total': total_donated, 'paid': '&nbsp;'})
+        data.append({'id': '&nbsp;', 'date': 'Total', 'parent': '&nbsp;', 'child': '&nbsp;', 'name': '&nbsp;', 'donation': '&nbsp;', 'total': total_donated, 'paid': '&nbsp;'})
         return data
 
     def verify_paypal_donations(self):
