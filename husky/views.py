@@ -130,9 +130,10 @@ def account(request, identifier=None):
     c['messages'] = messages.get_messages(request)
     return render_to_response('account/index.html', c, context_instance=RequestContext(request))
 
-def donation_sheet(request, identifier=None):
+def donation_sheet(request, identifier=None, final=None):
     c = Context(dict(
             page_title='Pledge Sheet',
+            final=final,
     ))
     if identifier and identifier == 'pdf':
         response = HttpResponse(mimetype='application/pdf')
