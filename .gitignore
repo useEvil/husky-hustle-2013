@@ -25,6 +25,7 @@ pip-log.txt
 
 #Mr Developer
 .mr.developer.cfg
+pledge-sheet-*
 
 #local settings
 *-local*

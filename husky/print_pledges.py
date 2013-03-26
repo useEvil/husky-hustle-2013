@@ -28,13 +28,13 @@ class PrintPDF(object):
         for child in children:
             print 'Printing: %s' % child['identifier']
             uri = "http://%s/donation_sheet/%s/final" % (HOST, child['identifier'])
-            cmd = 'wkpdf --source=%s --output=docs/pledge-sheet-%s.pdf --stylesheet-media="screen" --paper=tabloid' % (uri, child['identifier'])
+            cmd = 'wkpdf --source=%s --output=data/pledge-sheet-%s.pdf --stylesheet-media="screen" --paper=tabloid' % (uri, child['identifier'])
             call(cmd, shell=True)
-#            cmd = 'lp -d "%s" -o media=Legal -o natural-scaling=115 docs/pledge-sheet-%s.pdf' % (PRINTER, child['identifier'])
+#            cmd = 'lp -d "%s" -o media=Legal -o natural-scaling=115 data/pledge-sheet-%s.pdf' % (PRINTER, child['identifier'])
 #            call(cmd, shell=True)
 
     def getHttpRequest(self, uri=None, data=None):
-        setdefaulttimeout(3)
+        setdefaulttimeout(500)
         req = Request(uri, data)
         response = urlopen(req)
         content = ''
@@ -43,7 +43,9 @@ class PrintPDF(object):
         return content
 
 if __name__ == '__main__':
-    id = sys.argv[1] or None
+    id = None
+    if len(sys.argv) > 1:
+        id = sys.argv[1] or None
     pr_pdf = PrintPDF()
     pr_pdf.pledgeForms(id)
 
