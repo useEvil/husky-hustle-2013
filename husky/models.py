@@ -619,7 +619,7 @@ class Donation(models.Model):
         except Exception, e:
             return 0
 
-    def reports_most_laps(self):
+    def reports_most_laps_by_grade(self):
         json = {'label': [], 'values': []}
         grades = Grade.objects.all()
         for index, grade in enumerate(grades):
@@ -631,7 +631,7 @@ class Donation(models.Model):
                 json['values'][index]['labels'].append(teacher.full_name())
         return json
 
-    def reports_most_laps_by_child(self):
+    def reports_most_laps_by_child_by_grade(self):
         json = {'label': [], 'values': []}
         grades = Grade.objects.all()
         for index, grade in enumerate(grades):
@@ -642,7 +642,7 @@ class Donation(models.Model):
                 json['values'][index]['labels'].append(child.full_name())
         return json
 
-    def reports_most_donations(self):
+    def reports_most_donations_by_grade(self):
         json = {'label': [], 'values': []}
         grades = Grade.objects.all()
         for index, grade in enumerate(grades):
@@ -684,7 +684,7 @@ class Donation(models.Model):
             json['values'][index]['labels'].append(start.strftime('%m/%d/%Y'))
         return json
 
-    def reports_most_donations_by_child(self):
+    def reports_most_donations_by_child_by_grade(self):
         json = {'label': [], 'values': []}
         grades = Grade.objects.all()
         for index, grade in enumerate(grades):
@@ -693,6 +693,13 @@ class Donation(models.Model):
             for child in children:
                 json['values'][index]['values'].append(float(child.collected or 0))
                 json['values'][index]['labels'].append(child.full_name())
+        return json
+
+    def reports_most_donations_by_child(self):
+        json = {'label': [], 'values': []}
+        children = Children.objects.annotate(max_funds=Max('collected')).order_by('-collected')[:20]
+        for child in children:
+            json['values'].append({'label': child.id, 'values': [child.max_funds], 'labels': [child.full_name()]})
         return json
 
     def reports_donations_by_teacher(self, id=0):
