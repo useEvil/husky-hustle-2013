@@ -622,6 +622,13 @@ class Donation(models.Model):
         except Exception, e:
             return 0
 
+    def get_total(self, ids=None):
+        try:
+            donation = Donation.objects.filter(id__in=ids).aggregate(total=Sum('donated'))
+            return donation['total']
+        except Exception, e:
+            return 0
+
     def reports_most_laps_by_grade(self):
         json = {'label': [], 'values': []}
         grades = Grade.objects.all()
