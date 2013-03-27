@@ -33,7 +33,7 @@
 				<td>{{ result.name|safe }}</td>
 				<td>{{ result.parent|safe }}</td>
 				<td>{{ result.child|safe }}</td>
-				<td align="right">${{ result.donation|floatformat:2|intcomma }}</td>
+				<td align="right">{% if result.donation %}${{ result.donation|floatformat:2|intcomma }}{% endif %}</td>
 				<td>{{ result.type|safe }}</td>
 				<td align="right">${{ result.total|floatformat:2|intcomma }}</td>
 				<td>{{ result.paid|safe }}</td>
