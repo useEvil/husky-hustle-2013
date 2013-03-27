@@ -217,6 +217,7 @@
 								</tr>
 								{% endfor %}
 								{% else %}
+								{% if not final %}
 								{% for row in '123' %}
 								<tr>
 									<td class="bold">&nbsp;</td>
@@ -232,6 +233,7 @@
 									<td class="amount last-cell">&nbsp;</td>
 								</tr>
 								{% endfor %}
+								{% endif %}
 								<tr>
 									<td class="bold">Mrs. Agopian</td>
 									<td style="text-align: center;white-space: nowrap;">
