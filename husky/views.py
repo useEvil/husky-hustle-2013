@@ -224,9 +224,14 @@ def payment(request, identifier=None, id=None):
     except:
         messages.error(request, 'Could not find Student for identity: %s' % identifier)
         c['error'] = True
+    ids = id.split(',')
     if request.GET.get('amount'):
         c['encrypted_block'] = Donation().encrypted_block(Donation().button_data(request.GET.get('amount'), id))
         c['total'] = request.GET.get('amount')
+    elif len(ids) > 1:
+        total = Donation().get_total(ids)
+        c['encrypted_block'] = Donation().encrypted_block(Donation().button_data(total, id))
+        c['total'] = total
     else:
         try:
             donation = Donation.objects.get(id=id)

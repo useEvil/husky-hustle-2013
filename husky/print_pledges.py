@@ -28,7 +28,7 @@ class PrintPDF(object):
         for child in children:
             print 'Printing: %s' % child['identifier']
             uri = "http://%s/donation_sheet/%s/final" % (HOST, child['identifier'])
-            cmd = 'wkpdf --source=%s --output=husky/data/pledge-sheets/%s-%s.pdf --stylesheet-media="screen" --paper=tabloid' % (uri, child['teacher']['last_name'], child['identifier'])
+            cmd = 'wkpdf --source=%s --output=husky/data/pledge-sheets/%s-%s.pdf --stylesheet-media="screen" --paper=tabloid --save-delay=1' % (uri, child['teacher']['last_name'], child['identifier'])
             call(cmd, shell=True)
 #            cmd = 'lp -d "%s" -o media=Legal -o natural-scaling=115 husky/data/pledge-sheets/%s-%s.pdf' % (PRINTER, child['teacher']['last_name'], child['identifier'])
 #            call(cmd, shell=True)
