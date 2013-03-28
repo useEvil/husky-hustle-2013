@@ -19,6 +19,7 @@ class PayPalError(Exception):
         return message
 
 class PayPal(object):
+
     def encrypt(self, attributes):
         plaintext = ''
 
@@ -58,3 +59,10 @@ class PayPal(object):
         p7.write(out)
 
         return out.read()
+
+    def download_csv(self, start_date=None, end_date=None):
+        try:
+            results = getHttpRequest(settings.PAYPAL_IPN_URL, 'cmd=TransactionSearch&STARTDATE=%s&ENDDATE=%s' % (start_date, end_date))
+        except Exception, e:
+            print 'Failed to Download Transactions'
+        return results
