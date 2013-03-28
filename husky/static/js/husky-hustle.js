@@ -23,6 +23,7 @@ $('.pre-set-amount').live('click', setPreSetAmount);
 $('.to-principle').live('click', setPreSetAmount);
 $('.to-teacher').live('change', setPreSetAmount);
 $('.run-calculations').live('click', runCalculations);
+$('.make_payment').live('click', makePaymentFinal);
 $('.tooltip').live('click', showTooltip);
 $('#link_to').live('click', linkToParent);
 $('body').keyup(cancelOverlay);
@@ -586,6 +587,21 @@ function makePayment(event) {
 	} else {
 		alert('You must select sponsors to make payments for.');
 	}
+}
+
+function makePaymentFinal(event, id) {
+	$('#payment_form').show();
+	$('#payment_form').attr('action', '/payment/' + this.id);
+	$('#payment_id').val(this.id);
+	$('#overlay-box-payment').dialog({
+		closeOnEscape: true,
+		minWidth: 350,
+		minHeight: 150,
+		modal: true,
+		dialogClass: 'tooltip',
+		resizable: false,
+		close: function(event, ui) { cancelForm(event, ui); }
+	});
 }
 
 function disconnectSocial(event) {

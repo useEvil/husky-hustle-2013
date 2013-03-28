@@ -226,6 +226,7 @@ def payment(request, identifier=None, id=None):
         c['error'] = True
     ids = id.split(',')
     if request.GET.get('amount'):
+        if request.GET.get('id') and not id: id = request.GET.get('id')
         c['encrypted_block'] = Donation().encrypted_block(Donation().button_data(request.GET.get('amount'), id))
         c['total'] = request.GET.get('amount')
     elif len(ids) > 1:
