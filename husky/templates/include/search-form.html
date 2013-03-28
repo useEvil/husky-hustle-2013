@@ -3,7 +3,7 @@
 <span>Your search for <span class="bold">"{{ search|safe }}"</span> found <span class="bold">{{ children|length }}</span> results:</span>
 <table class="search-results" border="1">
 	<tr>
-		<th>Parent</th><th>Student</th><th>Grade</th><th>Teacher</th>
+		<th>Parent</th><th>Student</th><th>Grade</th><th>Teacher</th><th>&nbsp;</th>
 	</tr>
 	{% for child in children %}
 	<tr>
@@ -15,10 +15,30 @@
 		<td><a href="{{ child.donate_url }}">{{ child.full_name }}</a></td>
 		<td>{{ child.teacher.grade }}</td>
 		<td>{{ child.teacher.full_name }} ({{ child.teacher.room_number }})</td>
+		<td><a href="#" class="make_payment" id="{{ child.identifier }}">Make Payment</a></td>
 	</tr>
 	{% endfor %}
 </table>
 <br /><a href="/make-donation/search">Search Again</a>
+<div id="overlay-box-payment" class="overlay-box" title="Make a Payment" style="z-index: 1010;">
+	<div class="overlay-content">
+		<form id="payment_form" action="/payment" method="GET">
+			<div class="wrapper">
+				<ul>
+					<li>
+						<label for="payment_amount" id="payment_amount_label">Amount To Pay</label><br /><br />
+						<input type="hidden" id="payment_id" name="id" value="">
+						<input type="text" class="pad-left5" style="margin-left: 30px;" id="payment_amount" name="amount" value="" size="10" placeholder="0.00" />
+					</li>
+					<li>&nbsp;</li>
+					<li>
+						<input type="submit" style="width: 8em;" class="control input" id="submit_payment" value=" Make Payment " />
+					</li>
+				</ul>
+			</div>
+		</form>
+	</div>
+</div>
 {% else %}
 <h3>Search for a Student</h3>
 <form action="/make-donation/search" method="GET" id="form_search">
@@ -27,7 +47,7 @@
 		<li><label style="width: 200px;" for="student_first_name"{% if form.student_first_name.errors %} class="error"{% endif %}>Student First Name:</label><input id="student_first_name" type="text" name="student_first_name" value="{{ form.student_first_name.value }}" size="30" /></li>
 		<li style="display: inline;"><label style="width: 200px;" for="student_last_name"{% if form.student_last_name.errors %} class="error"{% endif %}>Last Name:</label><input id="student_last_name" type="text" name="student_last_name" value="{{ form.student_last_name.value }}" size="30" /></li>
 		<li style="display: inline;padding-left: 15px;"><input type="button" style="width: 8em;" id="submit_child_search" class="control input submit" value=" Search " /></li>
-        <li><br /><h4 style="padding-left: 300px;"> - OR - </h4></li>
+		<li><br /><h4 style="padding-left: 300px;"> - OR - </h4></li>
 	</ol>
 	<ol>
 		<li><label style="width: 200px;" for="parent_first_name"{% if form.parent_first_name.errors %} class="error"{% endif %}>Parent First Name:</label><input id="parent_first_name" type="text" name="parent_first_name" value="{{ form.parent_first_name.value }}" size="30" /></li>
