@@ -80,7 +80,7 @@ class ChildrenAdmin(admin.ModelAdmin):
     list_filter = [MostLapsListFilter]
     inlines = [ChildrenInline]
     save_on_top = True
-    list_per_page = 25
+    list_per_page = 40
 
 class ParentAdmin(admin.ModelAdmin):
     fields = ['first_name', 'last_name', 'email_address', 'phone_number', 'activation_key', 'default', 'guardian', 'date_added']
