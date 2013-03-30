@@ -866,6 +866,8 @@ def paid(request, donation_id=None):
         c['amount'] = '0.00'
         c['subject'] = 'Hicks Canyon Jog-A-Thon: Payment Failed'
         _send_email_teamplate('paid', c)
+    elif regexp.match('[^\d,]+', donation_id):
+        messages.success(request, 'Successfully Received Payment')
     else:
         for id in donation_id.split(','):
             try:
