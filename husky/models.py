@@ -691,8 +691,10 @@ class Donation(models.Model):
 
     def reports_most_donations_by_day(self):
         json = {'label': [], 'values': []}
-        total = Donation.objects.aggregate(donated=Sum('donated'))
-        json['values'].append({'label': 'To Date', 'values': [float(total['donated'] or 0)], 'labels': ['Total To Date']})
+        donated = Donation.objects.aggregate(donated=Sum('donated'))
+        collected = Children.objects.aggregate(collected=Sum('collected'))
+        json['values'].append({'label': 'Pledged', 'values': [float(donated['donated'] or 0)], 'labels': ['Total Pledged']})
+        json['values'].append({'label': 'Collected', 'values': [float(collected['collected'] or 0)], 'labels': ['Total Collected']})
         now = date.datetime.now(pytz.utc)
         for index in range(1, 11):
             end = date.datetime(now.year, now.month, now.day, 23, 59, 59, 0, pytz.utc) - date.timedelta(index-1)
