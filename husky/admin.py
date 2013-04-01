@@ -72,11 +72,11 @@ class ParentInline(admin.StackedInline):
     verbose_name_plural = 'parents'
 
 class ChildrenAdmin(admin.ModelAdmin):
-    fields = ['first_name', 'last_name', 'teacher', 'identifier', 'laps', 'date_added']
-    list_display = ['first_name', 'last_name', 'teacher', 'identifier', 'laps', 'total_for_laps', 'total_due', 'total_got']
-#    list_display = ['first_name', 'last_name', 'teacher', 'identifier', 'laps', 'total_for_laps', 'total_for_flat', 'total_due', 'total_got']
+    fields = ['first_name', 'last_name', 'teacher', 'identifier', 'age', 'gender', 'laps', 'date_added']
+    list_display = ['first_name', 'last_name', 'teacher', 'identifier', 'gender', 'laps', 'total_for_laps', 'total_due', 'total_got']
+#    list_display = ['first_name', 'last_name', 'teacher', 'identifier', 'gender', 'laps', 'total_for_laps', 'total_for_flat', 'total_due', 'total_got']
     search_fields = ['teacher__last_name', 'first_name', 'last_name', 'parents__first_name', 'parents__last_name', 'teacher__last_name']
-    list_editable = ['laps']
+    list_editable = ['laps', 'gender']
     list_filter = [MostLapsListFilter]
     inlines = [ChildrenInline]
     save_on_top = True

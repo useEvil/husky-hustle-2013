@@ -13,7 +13,9 @@
             var match = $('#id_teacher :selected').text().match(reg);
             var identifier = [$('#id_first_name').val(), $('#id_last_name').val(), match[1]].join('-');
             identifier = identifier.toLowerCase();
-            identifier = identifier.replace(' ', '-');
+            identifier = identifier.replace(/^\s+|\s+$/g,'');
+            identifier = identifier.replace(/\s+/g, '-');
+            identifier = identifier.replace(/-+/g, '-');
             $('#id_identifier').val(identifier);
         });
     }
