@@ -253,6 +253,8 @@ class Children(models.Model):
     identifier = models.CharField(max_length=100, unique=True)
     date_added = models.DateTimeField(default=date.datetime.now())
     laps = models.IntegerField(blank=True, null=True)
+    age = models.IntegerField(blank=True, null=True)
+    gender = models.CharField(max_length=1, blank=True, null=True, choices=(('M', 'Boy'), ('F', 'Girl')))
     collected = CurrencyField(blank=True, null=True)
     pledged = CurrencyField(blank=True, null=True)
     teacher = models.ForeignKey(Teacher, related_name='students')
@@ -650,12 +652,15 @@ class Donation(models.Model):
                 json['values'][index]['labels'].append(teacher.full_name())
         return json
 
-    def reports_most_laps_by_child_by_grade(self):
+    def reports_most_laps_by_child_by_grade(self, gender=None):
         json = {'label': [], 'values': []}
         grades = Grade.objects.all()
         for index, grade in enumerate(grades):
             json['values'].append({'label': grade.title, 'values': [], 'labels': []})
-            children = Children.objects.filter(teacher__grade=grade).annotate(max_laps=Max('laps')).order_by('-laps')[:20]
+            if gender:
+                children = Children.objects.filter(teacher__grade=grade, gender=gender).annotate(max_laps=Max('laps')).order_by('-laps')[:20]
+            else:
+                children = Children.objects.filter(teacher__grade=grade).annotate(max_laps=Max('laps')).order_by('-laps')[:20]
             for child in children:
                 json['values'][index]['values'].append(child.max_laps or 0)
                 json['values'][index]['labels'].append(child.full_name())
@@ -696,7 +701,7 @@ class Donation(models.Model):
         json['values'].append({'label': 'Pledged', 'values': [float(donated['donated'] or 0)], 'labels': ['Total Pledged']})
         json['values'].append({'label': 'Collected', 'values': [float(collected['collected'] or 0)], 'labels': ['Total Collected']})
         now = date.datetime.now(pytz.utc)
-        for index in range(1, 11):
+        for index in range(2, 12):
             end = date.datetime(now.year, now.month, now.day, 23, 59, 59, 0, pytz.utc) - date.timedelta(index-1)
             start = date.datetime(now.year, now.month, now.day, 23, 59, 59, 0, pytz.utc) - date.timedelta(index)
             json['values'].append({'label': end.strftime('%m/%d/%Y'), 'values': [], 'labels': []})
