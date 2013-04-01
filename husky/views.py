@@ -566,8 +566,6 @@ def results(request, type=None):
             c['results'] = Donation().verify_paypal_donations()
         elif 'show-unpaid-donations' in request.path:
             c['results'] = Donation().reports_unpaid_donations()
-        elif 'most-donations-by-child-by-grade' in request.path:
-            c['results'] = Donation().reports_most_laps_by_child_by_grade()
         return render_to_response('admin/results.html', c, context_instance=RequestContext(request))
     else:
         return render_to_response('results.html', c, context_instance=RequestContext(request))
