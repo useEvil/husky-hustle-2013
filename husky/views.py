@@ -945,7 +945,9 @@ def json(request, child_id=None):
 
 def reports(request, type=None):
     json = {}
-    if type == 'most-laps-by-grade':
+    if type == 'totals-by-grade':
+        json = Donation().reports_totals_by_grade()
+    elif type == 'most-laps-by-grade':
         json = Donation().reports_most_laps_by_grade()
     elif type == 'most-laps-by-grade-avg':
         json = Donation().reports_most_laps_by_grade_avg()
