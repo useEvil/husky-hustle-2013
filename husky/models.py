@@ -655,6 +655,15 @@ class Donation(models.Model):
         except Exception, e:
             return 0
 
+    def reports_totals_by_grade(self):
+        json = {'label': [], 'values': []}
+        grades = Grade.objects.all()
+        for index, grade in enumerate(grades):
+            json['values'].append({'label': grade.title, 'values': [], 'labels': []})
+            json['values'][index]['values'].append(grade.total_collected())
+            json['values'][index]['labels'].append('Laps: %d; Donations' % grade.total_laps())
+        return json
+
     def reports_most_laps_by_grade(self):
         json = {'label': [], 'values': []}
         grades = Grade.objects.all()
