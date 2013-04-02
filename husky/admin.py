@@ -73,10 +73,10 @@ class ParentInline(admin.StackedInline):
 
 class ChildrenAdmin(admin.ModelAdmin):
     fields = ['first_name', 'last_name', 'teacher', 'identifier', 'age', 'gender', 'laps', 'date_added']
-    list_display = ['first_name', 'last_name', 'teacher', 'identifier', 'gender', 'laps', 'total_for_laps', 'total_due', 'total_got']
-#    list_display = ['first_name', 'last_name', 'teacher', 'identifier', 'gender', 'laps', 'total_for_laps', 'total_for_flat', 'total_due', 'total_got']
+    list_display = ['first_name', 'last_name', 'teacher', 'identifier', 'disqualify', 'gender', 'laps', 'total_for_laps', 'total_due', 'total_got']
+#    list_display = ['first_name', 'last_name', 'teacher', 'identifier', 'disqualify', 'gender', 'laps', 'total_for_laps', 'total_for_flat', 'total_due', 'total_got']
     search_fields = ['teacher__last_name', 'first_name', 'last_name', 'parents__first_name', 'parents__last_name', 'teacher__last_name']
-    list_editable = ['laps', 'gender']
+    list_editable = ['laps', 'gender', 'disqualify']
     list_filter = [MostLapsListFilter]
     inlines = [ChildrenInline]
     save_on_top = True
@@ -133,7 +133,7 @@ class TeacherAdmin(admin.ModelAdmin):
 
 class GradeAdmin(admin.ModelAdmin):
     fields = ['grade', 'title']
-    list_display = ['id', 'grade', 'title', 'total_laps', 'total_donations', 'total_collected']
+    list_display = ['id', 'grade', 'title', 'total_laps', 'total_donations', 'total_collected', 'percent_completed']
     list_editable = ['grade', 'title']
     inlines = [TeacherInline]
 
