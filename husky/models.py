@@ -277,7 +277,7 @@ class Children(models.Model):
     age = models.IntegerField(blank=True, null=True)
     gender = models.CharField(max_length=1, blank=True, null=True, choices=(('M', 'Boy'), ('F', 'Girl')))
     collected = CurrencyField(blank=True, null=True)
-    disqualify = models.BooleanField(default=1, choices=((0, 'No'), (1, 'Yes')))
+    disqualify = models.IntegerField(default=0, choices=((0, 'No'), (1, 'Yes')))
     pledged = CurrencyField(blank=True, null=True)
     teacher = models.ForeignKey(Teacher, related_name='students')
     class Meta:
