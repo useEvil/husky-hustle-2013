@@ -174,7 +174,7 @@ class Grade(models.Model):
         return Grade.objects.exclude(grade=-1).all()
 
     def total_laps(self):
-        results = Children.objects.filter(teacher__grade=self).aggregate(num_laps=Sum('laps'))
+        results = Children.objects.filter(teacher__grade=self).exclude(disqualify=True).aggregate(num_laps=Sum('laps'))
         return results['num_laps'] or 0
 
     def total_donations(self):
@@ -184,6 +184,12 @@ class Grade(models.Model):
     def total_collected(self):
         results = Children.objects.filter(teacher__grade=self).aggregate(total_collected=Sum('collected'))
         return float(results['total_collected'] or 0)
+
+    def percent_completed(self):
+        percentage = 0
+        if self.total_collected() and self.total_donations():
+            percentage = self.total_collected() / self.total_donations()
+        return round(percentage, 2)
 
 
 class Teacher(models.Model):
@@ -271,6 +277,7 @@ class Children(models.Model):
     age = models.IntegerField(blank=True, null=True)
     gender = models.CharField(max_length=1, blank=True, null=True, choices=(('M', 'Boy'), ('F', 'Girl')))
     collected = CurrencyField(blank=True, null=True)
+    disqualify = models.BooleanField(default=1, choices=((False, 'No'), (True, 'Yes')))
     pledged = CurrencyField(blank=True, null=True)
     teacher = models.ForeignKey(Teacher, related_name='students')
     class Meta:
@@ -672,7 +679,7 @@ class Donation(models.Model):
             teachers = Teacher.objects.filter(grade=grade).exclude(list_type=3).all()
             laps = { }
             for teacher in teachers:
-                num_laps = Children.objects.filter(teacher=teacher).aggregate(num_laps=Sum('laps'))
+                num_laps = Children.objects.filter(teacher=teacher).exclude(disqualify=True).aggregate(num_laps=Sum('laps'))
                 laps[teacher.full_name()] = num_laps['num_laps'] or 0
             for key, value in sorted(laps.iteritems(), key=lambda (v,k): (k,v), reverse=True):
                 json['values'][index]['values'].append(value)
@@ -687,7 +694,7 @@ class Donation(models.Model):
             teachers = Teacher.objects.filter(grade=grade).exclude(list_type=3).all()
             laps = { }
             for teacher in teachers:
-                num_laps = Children.objects.filter(teacher=teacher).aggregate(num_laps=Sum('laps'))
+                num_laps = Children.objects.filter(teacher=teacher).exclude(disqualify=True).aggregate(num_laps=Sum('laps'))
                 students = teacher.total_students()
                 avg_laps = 0
                 if num_laps['num_laps'] and students:
@@ -704,9 +711,9 @@ class Donation(models.Model):
         for index, grade in enumerate(grades):
             json['values'].append({'label': grade.title, 'values': [], 'labels': []})
             if gender:
-                children = Children.objects.filter(teacher__grade=grade, gender=gender).annotate(max_laps=Max('laps')).order_by('-laps')[:20]
+                children = Children.objects.filter(teacher__grade=grade, gender=gender).exclude(disqualify=True).annotate(max_laps=Max('laps')).order_by('-laps')[:20]
             else:
-                children = Children.objects.filter(teacher__grade=grade).annotate(max_laps=Max('laps')).order_by('-laps')[:20]
+                children = Children.objects.filter(teacher__grade=grade).exclude(disqualify=True).annotate(max_laps=Max('laps')).order_by('-laps')[:20]
             for child in children:
                 json['values'][index]['values'].append(child.max_laps or 0)
                 json['values'][index]['labels'].append(child.full_name())
