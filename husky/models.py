@@ -178,7 +178,7 @@ class Grade(models.Model):
         return results['num_laps'] or 0
 
     def total_donations(self):
-        results = Donation.objects.filter(child__teacher=self).aggregate(total_donations=Sum('donated'))
+        results = Donation.objects.filter(child__teacher__grade=self).aggregate(total_donations=Sum('donated'))
         return float(results['total_donations'] or 0)
 
     def total_collected(self):
