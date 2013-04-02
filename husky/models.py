@@ -173,6 +173,18 @@ class Grade(models.Model):
     def get_all(self):
         return Grade.objects.exclude(grade=-1).all()
 
+    def total_laps(self):
+        results = Children.objects.filter(teacher__grade=self).aggregate(num_laps=Sum('laps'))
+        return results['num_laps'] or 0
+
+    def total_donations(self):
+        results = Donation.objects.filter(child__teacher=self).aggregate(total_donations=Sum('donated'))
+        return float(results['total_donations'] or 0)
+
+    def total_collected(self):
+        results = Children.objects.filter(teacher__grade=self).aggregate(total_collected=Sum('collected'))
+        return float(results['total_collected'] or 0)
+
 
 class Teacher(models.Model):
 
@@ -213,13 +225,6 @@ class Teacher(models.Model):
     def get_list(self):
         return Teacher.objects.exclude(list_type=3).order_by('grade','room_number').all()
 
-    def shortened(self):
-        if not self.shorten:
-            api = bitly.Api(login=settings.BITLY_LOGIN, apikey=settings.BITLY_APIKEY)
-            self.shorten = api.shorten(self.website)
-            self.save()
-        return self.shorten
-
     def get_donations(self):
         total = Donation.objects.filter(child__teacher=self).aggregate(donated=Sum('donated'))
         return float(total['donated'] or 0)
@@ -242,6 +247,13 @@ class Teacher(models.Model):
         for child, total in iter(sorted(totals.iteritems())):
             sponsors.append({'name': child, 'total': float(total or 0)})
         return donators, sponsors
+
+    def shortened(self):
+        if not self.shorten:
+            api = bitly.Api(login=settings.BITLY_LOGIN, apikey=settings.BITLY_APIKEY)
+            self.shorten = api.shorten(self.website)
+            self.save()
+        return self.shorten
 
     def reports_url(self):
         site = Site.objects.get_current()
