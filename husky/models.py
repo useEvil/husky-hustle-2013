@@ -649,10 +649,13 @@ class Donation(models.Model):
         for index, grade in enumerate(grades):
             json['values'].append({'label': grade.title, 'values': [], 'labels': []})
             teachers = Teacher.objects.filter(grade=grade).exclude(list_type=3).all()
+            laps = { }
             for teacher in teachers:
                 num_laps = Children.objects.filter(teacher=teacher).aggregate(num_laps=Sum('laps'))
-                json['values'][index]['values'].append(num_laps['num_laps'] or 0)
-                json['values'][index]['labels'].append(teacher.full_name())
+                laps[teacher.full_name()] = num_laps['num_laps'] or 0
+            for key, value in sorted(laps.iteritems(), key=lambda (v,k): (k,v), reverse=True):
+                json['values'][index]['values'].append(value)
+                json['values'][index]['labels'].append(key)
         return json
 
     def reports_most_laps_by_grade_avg(self):
@@ -661,14 +664,17 @@ class Donation(models.Model):
         for index, grade in enumerate(grades):
             json['values'].append({'label': grade.title, 'values': [], 'labels': []})
             teachers = Teacher.objects.filter(grade=grade).exclude(list_type=3).all()
+            laps = { }
             for teacher in teachers:
                 num_laps = Children.objects.filter(teacher=teacher).aggregate(num_laps=Sum('laps'))
                 students = teacher.total_students()
                 avg_laps = 0
                 if num_laps['num_laps'] and students:
                     avg_laps = num_laps['num_laps'] / students
-                json['values'][index]['values'].append(avg_laps)
-                json['values'][index]['labels'].append(teacher.full_name())
+                laps[teacher.full_name()] = avg_laps
+            for key, value in sorted(laps.iteritems(), key=lambda (v,k): (k,v), reverse=True):
+                json['values'][index]['values'].append(value)
+                json['values'][index]['labels'].append(key)
         return json
 
     def reports_most_laps_by_child_by_grade(self, gender=None):
@@ -691,13 +697,13 @@ class Donation(models.Model):
         for index, grade in enumerate(grades):
             json['values'].append({'label': grade.title, 'values': [], 'labels': []})
             teachers = Teacher.objects.filter(grade=grade).exclude(list_type=3).all()
+            totals = { }
             for teacher in teachers:
-                children = Children.objects.filter(teacher=teacher).all()
-                total = 0
-                for child in children:
-                    total += child.collected or 0
-                json['values'][index]['values'].append(float(total))
-                json['values'][index]['labels'].append(teacher.full_name())
+                results = Children.objects.filter(teacher=teacher).aggregate(total_collected=Sum('collected'))
+                totals[teacher.full_name()] = float(results['total_collected'] or 0)
+            for key, value in sorted(totals.iteritems(), key=lambda (v,k): (k,v), reverse=True):
+                json['values'][index]['values'].append(value)
+                json['values'][index]['labels'].append(key)
         return json
 
     def reports_most_donations_by_day_by_sponsor(self):
