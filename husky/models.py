@@ -201,6 +201,9 @@ class Teacher(models.Model):
         except ObjectDoesNotExist, e:
             return
 
+    def total_students(self):
+        return Children.objects.filter(teacher=self).count()
+
     def get_all(self):
         return Teacher.objects.exclude(grade__grade=-1).all()
 
@@ -649,6 +652,22 @@ class Donation(models.Model):
             for teacher in teachers:
                 num_laps = Children.objects.filter(teacher=teacher).aggregate(num_laps=Sum('laps'))
                 json['values'][index]['values'].append(num_laps['num_laps'] or 0)
+                json['values'][index]['labels'].append(teacher.full_name())
+        return json
+
+    def reports_most_laps_by_grade_avg(self):
+        json = {'label': [], 'values': []}
+        grades = Grade.objects.all()
+        for index, grade in enumerate(grades):
+            json['values'].append({'label': grade.title, 'values': [], 'labels': []})
+            teachers = Teacher.objects.filter(grade=grade).exclude(list_type=3).all()
+            for teacher in teachers:
+                num_laps = Children.objects.filter(teacher=teacher).aggregate(num_laps=Sum('laps'))
+                students = teacher.total_students()
+                avg_laps = 0
+                if num_laps['num_laps'] and students:
+                    avg_laps = num_laps['num_laps'] / students
+                json['values'][index]['values'].append(avg_laps)
                 json['values'][index]['labels'].append(teacher.full_name())
         return json
 

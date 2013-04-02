@@ -947,6 +947,8 @@ def reports(request, type=None):
     json = {}
     if type == 'most-laps-by-grade':
         json = Donation().reports_most_laps_by_grade()
+    elif type == 'most-laps-by-grade-avg':
+        json = Donation().reports_most_laps_by_grade_avg()
     elif type == 'most-laps-by-child-by-grade':
         json = Donation().reports_most_laps_by_child_by_grade()
     elif type == 'most-laps-by-child-by-grade-girls':
