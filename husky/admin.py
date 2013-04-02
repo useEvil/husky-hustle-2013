@@ -133,7 +133,7 @@ class TeacherAdmin(admin.ModelAdmin):
 
 class GradeAdmin(admin.ModelAdmin):
     fields = ['grade', 'title']
-    list_display = ['id', 'grade', 'title']
+    list_display = ['id', 'grade', 'title', 'total_laps', 'total_donations', 'total_collected']
     list_editable = ['grade', 'title']
     inlines = [TeacherInline]
 
