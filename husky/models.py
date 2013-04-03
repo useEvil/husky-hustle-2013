@@ -698,8 +698,8 @@ class Donation(models.Model):
                 students = teacher.total_students()
                 avg_laps = 0
                 if num_laps['num_laps'] and students:
-                    avg_laps = num_laps['num_laps'] / students
-                laps[teacher.full_name()] = avg_laps
+                    avg_laps = float(num_laps['num_laps']) / students
+                laps[teacher.full_name()] = round(avg_laps, 2)
             for key, value in sorted(laps.iteritems(), key=lambda (v,k): (k,v), reverse=True):
                 json['values'][index]['values'].append(value)
                 json['values'][index]['labels'].append(key)
