@@ -219,8 +219,11 @@ class Teacher(models.Model):
         except ObjectDoesNotExist, e:
             return
 
-    def total_students(self):
-        return Children.objects.filter(teacher=self).count()
+    def total_students(self, exclude=None):
+        if exclude:
+            return Children.objects.filter(teacher=self).exclude(disqualify=True).count()
+        else:
+            return Children.objects.filter(teacher=self).count()
 
     def get_all(self):
         return Teacher.objects.exclude(grade__grade=-1).all()
@@ -695,7 +698,7 @@ class Donation(models.Model):
             laps = { }
             for teacher in teachers:
                 num_laps = Children.objects.filter(teacher=teacher).exclude(disqualify=True).aggregate(num_laps=Sum('laps'))
-                students = teacher.total_students()
+                students = teacher.total_students(1)
                 avg_laps = 0
                 if num_laps['num_laps'] and students:
                     avg_laps = float(num_laps['num_laps']) / students
