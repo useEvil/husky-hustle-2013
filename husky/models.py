@@ -697,11 +697,11 @@ class Donation(models.Model):
             teachers = Teacher.objects.filter(grade=grade).exclude(list_type=3).all()
             laps = { }
             for teacher in teachers:
-                num_laps = Children.objects.filter(teacher=teacher).exclude(disqualify=True).aggregate(num_laps=Sum('laps'))
+                results  = Children.objects.filter(teacher=teacher).exclude(disqualify=True).aggregate(num_laps=Sum('laps'))
                 students = teacher.total_students(1)
                 avg_laps = 0
-                if num_laps['num_laps'] and students:
-                    avg_laps = float(num_laps['num_laps']) / students
+                if results['num_laps'] and students:
+                    avg_laps = float(results['num_laps']) / students
                 laps[teacher.full_name()] = round(avg_laps, 2)
             for key, value in sorted(laps.iteritems(), key=lambda (v,k): (k,v), reverse=True):
                 json['values'][index]['values'].append(value)
@@ -732,6 +732,25 @@ class Donation(models.Model):
             for teacher in teachers:
                 results = Children.objects.filter(teacher=teacher).aggregate(total_collected=Sum('collected'))
                 totals[teacher.full_name()] = float(results['total_collected'] or 0)
+            for key, value in sorted(totals.iteritems(), key=lambda (v,k): (k,v), reverse=True):
+                json['values'][index]['values'].append(value)
+                json['values'][index]['labels'].append(key)
+        return json
+
+    def reports_most_donations_by_grade_avg(self):
+        json = {'label': [], 'values': []}
+        grades = Grade.objects.all()
+        for index, grade in enumerate(grades):
+            json['values'].append({'label': grade.title, 'values': [], 'labels': []})
+            teachers = Teacher.objects.filter(grade=grade).exclude(list_type=3).all()
+            totals = { }
+            for teacher in teachers:
+                results = Children.objects.filter(teacher=teacher).aggregate(total_collected=Sum('collected'))
+                students = teacher.total_students()
+                total_collected = 0
+                if results['total_collected'] and students:
+                    total_collected = results['total_collected'] / students
+                totals[teacher.full_name()] = round(total_collected, 2)
             for key, value in sorted(totals.iteritems(), key=lambda (v,k): (k,v), reverse=True):
                 json['values'][index]['values'].append(value)
                 json['values'][index]['labels'].append(key)
