@@ -1,4 +1,4 @@
-from husky.models import Parent, Children, Content, Blog, Message, Link, Donation, Grade, Teacher
+import re as regexp
 
 from django import forms
 from django.contrib import admin
@@ -6,6 +6,8 @@ from django.contrib.admin import SimpleListFilter
 from django.contrib.auth.admin import UserAdmin
 from django.contrib.auth.models import User
 from django.utils.translation import ugettext_lazy as _
+
+from husky.models import Parent, Children, Content, Blog, Message, Link, Donation, Grade, Teacher
 
 
 class MostLapsListFilter(SimpleListFilter):
@@ -109,13 +111,20 @@ class MessageAdmin(admin.ModelAdmin):
     list_display = ['title', 'content', 'date_added']
 
 class DonationAdmin(admin.ModelAdmin):
+    def email_address(obj):
+        if regexp.match('^(_parent_|_teacher_)', obj.email_address): return obj.email_address
+        return '<a href="%s" target="_email_link">%s</a>' % (obj.payment_url(), obj.email_address)
+    email_address.allow_tags = True
+    email_address.short_description = "Email Address"
+
     fields = ['child', 'first_name', 'last_name', 'email_address', 'phone_number', 'donation', 'per_lap', 'date_added', 'paid']
-    list_display = ['child', 'teacher', 'first_name', 'last_name', 'email_address', 'donation', 'laps', 'per_lap', 'total', 'date_added', 'paid']
+    list_display = ['child', 'teacher', 'first_name', 'last_name', email_address, 'donation', 'laps', 'per_lap', 'total', 'date_added', 'paid']
     search_fields = ['email_address', 'first_name', 'last_name', 'child__first_name', 'child__last_name', 'child__teacher__last_name']
     list_editable = ['per_lap', 'donation', 'paid']
     list_filter = [MostDonationsListFilter]
     save_on_top = True
     list_per_page = 50
+
 
 class UserAdmin(UserAdmin):
     list_display = ['username', 'email', 'is_active', 'parent']

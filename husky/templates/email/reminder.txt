@@ -6,8 +6,9 @@ Dear {{ name }},
 You are getting this email because you have sponsored {{ child_name }} for the Hicks Canyon 
 Husky Hustle.  {% if child_laps %}{{ child_name }} ran an amazing {{ child_laps }} laps.{% endif %}
 
-Please refer to the link below to make your payment.  Your contribution ensures that the students 
-at Hicks Canyon will continue to receive the best education and tools our schools can provide.
+Our records indicate that your pledge has not been funded.  Please refer to the link below to 
+make your payment.  Your contribution ensures that the students at Hicks Canyon will continue 
+to receive the best education and tools our schools can provide.
 
 {{ payment_url }}
 
