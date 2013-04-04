@@ -221,7 +221,7 @@ class Teacher(models.Model):
 
     def total_students(self, exclude=None):
         if exclude:
-            return Children.objects.filter(teacher=self).exclude(disqualify=True).count()
+            return Children.objects.filter(teacher=self, laps__gt=0).exclude(disqualify=True).count()
         else:
             return Children.objects.filter(teacher=self).count()
 
