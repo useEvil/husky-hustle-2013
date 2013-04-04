@@ -52,9 +52,9 @@ class MostDonationsListFilter(SimpleListFilter):
         )
     def queryset(self, request, queryset):
         if self.value() == 'unpaid_lap':
-            return queryset.filter(paid=False, per_lap=True).all()
+            return queryset.filter(paid=False, per_lap=True).order_by('email_address').all()
         elif self.value() == 'unpaid_flat':
-            return queryset.filter(paid=False, per_lap=False).all()
+            return queryset.filter(paid=False, per_lap=False).order_by('email_address').all()
         elif self.value() == 'perlap':
             return queryset.filter(paid=True, per_lap=True).all()
         elif self.value() == 'flat':
@@ -111,14 +111,16 @@ class MessageAdmin(admin.ModelAdmin):
     list_display = ['title', 'content', 'date_added']
 
 class DonationAdmin(admin.ModelAdmin):
-    def email_address(obj):
-        if regexp.match('^(_parent_|_teacher_)', obj.email_address): return obj.email_address
-        return '<a href="%s" target="_email_link">%s</a>' % (obj.payment_url(), obj.email_address)
-    email_address.allow_tags = True
-    email_address.short_description = "Email Address"
+    def total_link(obj):
+        if regexp.match('^(_parent_|_teacher_)', obj.email_address):
+            return obj.total()
+        else:
+            return '<a href="%s" target="_email_link">%s</a>' % (obj.payment_url(), obj.total())
+    total_link.allow_tags = True
+    total_link.short_description = "Total"
 
     fields = ['child', 'first_name', 'last_name', 'email_address', 'phone_number', 'donation', 'per_lap', 'date_added', 'paid']
-    list_display = ['child', 'teacher', 'first_name', 'last_name', email_address, 'donation', 'laps', 'per_lap', 'total', 'date_added', 'paid']
+    list_display = ['child', 'teacher', 'first_name', 'last_name', 'email_address', 'donation', 'laps', 'per_lap', total_link, 'date_added', 'paid']
     search_fields = ['email_address', 'first_name', 'last_name', 'child__first_name', 'child__last_name', 'child__teacher__last_name']
     list_editable = ['per_lap', 'donation', 'paid']
     list_filter = [MostDonationsListFilter]
