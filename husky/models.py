@@ -908,9 +908,10 @@ class Donation(models.Model):
         thank_you_url = 'http://%s/thank_you' % (site.domain)
         return thank_you_url
 
-    def payment_url(self):
+    def payment_url(self, ids=None):
         site = Site.objects.get_current()
-        payment_url = 'http://%s/payment/%s/%s' % (site.domain, self.child.identifier, self.id)
+        if not ids: ids = self.id
+        payment_url = 'http://%s/payment/%s/%s' % (site.domain, self.child.identifier, ids)
         return payment_url
 
     def button_data(self, amount=None, ids=None):
