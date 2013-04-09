@@ -220,10 +220,15 @@ class Teacher(models.Model):
             return
 
     def total_students(self, exclude=None):
-        if exclude:
+        if exclude and exclude == 1:
             return Children.objects.filter(teacher=self, laps__gt=0).exclude(disqualify=True).count()
+        elif exclude and exclude == 2:
+            return Children.objects.filter(teacher=self, collected__gt=0).count()
         else:
             return Children.objects.filter(teacher=self).count()
+
+    def total_participation(self):
+        return Children.objects.filter(teacher=self, collected__gt=0).count()
 
     def get_all(self):
         return Teacher.objects.exclude(grade__grade=-1).all()
