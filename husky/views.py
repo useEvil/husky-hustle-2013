@@ -1035,13 +1035,15 @@ def send_unpaid_reports(request):
     _send_mass_mail(data)
     return HttpResponse(simplejson.dumps({'result': 'OK', 'status': 200}), mimetype='application/json')
 
-def send_unpaid_reminders(request, type=None):
+def send_unpaid_reminders(request, type=None, donation_id=None):
     c = Context(dict(
             subject='Hicks Canyon Jog-A-Thon: Pledge Reminder',
             reply_to=settings.EMAIL_HOST_USER,
     ))
-    if type:
-        flag = type = 'per_lap' and 1 or 0
+    if donation_id:
+        donations = [Donation.objects.filter(id=donation_id).order_by('child__last_name', 'child__first_name').get()]
+    elif type:
+        flag = type == 'per_lap' and 1 or 0
         donations = Donation.objects.filter(per_lap=flag).exclude(paid=1).order_by('child__last_name', 'child__first_name')
     else:
         donations = Donation.objects.exclude(paid=1).order_by('child__last_name', 'child__first_name')
