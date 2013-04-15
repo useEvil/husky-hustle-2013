@@ -1059,7 +1059,7 @@ def send_unpaid_reminders(request, type=None, donation_id=None):
         donation = donations[0]
         ids = ','.join(str(d.id) for d in donations)
         c['name'] = donation.full_name()
-        c['email_address'] = settings.DEBUG and settings.EMAIL_HOST_USER or email_address
+        c['email_address'] = settings.DEBUG and settings.EMAIL_HOST_USER or email
         c['child_name'] = donation.child.full_name()
         c['child_laps'] = donation.child.laps
         c['child_identifier'] = donation.child.identifier
@@ -1069,7 +1069,7 @@ def send_unpaid_reminders(request, type=None, donation_id=None):
         if settings.DEBUG: break
     _send_mass_mail(data)
     messages.success(request, 'Successfully Sent Reminders')
-    return HttpResponse(simplejson.dumps({'result': 'OK', 'status': 200}), mimetype='application/json')
+    return HttpResponse(simplejson.dumps({'result': 'OK', 'status': 200, 'count': len(data)}), mimetype='application/json')
 
 def calculate_totals(request, type=None, id=None):
     if type == 'donation':
