@@ -1049,41 +1049,24 @@ def send_unpaid_reminders(request, type=None, donation_id=None):
         donations = Donation.objects.exclude(paid=1).order_by('child__last_name', 'child__first_name')
     data = []
     sponsors = {}
-    is_parent = []
     for donation in donations:
-        email_address = None
-        if regexp.match('^_teacher_', donation.email_address):
-            continue
-        elif regexp.match('^_parent_', donation.email_address):
-            if donation.child.parent():
-                email_address = donation.child.parent().email_address
-                is_parent.append(donation.id)
-            else:
-                continue
-        else:
-            email_address = donation.email_address
+        email_address = donation.email_address
+        if regexp.match('^(_parent_|_teacher_)', email_address): continue
         if not sponsors.has_key(email_address):
             sponsors[email_address] = []
         sponsors[email_address].append(donation)
     for email, donations in iter(sponsors.iteritems()):
-        for donation in donations:
-            if donation.id in is_parent:
-                c['is_parent'] = True
-                c['parent_name'] = donation.child.parent().full_name()
-                ids = donation.id
-            else:
-                c['is_parent'] = False
-                ids = ','.join(str(d.id) for d in donations)
-            c['name'] = donation.full_name()
-            c['email_address'] = settings.DEBUG and settings.EMAIL_HOST_USER or email_address
-            c['child_name'] = donation.child.full_name()
-            c['child_laps'] = donation.child.laps
-            c['child_identifier'] = donation.child.identifier
-            c['donation_id'] = donation.id
-            c['payment_url'] = donation.payment_url(ids)
-            data.append(_send_email_teamplate('reminder', c, 1))
-            if donation.id not in is_parent: break
-            if settings.DEBUG: break
+        donation = donations[0]
+        ids = ','.join(str(d.id) for d in donations)
+        c['name'] = donation.full_name()
+        c['email_address'] = settings.DEBUG and settings.EMAIL_HOST_USER or email_address
+        c['child_name'] = donation.child.full_name()
+        c['child_laps'] = donation.child.laps
+        c['child_identifier'] = donation.child.identifier
+        c['donation_id'] = donation.id
+        c['payment_url'] = donation.payment_url(ids)
+        data.append(_send_email_teamplate('reminder', c, 1))
+        if settings.DEBUG: break
     _send_mass_mail(data)
     messages.success(request, 'Successfully Sent Reminders')
     return HttpResponse(simplejson.dumps({'result': 'OK', 'status': 200}), mimetype='application/json')
