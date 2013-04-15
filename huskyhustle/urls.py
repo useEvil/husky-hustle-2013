@@ -73,7 +73,7 @@ urlpatterns = patterns('',
     # reports
     url(r'^admin/reporting/(?P<type>[\w-]+)$', 'husky.views.reporting', name='reporting'),
     url(r'^admin/reports/(?P<type>[\w-]+)$', 'husky.views.reports', name='reports'),
-    url(r'^admin/results/(?P<type>[\w-]*)$', 'husky.views.results', name='results'),
+    url(r'^admin/results/(?P<type>[\w-]*)/*(?P<grade>[\w]*)$', 'husky.views.results', name='results'),
     url(r'^admin/(?P<type>[\w]+)/calculate_totals/*(?P<id>[\d]*)$', 'husky.views.calculate_totals', name='calculate_totals'),
     url(r'^admin/send_teacher_reports/*(?P<id>[\d,]*)$', 'husky.views.send_teacher_reports', name='send_teacher_reports'),
     url(r'^admin/send_unpaid_reports$', 'husky.views.send_unpaid_reports', name='send_unpaid_reports'),
