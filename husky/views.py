@@ -548,7 +548,7 @@ def contact(request):
     c['messages'] = messages.get_messages(request)
     return render_to_response('contact.html', c, context_instance=RequestContext(request))
 
-def results(request, type=None):
+def results(request, type=None, grade=None):
     c = Context(dict(
             page_title='Results',
             parent=getParent(request),
@@ -563,7 +563,7 @@ def results(request, type=None):
             c['donators'] = donators
             c['sponsors'] = sponsors
         if 'verify-paypal-donations' in request.path:
-            c['results'] = Donation().verify_paypal_donations()
+            c['results'] = Donation().verify_paypal_donations(grade)
         elif 'show-unpaid-donations' in request.path:
             c['results'] = Donation().reports_unpaid_donations()
         return render_to_response('admin/results.html', c, context_instance=RequestContext(request))

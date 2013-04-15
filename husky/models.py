@@ -859,7 +859,7 @@ class Donation(models.Model):
         data.append({'id': '&nbsp;', 'date': 'Total', 'parent': '&nbsp;', 'child': '&nbsp;', 'teacher': '&nbsp;', 'name': '&nbsp;', 'donation': None, 'total': total_donated, 'paid': '&nbsp;'})
         return data
 
-    def verify_paypal_donations(self):
+    def verify_paypal_donations(self, grade=None):
         data = []
         count = 0
         total_paid = 0
@@ -881,8 +881,9 @@ class Donation(models.Model):
                         count += 1
                         try:
                             donation = Donation.objects.filter(id=id).get()
-                            total_donated += donation.donated or 0
-                            data.append({'id': count, 'date': row['Date'], 'parent': donation.child.parent, 'child': donation.child, 'teacher': donation.child.teacher, 'name': row['Name'], 'emnail': row['From Email Address'], 'item': row['Item ID'], 'gross': row['Gross'], 'donation': donation.donated or 0, 'paid': donation.paid and 'Yes' or 'No'})
+                            if donation.child.grade.grade == grade:
+                                total_donated += donation.donated or 0
+                                data.append({'id': count, 'date': row['Date'], 'parent': donation.child.parent, 'child': donation.child, 'teacher': donation.child.teacher, 'name': row['Name'], 'emnail': row['From Email Address'], 'item': row['Item ID'], 'gross': row['Gross'], 'donation': donation.donated or 0, 'paid': donation.paid and 'Yes' or 'No'})
                         except:
                             data.append({'id': count, 'date': row['Date'], 'parent': 'N/A', 'child': 'N/A', 'teacher': 'N/A', 'name': row['Name'], 'emnail': row['From Email Address'], 'item': row['Item ID'], 'gross': row['Gross'], 'donation': 'N/A', 'paid': 'N/A'})
                 else:
@@ -890,8 +891,9 @@ class Donation(models.Model):
                     try:
                         names = row['Name'].split()
                         donation = Donation.objects.filter(first_name=names[0], last_name=names[1]).get()
-                        total_donated += donation.donated or 0
-                        data.append({'id': count, 'date': row['Date'], 'parent': donation.child.parent, 'child': donation.child, 'teacher': donation.child.teacher, 'name': row['Name'], 'emnail': row['From Email Address'], 'item': row['Item ID'], 'gross': row['Gross'], 'donation': donation.donated or 0, 'paid': donation.paid and 'Yes' or 'No'})
+                        if donation.child.grade.grade == grade:
+                            total_donated += donation.donated or 0
+                            data.append({'id': count, 'date': row['Date'], 'parent': donation.child.parent, 'child': donation.child, 'teacher': donation.child.teacher, 'name': row['Name'], 'emnail': row['From Email Address'], 'item': row['Item ID'], 'gross': row['Gross'], 'donation': donation.donated or 0, 'paid': donation.paid and 'Yes' or 'No'})
                     except:
                         data.append({'id': count, 'date': row['Date'], 'parent': 'N/A', 'child': 'N/A', 'teacher': 'N/A', 'name': row['Name'], 'emnail': row['From Email Address'], 'item': row['Item ID'], 'gross': row['Gross'], 'donation': 'N/A', 'paid': 'N/A'})
         data.append({'id': '&nbsp;', 'date': 'Total', 'parent': '&nbsp;', 'child': '&nbsp;', 'teacher': '&nbsp;', 'name': '&nbsp;', 'emnail': '&nbsp;', 'item': '&nbsp;', 'gross': total_paid, 'donation': total_donated, 'paid': '&nbsp;'})
