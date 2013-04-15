@@ -881,7 +881,7 @@ class Donation(models.Model):
                         count += 1
                         try:
                             donation = Donation.objects.filter(id=id).get()
-                            if donation.child.grade.grade == grade:
+                            if not grade or donation.child.grade.grade == grade:
                                 total_donated += donation.donated or 0
                                 data.append({'id': count, 'date': row['Date'], 'parent': donation.child.parent, 'child': donation.child, 'teacher': donation.child.teacher, 'name': row['Name'], 'emnail': row['From Email Address'], 'item': row['Item ID'], 'gross': row['Gross'], 'donation': donation.donated or 0, 'paid': donation.paid and 'Yes' or 'No'})
                         except:
@@ -891,7 +891,7 @@ class Donation(models.Model):
                     try:
                         names = row['Name'].split()
                         donation = Donation.objects.filter(first_name=names[0], last_name=names[1]).get()
-                        if donation.child.grade.grade == grade:
+                        if not grade or donation.child.grade.grade == grade:
                             total_donated += donation.donated or 0
                             data.append({'id': count, 'date': row['Date'], 'parent': donation.child.parent, 'child': donation.child, 'teacher': donation.child.teacher, 'name': row['Name'], 'emnail': row['From Email Address'], 'item': row['Item ID'], 'gross': row['Gross'], 'donation': donation.donated or 0, 'paid': donation.paid and 'Yes' or 'No'})
                     except:
