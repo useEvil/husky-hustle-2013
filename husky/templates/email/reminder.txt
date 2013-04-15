@@ -1,8 +1,24 @@
-{% autoescape off %}
+{% autoescape off %}{% if is_parent %}
+Dear {{ parent_name }},
+
+You are getting this email because you have sponsors for {{ child_name }} that have yet to make 
+a payment for their pledge.  If you can, please forward the message below to your sponsor.  If 
+you have already contacted the sponsor and they have submitted their payment or will not be making 
+a payment, please respond to let us know and we will reconcile with our records.
+
+Thank you for your understanding and support.
+
+Regards,
+
+The Husky Hustle Team
+
+http://www.huskyhustle.com/
+husky@huskyhustle.com
+--------------------------------------------------------------------------------
+{% endif %}
 Dear {{ name }},
-
-{{ custom_message }}
-
+{% if custom_message %}{{ custom_message }}
+{% endif %}
 You are getting this email because you have sponsored {{ child_name }} for the Hicks Canyon 
 Husky Hustle.  {% if child_laps %}{{ child_name }} ran an amazing {{ child_laps }} laps.{% endif %}
 
@@ -11,11 +27,4 @@ make your payment.  Your contribution ensures that the students at Hicks Canyon 
 to receive the best education and tools our schools can provide.
 
 {{ payment_url }}
-
-Regards,
-
-The Husky Hustle Team
-
-http://www.huskyhustle.com
-husky@huskyhustle.com
 {% endautoescape %}
