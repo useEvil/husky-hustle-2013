@@ -1052,7 +1052,9 @@ def send_unpaid_reminders(request, type=None, donation_id=None):
     is_parent = []
     for donation in donations:
         email_address = None
-        if regexp.match('^(_parent_|_teacher_)', donation.email_address):
+        if regexp.match('^_teacher_', donation.email_address):
+            continue
+        elif regexp.match('^_parent_', donation.email_address):
             if donation.child.parent():
                 email_address = donation.child.parent().email_address
                 is_parent.append(donation.id)
