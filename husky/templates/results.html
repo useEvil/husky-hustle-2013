@@ -16,6 +16,11 @@
 					<iframe src="/admin/reporting/most-laps-by-grade" height="600" width="900"></iframe>
 					{% endif %}
 
+					{% if type == 'most-laps-by-grade-avg' or type == 'all' %}
+					<span class="bold">Total Laps By Grade (Avg):</span>
+					<iframe src="/admin/reporting/most-laps-by-grade-avg" height="600" width="900"></iframe>
+					{% endif %}
+
 					{% if type == 'most-laps-by-child-by-grade' or type == 'all' %}
 					<span class="bold">Most Laps By Child By Grade:</span>
 					<iframe src="/admin/reporting/most-laps-by-child-by-grade" height="600" width="900"></iframe>
@@ -24,6 +29,11 @@
 					{% if type == 'most-donations-by-grade' or type == 'all' %}
 					<span class="bold">Total Donations By Grade:</span>
 					<iframe src="/admin/reporting/most-donations-by-grade" height="600" width="900"></iframe>
+					{% endif %}
+
+					{% if type == 'most-donations-by-grade-avg' or type == 'all' %}
+					<span class="bold">Total Donations By Grade (Avg):</span>
+					<iframe src="/admin/reporting/most-donations-by-grade-avg" height="600" width="900"></iframe>
 					{% endif %}
 
 					{% if type == 'most-donations-by-child-by-grade' or type == 'all' %}
