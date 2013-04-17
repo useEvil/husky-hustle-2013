@@ -173,6 +173,17 @@ class Grade(models.Model):
     def get_all(self):
         return Grade.objects.exclude(grade=-1).all()
 
+    def most_donations_avg(self):
+        avg = self.total_collected() / self.total_students()
+        return round(avg, 2)
+
+    def most_laps_avg(self):
+        avg = float(self.total_laps()) / self.total_students()
+        return round(avg, 2)
+
+    def total_students(self):
+        return Children.objects.filter(teacher__grade=self).count()
+
     def total_laps(self):
         results = Children.objects.filter(teacher__grade=self).exclude(disqualify=True).aggregate(num_laps=Sum('laps'))
         return results['num_laps'] or 0
