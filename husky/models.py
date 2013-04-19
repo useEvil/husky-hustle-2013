@@ -200,7 +200,7 @@ class Grade(models.Model):
         percentage = 0
         if self.total_collected() and self.total_donations():
             percentage = self.total_collected() / self.total_donations()
-        return round(percentage, 2)
+        return round(percentage, 3)
 
 
 class Teacher(models.Model):
