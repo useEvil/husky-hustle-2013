@@ -1,4 +1,4 @@
-from husky.models import Parent, Children, Content, Blog, Message, Link, Donation, Grade, Teacher
+import re as regexp
 
 from django import forms
 from django.contrib import admin
@@ -6,6 +6,8 @@ from django.contrib.admin import SimpleListFilter
 from django.contrib.auth.admin import UserAdmin
 from django.contrib.auth.models import User
 from django.utils.translation import ugettext_lazy as _
+
+from husky.models import Parent, Children, Content, Blog, Message, Link, Donation, Grade, Teacher
 
 
 class MostLapsListFilter(SimpleListFilter):
@@ -21,6 +23,7 @@ class MostLapsListFilter(SimpleListFilter):
             ('laps', _('Most Laps')),
             ('by_laps', _('By Laps')),
             ('no_laps', _('Missing Laps')),
+            ('outstanding', _('Outstanding')),
         )
     def queryset(self, request, queryset):
         if self.value() == 'laps':
@@ -29,6 +32,8 @@ class MostLapsListFilter(SimpleListFilter):
             return queryset.filter(sponsors__per_lap=True).all()
         elif self.value() == 'no_laps':
             return queryset.filter(laps=None).all()
+        elif self.value() == 'outstanding':
+            return queryset.filter(sponsors__paid=False).distinct().all()
         else:
             return queryset.all()
 
@@ -50,9 +55,9 @@ class MostDonationsListFilter(SimpleListFilter):
         )
     def queryset(self, request, queryset):
         if self.value() == 'unpaid_lap':
-            return queryset.filter(paid=False, per_lap=True).all()
+            return queryset.filter(paid=False, per_lap=True).order_by('email_address').all()
         elif self.value() == 'unpaid_flat':
-            return queryset.filter(paid=False, per_lap=False).all()
+            return queryset.filter(paid=False, per_lap=False).order_by('email_address').all()
         elif self.value() == 'perlap':
             return queryset.filter(paid=True, per_lap=True).all()
         elif self.value() == 'flat':
@@ -72,11 +77,11 @@ class ParentInline(admin.StackedInline):
     verbose_name_plural = 'parents'
 
 class ChildrenAdmin(admin.ModelAdmin):
-    fields = ['first_name', 'last_name', 'teacher', 'identifier', 'age', 'gender', 'laps', 'date_added']
-    list_display = ['first_name', 'last_name', 'teacher', 'identifier', 'gender', 'laps', 'total_for_laps', 'total_due', 'total_got']
-#    list_display = ['first_name', 'last_name', 'teacher', 'identifier', 'gender', 'laps', 'total_for_laps', 'total_for_flat', 'total_due', 'total_got']
+    fields = ['first_name', 'last_name', 'teacher', 'identifier', 'age', 'gender', 'laps', 'disqualify', 'date_added']
+    list_display = ['first_name', 'last_name', 'teacher', 'identifier', 'disqualify', 'gender', 'laps', 'total_for_laps', 'total_due', 'total_got']
+#    list_display = ['first_name', 'last_name', 'teacher', 'identifier', 'disqualify', 'gender', 'laps', 'total_for_laps', 'total_for_flat', 'total_due', 'total_got']
     search_fields = ['teacher__last_name', 'first_name', 'last_name', 'parents__first_name', 'parents__last_name', 'teacher__last_name']
-    list_editable = ['laps', 'gender']
+    list_editable = ['laps', 'gender', 'disqualify']
     list_filter = [MostLapsListFilter]
     inlines = [ChildrenInline]
     save_on_top = True
@@ -109,13 +114,22 @@ class MessageAdmin(admin.ModelAdmin):
     list_display = ['title', 'content', 'date_added']
 
 class DonationAdmin(admin.ModelAdmin):
+    def total_link(obj):
+        if regexp.match('^(_parent_|_teacher_)', obj.email_address):
+            return obj.total()
+        else:
+            return '<a href="%s" target="_email_link">%s</a>' % (obj.payment_url(), obj.total())
+    total_link.allow_tags = True
+    total_link.short_description = "Total"
+
     fields = ['child', 'first_name', 'last_name', 'email_address', 'phone_number', 'donation', 'per_lap', 'date_added', 'paid']
-    list_display = ['child', 'teacher', 'first_name', 'last_name', 'email_address', 'donation', 'laps', 'per_lap', 'total', 'date_added', 'paid']
+    list_display = ['child', 'teacher', 'first_name', 'last_name', 'email_address', 'donation', 'laps', 'per_lap', total_link, 'date_added', 'paid']
     search_fields = ['email_address', 'first_name', 'last_name', 'child__first_name', 'child__last_name', 'child__teacher__last_name']
     list_editable = ['per_lap', 'donation', 'paid']
     list_filter = [MostDonationsListFilter]
     save_on_top = True
     list_per_page = 50
+
 
 class UserAdmin(UserAdmin):
     list_display = ['username', 'email', 'is_active', 'parent']
@@ -128,12 +142,12 @@ class TeacherInline(admin.StackedInline):
 
 class TeacherAdmin(admin.ModelAdmin):
     fields = ['grade', 'list_type', 'title', 'first_name', 'last_name', 'room_number', 'email_address', 'phone_number', 'website']
-    list_display = ['grade', 'list_type', 'title', 'last_name', 'room_number', 'email_address', 'phone_number', 'get_donations']
-    list_editable = ['list_type', 'last_name', 'room_number', 'phone_number']
+    list_display = ['grade', 'list_type', 'title', 'last_name', 'room_number', 'email_address', 'get_donations', 'total_students', 'total_participation']
+    list_editable = ['list_type', 'last_name', 'room_number', 'email_address']
 
 class GradeAdmin(admin.ModelAdmin):
     fields = ['grade', 'title']
-    list_display = ['id', 'grade', 'title']
+    list_display = ['id', 'grade', 'title', 'total_students', 'total_laps', 'total_donations', 'total_collected', 'percent_completed', 'most_laps_avg', 'most_donations_avg']
     list_editable = ['grade', 'title']
     inlines = [TeacherInline]
 

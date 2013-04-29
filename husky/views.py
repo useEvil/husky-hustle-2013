@@ -548,7 +548,7 @@ def contact(request):
     c['messages'] = messages.get_messages(request)
     return render_to_response('contact.html', c, context_instance=RequestContext(request))
 
-def results(request, type=None):
+def results(request, type=None, grade=None):
     c = Context(dict(
             page_title='Results',
             parent=getParent(request),
@@ -563,7 +563,7 @@ def results(request, type=None):
             c['donators'] = donators
             c['sponsors'] = sponsors
         if 'verify-paypal-donations' in request.path:
-            c['results'] = Donation().verify_paypal_donations()
+            c['results'] = Donation().verify_paypal_donations(grade)
         elif 'show-unpaid-donations' in request.path:
             c['results'] = Donation().reports_unpaid_donations()
         return render_to_response('admin/results.html', c, context_instance=RequestContext(request))
@@ -945,8 +945,12 @@ def json(request, child_id=None):
 
 def reports(request, type=None):
     json = {}
-    if type == 'most-laps-by-grade':
+    if type == 'totals-by-grade':
+        json = Donation().reports_totals_by_grade()
+    elif type == 'most-laps-by-grade':
         json = Donation().reports_most_laps_by_grade()
+    elif type == 'most-laps-by-grade-avg':
+        json = Donation().reports_most_laps_by_grade_avg()
     elif type == 'most-laps-by-child-by-grade':
         json = Donation().reports_most_laps_by_child_by_grade()
     elif type == 'most-laps-by-child-by-grade-girls':
@@ -955,6 +959,8 @@ def reports(request, type=None):
         json = Donation().reports_most_laps_by_child_by_grade('M')
     elif type == 'most-donations-by-grade':
         json = Donation().reports_most_donations_by_grade()
+    elif type == 'most-donations-by-grade-avg':
+        json = Donation().reports_most_donations_by_grade_avg()
     elif type == 'most-donations-by-child':
         json = Donation().reports_most_donations_by_child()
     elif type == 'most-donations-by-child-pledged':
@@ -1028,6 +1034,42 @@ def send_unpaid_reports(request):
         data.append(_send_email_teamplate('reports-unpaid', c, 1))
     _send_mass_mail(data)
     return HttpResponse(simplejson.dumps({'result': 'OK', 'status': 200}), mimetype='application/json')
+
+def send_unpaid_reminders(request, type=None, donation_id=None):
+    c = Context(dict(
+            subject='Hicks Canyon Jog-A-Thon: Pledge Reminder',
+            reply_to=settings.EMAIL_HOST_USER,
+    ))
+    if donation_id:
+        donations = [Donation.objects.filter(id=donation_id).order_by('child__last_name', 'child__first_name').get()]
+    elif type:
+        flag = type == 'per_lap' and 1 or 0
+        donations = Donation.objects.filter(per_lap=flag).exclude(paid=1).order_by('child__last_name', 'child__first_name')
+    else:
+        donations = Donation.objects.exclude(paid=1).order_by('child__last_name', 'child__first_name')
+    data = []
+    sponsors = {}
+    for donation in donations:
+        email_address = donation.email_address
+        if regexp.match('^(_parent_|_teacher_)', email_address): continue
+        if not sponsors.has_key(email_address):
+            sponsors[email_address] = []
+        sponsors[email_address].append(donation)
+    for email, donations in iter(sponsors.iteritems()):
+        donation = donations[0]
+        ids = ','.join(str(d.id) for d in donations)
+        c['name'] = donation.full_name()
+        c['email_address'] = settings.DEBUG and settings.EMAIL_HOST_USER or email
+        c['child_name'] = donation.child.full_name()
+        c['child_laps'] = donation.child.laps
+        c['child_identifier'] = donation.child.identifier
+        c['donation_id'] = donation.id
+        c['payment_url'] = donation.payment_url(ids)
+        data.append(_send_email_teamplate('reminder', c, 1))
+        if settings.DEBUG: break
+    _send_mass_mail(data)
+    messages.success(request, 'Successfully Sent Reminders')
+    return HttpResponse(simplejson.dumps({'result': 'OK', 'status': 200, 'count': len(data)}), mimetype='application/json')
 
 def calculate_totals(request, type=None, id=None):
     if type == 'donation':
