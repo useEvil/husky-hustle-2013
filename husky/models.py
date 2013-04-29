@@ -173,6 +173,35 @@ class Grade(models.Model):
     def get_all(self):
         return Grade.objects.exclude(grade=-1).all()
 
+    def most_donations_avg(self):
+        avg = self.total_collected() / self.total_students()
+        return round(avg, 2)
+
+    def most_laps_avg(self):
+        avg = float(self.total_laps()) / self.total_students()
+        return round(avg, 2)
+
+    def total_students(self):
+        return Children.objects.filter(teacher__grade=self).count()
+
+    def total_laps(self):
+        results = Children.objects.filter(teacher__grade=self).exclude(disqualify=True).aggregate(num_laps=Sum('laps'))
+        return results['num_laps'] or 0
+
+    def total_donations(self):
+        results = Donation.objects.filter(child__teacher__grade=self).aggregate(total_donations=Sum('donated'))
+        return float(results['total_donations'] or 0)
+
+    def total_collected(self):
+        results = Children.objects.filter(teacher__grade=self).aggregate(total_collected=Sum('collected'))
+        return float(results['total_collected'] or 0)
+
+    def percent_completed(self):
+        percentage = 0
+        if self.total_collected() and self.total_donations():
+            percentage = self.total_collected() / self.total_donations()
+        return round(percentage, 3)
+
 
 class Teacher(models.Model):
 
@@ -201,6 +230,17 @@ class Teacher(models.Model):
         except ObjectDoesNotExist, e:
             return
 
+    def total_students(self, exclude=None):
+        if exclude and exclude == 1:
+            return Children.objects.filter(teacher=self, laps__gt=0).exclude(disqualify=True).count()
+        elif exclude and exclude == 2:
+            return Children.objects.filter(teacher=self, collected__gt=0).count()
+        else:
+            return Children.objects.filter(teacher=self).count()
+
+    def total_participation(self):
+        return Children.objects.filter(teacher=self, collected__gt=0).count()
+
     def get_all(self):
         return Teacher.objects.exclude(grade__grade=-1).all()
 
@@ -209,13 +249,6 @@ class Teacher(models.Model):
 
     def get_list(self):
         return Teacher.objects.exclude(list_type=3).order_by('grade','room_number').all()
-
-    def shortened(self):
-        if not self.shorten:
-            api = bitly.Api(login=settings.BITLY_LOGIN, apikey=settings.BITLY_APIKEY)
-            self.shorten = api.shorten(self.website)
-            self.save()
-        return self.shorten
 
     def get_donations(self):
         total = Donation.objects.filter(child__teacher=self).aggregate(donated=Sum('donated'))
@@ -240,6 +273,13 @@ class Teacher(models.Model):
             sponsors.append({'name': child, 'total': float(total or 0)})
         return donators, sponsors
 
+    def shortened(self):
+        if not self.shorten:
+            api = bitly.Api(login=settings.BITLY_LOGIN, apikey=settings.BITLY_APIKEY)
+            self.shorten = api.shorten(self.website)
+            self.save()
+        return self.shorten
+
     def reports_url(self):
         site = Site.objects.get_current()
         reports_url = 'http://%s/admin/results/donations-by-teacher?id=%s' % (site.domain, self.id)
@@ -256,6 +296,7 @@ class Children(models.Model):
     age = models.IntegerField(blank=True, null=True)
     gender = models.CharField(max_length=1, blank=True, null=True, choices=(('M', 'Boy'), ('F', 'Girl')))
     collected = CurrencyField(blank=True, null=True)
+    disqualify = models.IntegerField(default=0, choices=((0, 'No'), (1, 'Yes')))
     pledged = CurrencyField(blank=True, null=True)
     teacher = models.ForeignKey(Teacher, related_name='students')
     class Meta:
@@ -338,7 +379,10 @@ class Children(models.Model):
             return
 
     def parent(self):
-        return self.parents.filter(parentchildren__default=1).get()
+        try:
+            return self.parents.filter(parentchildren__default=1).get()
+        except ObjectDoesNotExist, e:
+            return
 
     def is_default(self, parent):
         return ParentChildren.objects.filter(children=self, parent=parent).get().default
@@ -640,16 +684,47 @@ class Donation(models.Model):
         except Exception, e:
             return 0
 
+    def reports_totals_by_grade(self):
+        json = {'label': [], 'values': []}
+        grades = Grade.objects.all()
+        for index, grade in enumerate(grades):
+            json['values'].append({'label': grade.title, 'values': [], 'labels': []})
+            json['values'][index]['values'].append(grade.total_collected())
+            json['values'][index]['labels'].append('Laps: %d; Donations' % grade.total_laps())
+        return json
+
     def reports_most_laps_by_grade(self):
         json = {'label': [], 'values': []}
         grades = Grade.objects.all()
         for index, grade in enumerate(grades):
             json['values'].append({'label': grade.title, 'values': [], 'labels': []})
             teachers = Teacher.objects.filter(grade=grade).exclude(list_type=3).all()
+            laps = { }
             for teacher in teachers:
-                num_laps = Children.objects.filter(teacher=teacher).aggregate(num_laps=Sum('laps'))
-                json['values'][index]['values'].append(num_laps['num_laps'] or 0)
-                json['values'][index]['labels'].append(teacher.full_name())
+                num_laps = Children.objects.filter(teacher=teacher, laps__gt=0).exclude(disqualify=True).aggregate(num_laps=Sum('laps'))
+                laps[teacher.full_name()] = num_laps['num_laps'] or 0
+            for key, value in sorted(laps.iteritems(), key=lambda (v,k): (k,v), reverse=True):
+                json['values'][index]['values'].append(value)
+                json['values'][index]['labels'].append(key)
+        return json
+
+    def reports_most_laps_by_grade_avg(self):
+        json = {'label': [], 'values': []}
+        grades = Grade.objects.all()
+        for index, grade in enumerate(grades):
+            json['values'].append({'label': grade.title, 'values': [], 'labels': []})
+            teachers = Teacher.objects.filter(grade=grade).exclude(list_type=3).all()
+            laps = { }
+            for teacher in teachers:
+                results  = Children.objects.filter(teacher=teacher, laps__gt=0).exclude(disqualify=True).aggregate(num_laps=Sum('laps'))
+                students = teacher.total_students(1)
+                avg_laps = 0
+                if results['num_laps'] and students:
+                    avg_laps = float(results['num_laps']) / students
+                laps[teacher.full_name()] = round(avg_laps, 2)
+            for key, value in sorted(laps.iteritems(), key=lambda (v,k): (k,v), reverse=True):
+                json['values'][index]['values'].append(value)
+                json['values'][index]['labels'].append(key)
         return json
 
     def reports_most_laps_by_child_by_grade(self, gender=None):
@@ -658,9 +733,9 @@ class Donation(models.Model):
         for index, grade in enumerate(grades):
             json['values'].append({'label': grade.title, 'values': [], 'labels': []})
             if gender:
-                children = Children.objects.filter(teacher__grade=grade, gender=gender).annotate(max_laps=Max('laps')).order_by('-laps')[:20]
+                children = Children.objects.filter(teacher__grade=grade, gender=gender, laps__gt=0).exclude(disqualify=True).annotate(max_laps=Max('laps')).order_by('-laps')[:20]
             else:
-                children = Children.objects.filter(teacher__grade=grade).annotate(max_laps=Max('laps')).order_by('-laps')[:20]
+                children = Children.objects.filter(teacher__grade=grade, laps__gt=0).exclude(disqualify=True).annotate(max_laps=Max('laps')).order_by('-laps')[:20]
             for child in children:
                 json['values'][index]['values'].append(child.max_laps or 0)
                 json['values'][index]['labels'].append(child.full_name())
@@ -672,13 +747,32 @@ class Donation(models.Model):
         for index, grade in enumerate(grades):
             json['values'].append({'label': grade.title, 'values': [], 'labels': []})
             teachers = Teacher.objects.filter(grade=grade).exclude(list_type=3).all()
+            totals = { }
             for teacher in teachers:
-                children = Children.objects.filter(teacher=teacher).all()
-                total = 0
-                for child in children:
-                    total += child.collected or 0
-                json['values'][index]['values'].append(float(total))
-                json['values'][index]['labels'].append(teacher.full_name())
+                results = Children.objects.filter(teacher=teacher).aggregate(total_collected=Sum('collected'))
+                totals[teacher.full_name()] = float(results['total_collected'] or 0)
+            for key, value in sorted(totals.iteritems(), key=lambda (v,k): (k,v), reverse=True):
+                json['values'][index]['values'].append(value)
+                json['values'][index]['labels'].append(key)
+        return json
+
+    def reports_most_donations_by_grade_avg(self):
+        json = {'label': [], 'values': []}
+        grades = Grade.objects.all()
+        for index, grade in enumerate(grades):
+            json['values'].append({'label': grade.title, 'values': [], 'labels': []})
+            teachers = Teacher.objects.filter(grade=grade).exclude(list_type=3).all()
+            totals = { }
+            for teacher in teachers:
+                results = Children.objects.filter(teacher=teacher).aggregate(total_collected=Sum('collected'))
+                students = teacher.total_students()
+                total_collected = 0
+                if results['total_collected'] and students:
+                    total_collected = results['total_collected'] / students
+                totals[teacher.full_name()] = round(total_collected, 2)
+            for key, value in sorted(totals.iteritems(), key=lambda (v,k): (k,v), reverse=True):
+                json['values'][index]['values'].append(value)
+                json['values'][index]['labels'].append(key)
         return json
 
     def reports_most_donations_by_day_by_sponsor(self):
@@ -779,7 +873,7 @@ class Donation(models.Model):
         data.append({'id': '&nbsp;', 'date': 'Total', 'parent': '&nbsp;', 'child': '&nbsp;', 'teacher': '&nbsp;', 'name': '&nbsp;', 'donation': None, 'total': total_donated, 'paid': '&nbsp;'})
         return data
 
-    def verify_paypal_donations(self):
+    def verify_paypal_donations(self, grade=None):
         data = []
         count = 0
         total_paid = 0
@@ -801,8 +895,9 @@ class Donation(models.Model):
                         count += 1
                         try:
                             donation = Donation.objects.filter(id=id).get()
-                            total_donated += donation.donated or 0
-                            data.append({'id': count, 'date': row['Date'], 'parent': donation.child.parent, 'child': donation.child, 'teacher': donation.child.teacher, 'name': row['Name'], 'emnail': row['From Email Address'], 'item': row['Item ID'], 'gross': row['Gross'], 'donation': donation.donated or 0, 'paid': donation.paid and 'Yes' or 'No'})
+                            if not grade or donation.child.teacher.grade.title == grade:
+                                total_donated += donation.donated or 0
+                                data.append({'id': count, 'date': row['Date'], 'parent': donation.child.parent, 'child': donation.child, 'teacher': donation.child.teacher, 'name': row['Name'], 'emnail': row['From Email Address'], 'item': row['Item ID'], 'gross': row['Gross'], 'donation': donation.donated or 0, 'paid': donation.paid and 'Yes' or 'No'})
                         except:
                             data.append({'id': count, 'date': row['Date'], 'parent': 'N/A', 'child': 'N/A', 'teacher': 'N/A', 'name': row['Name'], 'emnail': row['From Email Address'], 'item': row['Item ID'], 'gross': row['Gross'], 'donation': 'N/A', 'paid': 'N/A'})
                 else:
@@ -810,8 +905,9 @@ class Donation(models.Model):
                     try:
                         names = row['Name'].split()
                         donation = Donation.objects.filter(first_name=names[0], last_name=names[1]).get()
-                        total_donated += donation.donated or 0
-                        data.append({'id': count, 'date': row['Date'], 'parent': donation.child.parent, 'child': donation.child, 'teacher': donation.child.teacher, 'name': row['Name'], 'emnail': row['From Email Address'], 'item': row['Item ID'], 'gross': row['Gross'], 'donation': donation.donated or 0, 'paid': donation.paid and 'Yes' or 'No'})
+                        if not grade or donation.child.teacher.grade.title == grade:
+                            total_donated += donation.donated or 0
+                            data.append({'id': count, 'date': row['Date'], 'parent': donation.child.parent, 'child': donation.child, 'teacher': donation.child.teacher, 'name': row['Name'], 'emnail': row['From Email Address'], 'item': row['Item ID'], 'gross': row['Gross'], 'donation': donation.donated or 0, 'paid': donation.paid and 'Yes' or 'No'})
                     except:
                         data.append({'id': count, 'date': row['Date'], 'parent': 'N/A', 'child': 'N/A', 'teacher': 'N/A', 'name': row['Name'], 'emnail': row['From Email Address'], 'item': row['Item ID'], 'gross': row['Gross'], 'donation': 'N/A', 'paid': 'N/A'})
         data.append({'id': '&nbsp;', 'date': 'Total', 'parent': '&nbsp;', 'child': '&nbsp;', 'teacher': '&nbsp;', 'name': '&nbsp;', 'emnail': '&nbsp;', 'item': '&nbsp;', 'gross': total_paid, 'donation': total_donated, 'paid': '&nbsp;'})
@@ -833,9 +929,10 @@ class Donation(models.Model):
         thank_you_url = 'http://%s/thank_you' % (site.domain)
         return thank_you_url
 
-    def payment_url(self):
+    def payment_url(self, ids=None):
         site = Site.objects.get_current()
-        payment_url = 'http://%s/payment/%s/%s' % (site.domain, self.child.identifier, self.id)
+        if not ids: ids = self.id
+        payment_url = 'http://%s/payment/%s/%s' % (site.domain, self.child.identifier, ids)
         return payment_url
 
     def button_data(self, amount=None, ids=None):
