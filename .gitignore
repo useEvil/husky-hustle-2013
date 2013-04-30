@@ -33,3 +33,6 @@ husky-hustle.db
 fabfile.py
 develop/
 .gitconfig
+data/
+logs/
+*.sql
