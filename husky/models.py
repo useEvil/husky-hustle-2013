@@ -36,6 +36,7 @@ DONATION_GOAL     = 50000
 MAX_BAR_LENGTH    = 225
 MAX_ARROW_HEIGHT  = 275
 BASE_ARROW_HEIGHT = 73
+RAFFLE_TICKET_AMT = 25
 
 
 # Field Classes
@@ -330,6 +331,9 @@ class Children(models.Model):
         except ObjectDoesNotExist, e:
             return
 
+    def get_collected_list(self):
+        return Children.objects.filter(collected__gt=0).order_by('-collected').all()
+
     def donate_url(self):
         site = Site.objects.get_current()
         donate_url = 'http://%s/make-donation/%s' % (site.domain, self.identifier)
@@ -410,6 +414,10 @@ class Children(models.Model):
         for sponsor in self.sponsors_teacher():
             total_due += sponsor.total()
         return total_due
+
+    def total_raffle_tickets(self):
+        tickets = int(self.collected / RAFFLE_TICKET_AMT)
+        return tickets
 
     def total_due(self):
         total_due = 0
