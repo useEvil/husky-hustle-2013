@@ -1,6 +1,7 @@
 import csv
 import pytz
 import base64
+import random
 import django.contrib.staticfiles
 import gdata.photos.service as gdata
 import husky.helpers as h
@@ -976,16 +977,24 @@ def reports(request, type=None):
         id = int(request.GET.get('id') or 0)
         json = Donation().reports_donations_by_teacher(id)
     elif type == 'download-raffle-tickets':
-        response = HttpResponse(content_type='text/csv')
-        response['Content-Disposition'] = 'attachment; filename="raffle-tickets.csv"'
+        winner = request.GET.get('winner') or None
+        if winner:
+            children = Children().get_collected_list()
+            tickets  = []
+            for child in children:
+                for n in range(child.total_raffle_tickets()):
+                    tickets.append(child.full_name())
+            json['winner'] = random.choice(tickets)
+        else:
+            response = HttpResponse(content_type='text/csv')
+            response['Content-Disposition'] = 'attachment; filename="raffle-tickets.csv"'
 
-        children = Children().get_collected_list()
-        writer = csv.writer(response)
-        writer.writerow(['ID', 'Child First Name', 'Child Last Name', 'Teacher', 'Total Collected', 'Total Raffle Tickets'])
-        for child in children:
-            writer.writerow([child.id, child.first_name, child.last_name, child.teacher, child.collected, child.total_raffle_tickets()])
-
-        return response
+            children = Children().get_collected_list()
+            writer = csv.writer(response)
+            writer.writerow(['ID', 'Child First Name', 'Child Last Name', 'Teacher', 'Total Collected', 'Total Raffle Tickets'])
+            for child in children:
+                writer.writerow([child.id, child.first_name, child.last_name, child.teacher, child.collected, child.total_raffle_tickets()])
+            return response
     return HttpResponse(simplejson.dumps(json), mimetype='application/json')
 
 def send_teacher_reports(request, id=None):
