@@ -977,19 +977,26 @@ def reports(request, type=None):
         id = int(request.GET.get('id') or 0)
         json = Donation().reports_donations_by_teacher(id)
     elif type == 'download-raffle-tickets':
-        winner = request.GET.get('winner') or None
-        if winner:
-            children = Children().get_collected_list()
+        winner   = request.GET.get('winner') or None
+        teacher  = request.GET.get('teacher') or None
+        children = Children().get_collected_list()
+        teachers = Teacher().get_donate_list()
+        if teacher:
+            tickets  = []
+            for teach in teachers:
+                tickets.append(teach.full_name())
+            random.shuffle(tickets)
+            json['winner'] = random.choice(tickets)
+        elif winner:
             tickets  = []
             for child in children:
                 for n in range(child.total_raffle_tickets()):
                     tickets.append(child.full_name())
+            random.shuffle(tickets)
             json['winner'] = random.choice(tickets)
         else:
             response = HttpResponse(content_type='text/csv')
             response['Content-Disposition'] = 'attachment; filename="raffle-tickets.csv"'
-
-            children = Children().get_collected_list()
             writer = csv.writer(response)
             writer.writerow(['ID', 'Child First Name', 'Child Last Name', 'Teacher', 'Total Collected', 'Total Raffle Tickets'])
             for child in children:
